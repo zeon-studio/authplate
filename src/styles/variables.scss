@@ -1,0 +1,36 @@
+// define font family into layout.tsx
+// define font size into tailwind.config.js
+
+// default colors
+:root {
+  --body-color: #fff;
+  --primary-color: #121212;
+  --border-color: #eaeaea;
+  --light-color: #f6f6f6;
+  --dark-color: #121212;
+  --accent-color: #0073ff;
+  --mute-color: #e4e4e4;
+  --danger-color: #ff0000;
+
+  --text-primary-color: #fff;
+  --text-default-color: #444444;
+  --text-light-color: #717171;
+  --text-dark-color: #040404;
+}
+
+// darkmode colors
+.dark {
+  --darkmode-body-color: #1c1c1c;
+  --darkmode-primary-color: #fff;
+  --darkmode-border-color: #3e3e3e;
+  --darkmode-light-color: #222222;
+  --darkmode-dark-color: #f1f1f1;
+  --darkmode-accent-color: #4599ff;
+  --darkmode-mute-color: #2e2e2e;
+  --darkmode-danger-color: #ff0000;
+
+  --darkmode-text-primary-color: #000;
+  --darkmode-text-default-color: #b4afb6;
+  --darkmode-text-light-color: #b4afb6;
+  --darkmode-text-dark-color: #ffffff;
+}

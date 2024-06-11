@@ -1,0 +1,129 @@
+@import "variables";
+
+:root {
+  --background: var(--body-color);
+  --foreground: var(--text-default-color);
+
+  --border: var(--border-color);
+  --input: var(--text-light-color);
+  --ring: var(--primary-color);
+  --light: var(--light-color);
+  --dark: var(--dark-color);
+
+  --card: var(--light-color);
+  --card-foreground: var(--text-default-color);
+
+  --popover: var(--light-color);
+  --popover-foreground: var(--text-default-color);
+
+  --primary: var(--primary-color);
+  --primary-foreground: var(--text-primary-color);
+
+  --muted: var(--mute-color);
+  --muted-foreground: var(--text-light-color);
+
+  --accent: var(--accent-color);
+  --accent-foreground: #fff;
+
+  --destructive: var(--danger-color);
+  --destructive-foreground: #fff;
+
+  --text-color: var(--text-default-color);
+  --text-dark: var(--text-dark-color);
+  --text-light: var(--text-light-color);
+}
+
+.dark {
+  --background: var(--darkmode-body-color);
+  --foreground: var(--darkmode-text-default-color);
+
+  --primary: var(--darkmode-primary-color);
+  --primary-foreground: var(--darkmode-text-primary-color);
+
+  --border: var(--darkmode-border-color);
+  --input: var(--darkmode-text-light-color);
+  --ring: var(--darkmode-primary-color);
+  --light: var(--darkmode-light-color);
+  --dark: var(--darkmode-dark-color);
+
+  --card: var(--darkmode-light-color);
+  --card-foreground: var(--darkmode-text-default-color);
+
+  --popover: var(--darkmode-light-color);
+  --popover-foreground: var(--darkmode-text-default-color);
+
+  --primary: var(--darkmode-primary-color);
+
+  --muted: var(--darkmode-mute-color);
+  --muted-foreground: var(--darkmode-text-light-color);
+
+  --accent: var(--darkmode-accent-color);
+  --accent-foreground: #fff;
+
+  --destructive: var(--darkmode-danger-color);
+  --destructive-foreground: #fff;
+
+  --text-color: var(--darkmode-text-default-color);
+  --text-dark: var(--darkmode-text-dark-color);
+  --text-light: var(--darkmode-text-light-color);
+}
+
+html {
+  @apply text-base-sm md:text-base;
+}
+
+body {
+  @apply bg-background text-base font-primary font-normal leading-relaxed text-text;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-secondary font-bold leading-tight text-dark;
+}
+
+h1,
+.h1 {
+  @apply text-h1-sm md:text-h1;
+}
+
+h2,
+.h2 {
+  @apply text-h2-sm md:text-h2;
+}
+
+h3,
+.h3 {
+  @apply text-h3-sm md:text-h3;
+}
+
+h4,
+.h4 {
+  @apply text-h4;
+}
+
+h5,
+.h5 {
+  @apply text-h5;
+}
+
+h6,
+.h6 {
+  @apply text-h6;
+}
+
+b,
+strong {
+  @apply font-semibold;
+}
+
+code {
+  @apply after:border-none;
+}
+
+blockquote > p {
+  @apply my-0 #{!important};
+}
