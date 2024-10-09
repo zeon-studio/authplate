@@ -25,7 +25,7 @@ export default {
     newUser: "/signup",
   },
   callbacks: {
-    async signIn({ user, credentials, account, profile }) {
+    async signIn({ user, account }) {
       //@ts-ignore
       if (account?.type === "credentials" && !user.emailVerified) {
         return false;
@@ -54,13 +54,11 @@ export default {
             isTermsAccepted: true,
           },
         });
-        console.log({ dbUser });
-        return dbUser;
+        return true;
       }
       return true;
     },
-    jwt({ token, user, profile, account }) {
-      console.log({ user, profile, account });
+    jwt({ token }) {
       return token;
     },
 

@@ -1,0 +1,186 @@
+/* section style */
+.section {
+  @apply py-24 xl:py-28;
+}
+
+.section-sm {
+  @apply py-16 xl:py-20;
+}
+
+/* container */
+.container {
+  @apply mx-auto xl:!max-w-[1320px] px-4;
+}
+
+/* social icons */
+.social-icons {
+  @apply space-x-4;
+}
+.social-icons li {
+  @apply inline-block;
+}
+.social-icons li a {
+  @apply flex h-9 w-9 items-center justify-center rounded-sm bg-primary text-center leading-9 text-white;
+}
+.social-icons li a svg {
+  @apply h-5 w-5;
+}
+
+/* notice */
+.notice {
+  @apply mb-6 rounded-lg border px-8 py-6;
+}
+
+.notice-head {
+  @apply flex items-center;
+}
+
+.notice-head svg {
+  @apply mr-3;
+}
+
+.notice-head p {
+  @apply font-secondary text-xl font-semibold text-text-dark;
+}
+
+.notice-body {
+  @apply mt-3;
+}
+
+.notice-body p {
+  @apply my-0;
+}
+
+.notice.note {
+  @apply text-[#1B83E2];
+  @apply border-current;
+}
+
+.notice.tip {
+  @apply text-[#40D294];
+  @apply border-current;
+}
+
+.notice.info {
+  @apply text-[#E3A72C];
+  @apply border-current;
+}
+
+.notice.warning {
+  @apply text-[#DB2C23];
+  @apply border-current;
+}
+
+/* tab */
+.tab {
+  @apply overflow-hidden rounded-lg border border-border;
+}
+
+.tab-nav {
+  @apply flex border-b border-border bg-light   !m-0 !list-none;
+}
+
+.tab-nav-item {
+  @apply cursor-pointer border-b-[3px] border-border py-2 text-lg text-text-dark opacity-80  !my-0 !px-8;
+}
+
+.tab-nav-item.active {
+  @apply border-b-[3px] border-dark opacity-100;
+}
+
+.tab-content {
+  @apply px-5;
+}
+
+.tab-content-panel {
+  @apply p-8;
+}
+
+.tab-content-panel p {
+  @apply mb-0;
+}
+
+.tab-content-panel.active {
+  @apply block;
+}
+
+/* accordion */
+.accordion {
+  @apply mb-6 overflow-hidden rounded-lg border border-border bg-light;
+}
+
+.accordion-header {
+  @apply flex w-full cursor-pointer items-center justify-between px-8 py-4 text-lg text-text-dark;
+}
+
+.accordion-icon {
+  @apply h-[.8em] w-[.8em] rotate-[-90deg] transition-transform duration-200;
+}
+
+.accordion-content {
+  @apply max-h-0 overflow-hidden px-8 py-0;
+}
+
+.accordion.active .accordion-icon {
+  @apply rotate-0;
+}
+
+.accordion.active .accordion-content {
+  @apply max-h-screen;
+}
+
+/* modal */
+.modal {
+  @apply fixed inset-0 z-40 hidden h-full w-full overflow-auto;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 z-40 hidden h-full w-full bg-black/40;
+}
+
+.modal-content {
+  @apply relative top-1/2 z-50 mx-auto max-w-[90%] -translate-y-1/2 rounded-lg bg-background p-8;
+}
+
+.modal-close {
+  @apply absolute right-3 top-3 h-8 w-8 rounded-full bg-light text-center leading-8 text-text-dark;
+}
+
+/* pricing */
+.pricing-switch {
+  .toggle {
+    @apply relative z-10 h-9 cursor-pointer;
+    .pricing-check {
+      @apply absolute z-30 h-full w-full cursor-pointer opacity-0;
+    }
+    .switch {
+      @apply relative inline-block h-full w-[4.3rem] rounded-[0.9rem] border border-solid border-primary;
+    }
+    .switch::after {
+      @apply absolute left-[0.2rem] top-[0.3rem] z-20 h-6 w-6 rounded-full bg-primary duration-300 content-[""];
+    }
+  }
+}
+
+/* content style */
+.content {
+  @apply prose max-w-none;
+  @apply prose-headings:mb-[.3em] prose-headings:mt-[.6em] prose-headings:text-text-dark;
+  @apply prose-h1:text-h1-sm md:prose-h1:text-h1;
+  @apply prose-h2:text-h2-sm md:prose-h2:text-h2;
+  @apply prose-h3:text-h3-sm md:prose-h3:text-h3;
+  @apply prose-img:max-w-full prose-img:rounded;
+  @apply prose-hr:border-border;
+  @apply prose-p:text-base prose-p:text-text;
+  @apply prose-blockquote:rounded-lg prose-blockquote:border prose-blockquote:border-l-[10px] prose-blockquote:border-primary prose-blockquote:bg-light prose-blockquote:px-8 prose-blockquote:py-10 prose-blockquote:font-secondary prose-blockquote:text-2xl prose-blockquote:not-italic prose-blockquote:text-text-dark;
+  @apply prose-pre:rounded-lg prose-pre:bg-light;
+  @apply prose-code:px-1 prose-code:text-primary;
+  @apply prose-strong:text-text-dark;
+  @apply prose-a:text-text prose-a:underline prose-a:hover:text-primary;
+  @apply prose-li:text-text;
+  @apply prose-table:relative prose-table:overflow-hidden prose-table:rounded-lg prose-table:before:absolute prose-table:before:left-0 prose-table:before:top-0 prose-table:before:h-full prose-table:before:w-full prose-table:before:rounded-[inherit] prose-table:before:border prose-table:before:content-[""];
+  @apply prose-thead:border-border prose-thead:bg-light;
+  @apply prose-th:relative prose-th:z-10 prose-th:px-4 prose-th:py-[18px] prose-th:text-text-dark;
+  @apply prose-tr:border-border;
+  @apply prose-td:relative prose-td:z-10 prose-td:px-3 prose-td:py-[18px];
+}

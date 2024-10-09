@@ -25,7 +25,7 @@ const tags = () => {
                 <li className="m-3 inline-block" key={tag}>
                   <Link
                     href={`/tags/${tag}`}
-                    className="block rounded bg-light px-4 py-2 text-xl text-dark  "
+                    className="block rounded bg-light px-4 py-2 text-xl text-text-dark  "
                   >
                     {humanize(tag)}
                     <span className="ml-2 rounded bg-background px-2 ">

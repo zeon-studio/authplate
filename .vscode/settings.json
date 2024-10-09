@@ -2,5 +2,12 @@
   "files.associations": {
     "*.mdx": "markdown"
   },
-  "cSpell.words": ["frontmatter", "hookform", "NEXTAUTH", "signin", "singup"]
+  "cSpell.words": [
+    "frontmatter",
+    "hookform",
+    "NEXTAUTH",
+    "signin",
+    "singup"
+  ],
+  "git.ignoreLimitWarning": true
 }

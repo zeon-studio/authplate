@@ -72,7 +72,6 @@ export const verifyOtp = async (
   prevState: SubmitFormState<OTP>,
   data: ExtractVariables<OTP>,
 ): Promise<SubmitFormState<OTP>> => {
-  console.log(data);
   const { email, otp } = data;
   return await mutate<OTP>(async () => {
     const user = await prisma.user.findUnique({ where: { email } });

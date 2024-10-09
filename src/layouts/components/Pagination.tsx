@@ -34,7 +34,7 @@ const Pagination = ({
                   ? `${section ? "/" + section : "/"}`
                   : `${section ? "/" + section : ""}/page/${currentPage - 1}`
               }
-              className="rounded px-2 py-1.5 text-dark hover:bg-light  "
+              className="rounded px-2 py-1.5 text-text-dark hover:bg-light  "
             >
               <span className="sr-only">Previous</span>
               <svg
@@ -52,7 +52,7 @@ const Pagination = ({
               </svg>
             </Link>
           ) : (
-            <span className="rounded px-2 py-1.5 text-light">
+            <span className="rounded px-2 py-1.5 text-text-light">
               <span className="sr-only">Previous</span>
               <svg
                 viewBox="0 0 20 20"
@@ -89,7 +89,7 @@ const Pagination = ({
                   }
                   passHref
                   aria-current="page"
-                  className="rounded px-4 py-2 text-dark hover:bg-light  "
+                  className="rounded px-4 py-2 text-text-dark hover:bg-light  "
                 >
                   {pagination}
                 </Link>
@@ -101,7 +101,7 @@ const Pagination = ({
           {hasNextPage ? (
             <Link
               href={`${section ? "/" + section : ""}/page/${currentPage + 1}`}
-              className="rounded px-2 py-1.5 text-dark hover:bg-light  "
+              className="rounded px-2 py-1.5 text-text-dark hover:bg-light  "
             >
               <span className="sr-only">Next</span>
               <svg
@@ -119,7 +119,7 @@ const Pagination = ({
               </svg>
             </Link>
           ) : (
-            <span className="rounded px-2 py-1.5 text-light">
+            <span className="rounded px-2 py-1.5 text-text-light">
               <span className="sr-only">Next</span>
               <svg
                 viewBox="0 0 20 20"

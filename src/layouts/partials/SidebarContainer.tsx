@@ -27,7 +27,7 @@ const SidebarContainer = async ({
                       <h6>
                         {user.first_name} {user.last_name}
                       </h6>
-                      <p className="text-sm text-light">{user.email}</p>
+                      <p className="text-sm text-text-light">{user.email}</p>
                     </div>
                   </Sidebar>
                 </div>

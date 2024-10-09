@@ -32,8 +32,8 @@ const Header = () => {
   // const [remember, setRemember] = useState(false);
   // get current path
   const pathname = usePathname();
-  const { status, data } = useSession();
-  const { user, expires } = data || {};
+  const { status } = useSession();
+  // const { user, expires } = data || {};
 
   return (
     <header
@@ -48,7 +48,7 @@ const Header = () => {
         <input id="nav-toggle" type="checkbox" className="hidden" />
         <label
           htmlFor="nav-toggle"
-          className="order-3 cursor-pointer flex items-center lg:hidden text-dark  lg:order-1"
+          className="order-3 cursor-pointer flex items-center lg:hidden text-text-dark  lg:order-1"
         >
           <svg
             id="show-button"
@@ -141,7 +141,7 @@ const Header = () => {
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
             <Link
-              className="mr-5 inline-block border-r border-border pr-5 text-xl text-dark hover:text-primary  "
+              className="mr-5 inline-block border-r border-border pr-5 text-xl text-text-dark hover:text-primary  "
               href="/search"
               aria-label="search"
             >

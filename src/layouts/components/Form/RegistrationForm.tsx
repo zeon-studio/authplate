@@ -17,23 +17,22 @@ import {
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const RegisterForm = () => {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: "mukles",
-      lastName: "hossen",
-      email: "mukles.themefisher@gmail.com",
-      password: "Mokles1234$",
-      confirmPassword: "Mokles1234$",
-      isTermsAccepted: true,
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      isTermsAccepted: false,
     },
   });
 

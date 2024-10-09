@@ -6,10 +6,8 @@ import { Pin } from "lucide-react";
 
 const PricingCard = ({
   button_label,
-  button_link,
   content,
   currency,
-  featured,
   monthly_price,
   name,
   services,
@@ -18,13 +16,11 @@ const PricingCard = ({
 }: PricingCardType & { selectedPackage: Package }) => {
   const price = selectedPackage === "monthly" ? monthly_price : yearly_price;
 
-  console.log({ selectedPackage, price });
-
   return (
     <div className="rounded-2xl  bg-light">
       <div className="p-8">
         <h3 className="h4 mb-1 font-semibold">{name}</h3>
-        <span className="h3 inline-flex font-bold text-dark">
+        <span className="h3 inline-flex font-bold text-text-dark">
           {price}
           {currency}
         </span>
@@ -41,7 +37,7 @@ const PricingCard = ({
           ))}
         </ul>
         <Button
-          className="w-full font-bold hover:bg-dark hover:text-light"
+          className="w-full font-bold hover:bg-dark hover:text-text-light"
           variant={"outline"}
         >
           {button_label}

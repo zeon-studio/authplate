@@ -3,7 +3,7 @@ import TwSizeIndicator from "@/helpers/TwSizeIndicator";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
-import "@/styles/main.scss";
+import "@/styles/main.css";
 import { Toaster } from "@/ui/sonner";
 import { Heebo, Signika } from "next/font/google";
 

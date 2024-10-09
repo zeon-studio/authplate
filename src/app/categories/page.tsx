@@ -25,7 +25,7 @@ const Categories = () => {
                 <li className="m-3 inline-block" key={category}>
                   <Link
                     href={`/categories/${category}`}
-                    className="block rounded bg-light px-4 py-2 text-xl text-dark  "
+                    className="block rounded bg-light px-4 py-2 text-xl text-text-dark  "
                   >
                     {humanize(category)}{" "}
                     <span className="ml-2 rounded bg-background px-2 ">

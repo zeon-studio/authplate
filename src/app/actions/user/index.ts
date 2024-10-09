@@ -14,6 +14,7 @@ import { mutate } from "../index";
 import { createToken } from "../jwt";
 
 export const createUser = async (
+  prevState: SubmitFormState<UserRegister>,
   userData: Partial<User>,
 ): Promise<SubmitFormState<UserRegister>> => {
   return await mutate<UserRegister>(async () => {
@@ -36,14 +37,10 @@ export const createUser = async (
     try {
       await prisma.$connect();
       try {
-        const accessToken = await createToken(
-          {
-            id: userData.email,
-            email: userData.email,
-          },
-          process.env.JWT_SECRET!,
-          process.env.JWT_EXPIRES!,
-        );
+        const accessToken = await createToken({
+          id: userData.email,
+          email: userData.email,
+        });
 
         const newUser = await prisma.user.create({
           // @ts-ignore
@@ -64,21 +61,20 @@ export const createUser = async (
           statusCode: 201,
         };
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        throw error;
       }
-    } catch (error) {
+    } catch {
       return {
         data: null,
         error: [],
         isError: true,
-
         message: "Something went wrong",
         statusCode: 500,
       };
     }
   });
 };
-
 export const register = async (
   prevState: SubmitFormState<UserRegister>,
   data: ExtractVariables<UserRegister>,
@@ -118,14 +114,10 @@ export const register = async (
       await prisma.$connect();
       delete data.confirmPassword;
       try {
-        const accessToken = await createToken(
-          {
-            id: data.email,
-            email: data.email,
-          },
-          process.env.JWT_SECRET!,
-          process.env.JWT_EXPIRES!,
-        );
+        const accessToken = await createToken({
+          id: data.email,
+          email: data.email,
+        });
 
         const newUser = await prisma.user.create({
           data: {
@@ -146,14 +138,14 @@ export const register = async (
           statusCode: 201,
         };
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        throw error;
       }
-    } catch (error) {
+    } catch {
       return {
         data: null,
         error: [],
         isError: true,
-
         message: "Something went wrong",
         statusCode: 500,
       };

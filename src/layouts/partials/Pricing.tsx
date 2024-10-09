@@ -19,11 +19,11 @@ const Pricing = ({ pricing_card, title }: PricingType) => {
         <div className="row justify-center">
           <div className="mb-12 text-center md:col-12 lg:col-4">
             <h2 className="mb-6">{title}</h2>
-            <div className="border-2 border-border rounded-lg p-2 mx-auto flex justify-between space-x-3 text-center font-bold text-dark">
+            <div className="border-2 border-border rounded-lg p-2 mx-auto flex justify-between space-x-3 text-center font-bold text-text-dark">
               <Button
                 className={cn(
                   "bg-transparent flex-1 text-inherit",
-                  selectedPackage === "monthly" && "bg-primary text-light",
+                  selectedPackage === "monthly" && "bg-primary text-text-light",
                 )}
                 onClick={() => handleChangePackage("monthly")}
               >
@@ -33,7 +33,7 @@ const Pricing = ({ pricing_card, title }: PricingType) => {
                 onClick={() => handleChangePackage("yearly")}
                 className={cn(
                   "bg-transparent flex-1 text-inherit",
-                  selectedPackage === "yearly" && "bg-primary text-light",
+                  selectedPackage === "yearly" && "bg-primary text-text-light",
                 )}
               >
                 Yearly

@@ -3,7 +3,9 @@ import "server-only";
 
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 
-export const createToken = (payload: Record<string, unknown>): string => {
+export const createToken = async (
+  payload: Record<string, unknown>,
+): Promise<string> => {
   const secret = process.env.JWT_SECRET;
   const expires = process.env.JWT_EXPIRES;
 
@@ -16,6 +18,9 @@ export const createToken = (payload: Record<string, unknown>): string => {
   );
 };
 
-export const verifyToken = (token: string, secret: Secret): JwtPayload => {
+export const verifyToken = async (
+  token: string,
+  secret: Secret,
+): Promise<JwtPayload> => {
   return jwt.verify(token, secret) as JwtPayload;
 };

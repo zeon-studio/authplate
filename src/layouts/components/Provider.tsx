@@ -26,10 +26,9 @@ const providers = [
   },
 ];
 
-
 const Provider = ({ provider }: { provider: AuthProvider }) => {
   const session = useSession();
-  
+
   return (
     providers.find((item) => item.id === provider.id) && (
       <div
@@ -38,7 +37,7 @@ const Provider = ({ provider }: { provider: AuthProvider }) => {
       >
         <Button
           onClick={() => signIn("google")}
-          className="flex items-center justify-center font-semibold text-dark py-3 border-border border rounded-md w-full"
+          className="flex items-center justify-center font-semibold text-text-dark py-3 border-border border rounded-md w-full"
         >
           <span className="mr-2">
             {providers.find((item) => item.id === provider.id)?.icon}

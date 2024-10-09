@@ -1,3 +1,4 @@
+import MDXContent from "@/helpers/MDXContent";
 import { getSinglePage } from "@/lib/contentParser";
 import PageHeader from "@/partials/PageHeader";
 import SeoMeta from "@/partials/SeoMeta";
@@ -38,7 +39,7 @@ const RegularPages = ({ params }: { params: { regular: string } }) => {
       <section className="section">
         <div className="container">
           <div className="content">
-            {/* <MDXContent content={content} /> */}
+            <MDXContent content={content} />
           </div>
         </div>
       </section>
