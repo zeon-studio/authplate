@@ -1,16 +1,6 @@
-import { loginSchema, registerSchema } from "@/lib/validation";
+import { loginUserSchema, userSchema } from "@/lib/validation/user.schema";
 import { z } from "zod";
 
-  export type User<T> = {
-    id: string;
-    email: string;
-    name: string;
-    profession: string;
-    country: string;
-    verified: boolean;
-    image?: string;
-    variables: T;
-  };
-
-export type UserRegister = User<z.infer<typeof registerSchema>>;
-export type UserLogin = User<z.infer<typeof loginSchema>>;
+export type User = z.infer<typeof userSchema>;
+export type UserRegister = z.infer<typeof userSchema>;
+export type UserLogin = z.infer<typeof loginUserSchema>;

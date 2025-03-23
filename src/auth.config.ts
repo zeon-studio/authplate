@@ -2,7 +2,7 @@ import { createToken } from "@/actions/jwt";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
-import prisma from "./lib/prismaClient";
+import prisma from "./lib/prisma";
 
 export default {
   providers: [

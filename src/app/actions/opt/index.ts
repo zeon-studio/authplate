@@ -1,7 +1,7 @@
 "use server";
 
 import { ExtractVariables, SubmitFormState } from "@/hooks/useSubmit";
-import prisma from "@/lib/prismaClient";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import "server-only";
 import { mutate } from "..";

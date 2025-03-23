@@ -1,8 +1,5 @@
 "use client";
 
-import { createUser } from "@/actions/user";
-import { UserRegister } from "@/actions/user/types";
-import { useSubmitForm } from "@/hooks/useSubmit";
 import { registerSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
@@ -16,14 +13,10 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const RegisterForm = () => {
-  const [isPending, startTransition] = useTransition();
-
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -36,24 +29,9 @@ const RegisterForm = () => {
     },
   });
 
-  const { action, state } = useSubmitForm<UserRegister>(createUser, {
-    async onSuccess() {
-      const { email, password } = registerForm.getValues();
-      await signIn("credentials", {
-        email,
-        password,
-      });
-    },
-  });
-
   return (
     <Form {...registerForm}>
-      <form
-        onSubmit={registerForm.handleSubmit((data) => {
-          action(data);
-        })}
-        className="mx-auto mb-10 row"
-      >
+      <form className="mx-auto mb-10 row">
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}
@@ -72,6 +50,7 @@ const RegisterForm = () => {
             )}
           />
         </div>
+
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}
@@ -177,19 +156,9 @@ const RegisterForm = () => {
           />
         </div>
 
-        {state?.isError && (
-          <div className="mb-4">
-            <p className="text-destructive">{state.message}</p>
-          </div>
-        )}
-
         <div className="col-12">
-          <Button
-            type="submit"
-            className={`font-bold text-lg w-full`}
-            aria-disabled={isPending}
-          >
-            {isPending ? "submitting..." : "submit"}
+          <Button type="submit" className={`font-bold text-lg w-full`}>
+            submit
           </Button>
         </div>
       </form>

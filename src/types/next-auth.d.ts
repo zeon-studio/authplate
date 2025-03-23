@@ -1,28 +1,42 @@
-import { DefaultSession } from "next-auth";
+// types/next-auth.d.ts
+import type { DefaultUser } from "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
     user: {
-      firstName: string;
-      lastName: string;
-      emailVerified: boolean;
-      accessToken: string;
+      id: string;
       email: string;
-    } & DefaultSession["user"];
+      firstName: string;
+      lastName?: string;
+      image?: string;
+      emailVerified: boolean;
+      accessToken: string | null;
+      provider: "Google" | "Github" | "Credentials";
+    };
+  }
+
+  interface User extends DefaultUser {
+    id: string;
+    firstName: string;
+    lastName?: string;
+    email: string;
+    image?: string;
+    emailVerified: boolean;
+    accessToken: string | null;
+    provider: "Google" | "Github" | "Credentials";
   }
 }
 
-declare module "@auth/core/jwt" {
-  adapter: {
-  }
+declare module "next-auth/jwt" {
   interface JWT {
+    id: string;
     firstName: string;
-    lastName: string;
-    emailVerified: boolean;
+    lastName?: string;
     email: string;
-    access_token: string;
-    expires_at: number;
-    refresh_token: string;
-    error?: "RefreshAccessTokenError";
+    image?: string;
+    emailVerified: boolean;
+    accessToken: string | null;
+    provider: "Google" | "Github" | "Credentials";
   }
 }

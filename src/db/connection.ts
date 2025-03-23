@@ -19,5 +19,8 @@ export const dbConnect = async () => {
     const clientPromise = client.connect();
     await clientPromise;
     return clientPromise;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to connect to MongoDB");
+  }
 };
