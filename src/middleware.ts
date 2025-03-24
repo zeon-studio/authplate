@@ -28,5 +28,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/signin", "/signup/", "/otp"],
+  matcher: ["/signin", "/signup/", "/otp", "/"],
 };

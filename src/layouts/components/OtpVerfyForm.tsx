@@ -1,36 +1,26 @@
 "use client";
 
-import { sendVerificationOtp, verifyOtp } from "@/actions/opt";
-import { OTP } from "@/actions/opt/types";
-import { useSubmitForm } from "@/hooks/useSubmit";
-import { otpSchema } from "@/lib/validation";
+import { sendOtp } from "@/app/actions/user";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/ui/form";
-import { Input } from "@/ui/input";
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { useMutation } from "@/hooks/useMutation";
+import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useTransition } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 import { Timer } from "./timer";
-import { Button } from "./ui/button";
+import { Label } from "./ui/label";
 
 const OtpVerifyForm = () => {
-  const { data, update } = useSession();
-  const { user } = data || {};
-  const router = useRouter();
-
-  const [isPending, startTransition] = useTransition();
-  const formRef = useRef<HTMLFormElement>(null);
-
+  const { data: session, status } = useSession();
   const otpForm = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -38,58 +28,48 @@ const OtpVerifyForm = () => {
     },
   });
 
-  const otp = otpForm.watch("otp");
-  const { action: sendVerificationOtpRequest } =
-    useSubmitForm<OTP>(sendVerificationOtp);
-
-  const { action: verifyOtpRequest, state } = useSubmitForm<OTP>(verifyOtp, {
-    onSuccess(state, ref) {
-      toast.success(state.message);
-      update({
-        emailVerified: true,
-      } as any);
+  const { action, isPending } = useMutation(sendOtp, {
+    onError({ error }) {
+      if (error.type === "VALIDATION_ERROR") {
+        return;
+      }
     },
+    onSuccess() {},
   });
 
   useEffect(() => {
-    if (otp.length >= 4) {
-      formRef.current?.submit();
+    if (status === "authenticated" && !session.user.emailVerified) {
+      // sent otp to email
     }
-  }, []);
+  }, [session?.user.emailVerified, status]);
 
   return (
     <>
       <Form {...otpForm}>
-        <form
-          ref={formRef}
-          className="mx-auto max-w-md"
-          onSubmit={otpForm.handleSubmit((data) => {
-            startTransition(() => {
-              verifyOtpRequest({ email: user?.email!, otp: data.otp });
-            });
-          })}
-        >
-          <div className="mb-4">
-            <FormField
-              control={otpForm.control}
-              name={"otp"}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    OTP
-                    <span className="text-red-500"> *</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} type="text" placeholder="* * * *" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form action={action} className="space-y-3 text-left">
+          <div className="mb-4 text-left">
+            <Label className="from-input mb-2.5 inline-block">Enter OTP:</Label>
+            <div className="space-y-2">
+              <InputOTP maxLength={6}>
+                <InputOTPGroup className="w-full">
+                  <InputOTPSlot className="w-full" index={0} />
+                  <InputOTPSlot className="w-full" index={1} />
+                  <InputOTPSlot className="w-full" index={2} />
+                  <InputOTPSlot className="w-full" index={3} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
           </div>
-          <Timer email={user?.email!} />
-          <Button disabled={isPending} className="w-full rounded-full">
-            Verify
+          <Timer email={session?.user.email!} />
+          <Button disabled={isPending} type="submit" className="w-full">
+            {isPending ? (
+              <>
+                Verifying
+                <Loader2 className="size-4 animate-spin ml-2" />
+              </>
+            ) : (
+              "Verify"
+            )}
           </Button>
         </form>
       </Form>

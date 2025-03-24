@@ -1,11 +1,18 @@
 "use client";
 
 import config from "@/config/config.json";
+import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 
-const Providers = ({ children }: { children: ReactNode }) => {
+const Providers = ({
+  children,
+  session,
+}: {
+  children: ReactNode;
+  session: Session | null;
+}) => {
   const { default_theme } = config.settings;
 
   return (
@@ -14,7 +21,9 @@ const Providers = ({ children }: { children: ReactNode }) => {
       defaultTheme={default_theme}
       enableColorScheme={false}
     >
-      <SessionProvider>{children}</SessionProvider>
+      <SessionProvider key={JSON.stringify(session, null, 2)} session={session}>
+        {children}
+      </SessionProvider>
     </ThemeProvider>
   );
 };

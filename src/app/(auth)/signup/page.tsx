@@ -1,4 +1,5 @@
-import RegisterForm from "@components/Form/RegistrationForm";
+import RegisterForm from "@/components/Form/RegistrationForm";
+import { Button } from "@/layouts/components/ui/button";
 import Link from "next/link";
 
 export default function Register() {
@@ -21,6 +22,15 @@ export default function Register() {
         <span className="absolute bg-light z-10 inline-block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-2">
           Or Continue With
         </span>
+      </div>
+
+      <div>
+        <Button className="w-full bg-primary text-white py-2 rounded-md">
+          Continue with Google
+        </Button>
+        <Button className="w-full bg-white text-black py-2 rounded-md mt-2">
+          Continue with Github
+        </Button>
       </div>
     </>
   );

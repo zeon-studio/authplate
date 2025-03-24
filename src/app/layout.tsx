@@ -1,11 +1,12 @@
+import { auth } from "@/auth";
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
 import "@/styles/main.css";
-import { Toaster } from "@/ui/sonner";
 import { Heebo, Signika } from "next/font/google";
+import { Toaster } from "sonner";
 
 const fontPrimary = Heebo({
   weight: ["400", "600"],
@@ -19,11 +20,12 @@ const fontSecondary = Signika({
   variable: "--font-secondary",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html suppressHydrationWarning={true} lang="en">
       <head>
@@ -55,7 +57,7 @@ export default function RootLayout({
         className={`${fontPrimary.variable} ${fontSecondary.variable}`}
       >
         <TwSizeIndicator />
-        <Providers>
+        <Providers session={session}>
           <Header />
           <main>{children}</main>
           <Footer />

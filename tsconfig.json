@@ -19,10 +19,13 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@actions/*": ["./src/app/actions/*"],
-      "@components/*": ["./src/layouts/components/*"],
-      "@layouts/*": ["./src/layouts/*"],
-      "@lib/*": ["./src/lib/*"]
+      "@/actions/*": ["./src/app/actions/*"],
+      "@/components/*": ["./src/layouts/components/*"],
+      "@/layouts/*": ["./src/layouts/*"],
+      "@/helpers/*": ["./src/layouts/helpers/*"],
+      "@/partials/*": ["./src/layouts/partials/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/shortcodes/*": ["./src/layouts/shortcodes/*"]
     },
     "target": "ES2024"
   },

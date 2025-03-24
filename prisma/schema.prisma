@@ -1,6 +1,6 @@
 datasource db {
   provider = "mongodb"
-  url      = env("")
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,9 +8,13 @@ generator client {
 }
 
 
+
+
+
 enum Provider {
-  Credentials
-  Github
+  CREDENTIALS
+  GITHUB
+  GOOGLE
 }
 
 model User {
@@ -22,9 +26,8 @@ model User {
   image               String?
   password            String?
   isTermsAccepted     Boolean
-  provider            Provider        @default(Credentials)
+  provider            Provider        @default(CREDENTIALS)
   verifications        OtpVerification[]
-  accessToken         String
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }

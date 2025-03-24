@@ -12,7 +12,7 @@ export default function SignIn() {
       <div className="text-center mb-12">
         <h1 className="h2 font-semibold">Sign in to your account</h1>
         <p className="text-center">
-          Don't Have An Account?{" "}
+          Don&apos;t Have An Account?{" "}
           <Link
             className="font-semibold text-primary cursor-pointer"
             href="/signup"

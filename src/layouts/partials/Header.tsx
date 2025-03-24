@@ -29,11 +29,8 @@ export interface INavigationLink {
 const Header = () => {
   const { main }: { main: INavigationLink[] } = menu;
   const { navigation_button, settings } = config;
-  // const [remember, setRemember] = useState(false);
-  // get current path
   const pathname = usePathname();
   const { status } = useSession();
-  // const { user, expires } = data || {};
 
   return (
     <header
@@ -159,7 +156,7 @@ const Header = () => {
             >
               <Link
                 className="btn btn-outline-primary btn-sm hidden lg:inline-block"
-                href="/login"
+                href="/signin"
               >
                 Sign in
               </Link>

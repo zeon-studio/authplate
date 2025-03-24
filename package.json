@@ -5,14 +5,13 @@
   "author": "zeon.studio",
   "license": "MIT",
   "packageManager": "yarn@1.22.22",
-  "prisma": {
-    "schema": "src/db/prisma/schema.prisma"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "preview": "next start",
     "postbuild": "next-sitemap",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:prod": "prisma migrate deploy",
     "lint": "next lint",
     "format": "prettier -w ./src",
     "generate-json": "node scripts/jsonGenerator.js",
@@ -43,6 +42,7 @@
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "http-status": "^2.1.0",
+    "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.475.0",
     "marked": "^15.0.7",
