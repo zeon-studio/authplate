@@ -1,8 +1,9 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import { auth } from "./auth";
+import { authOptions } from "./auth-option";
 
+const { auth } = NextAuth(authOptions);
 const publicUrl = ["/signin", "/signup", "/forgot-password"];
-
 export default auth((req) => {
   const { nextUrl } = req;
   const { emailVerified } = req.auth?.user || {};
@@ -28,5 +29,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/signin", "/signup/", "/otp", "/"],
+  matcher: ["/signin", "/signup/", "/", "/otp"],
 };

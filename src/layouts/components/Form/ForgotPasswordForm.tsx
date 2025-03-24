@@ -1,41 +1,86 @@
 "use client";
-import { verifyEmail } from "@/app/action";
-import useResponse from "@/hooks/useResponse";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+
+import { forgotPassword } from "@/app/actions/user";
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useMutation } from "@/hooks/useMutation";
+import { forgotPasswordSchema } from "@/lib/validation/user.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import OtpVerifyForm from "../OtpVerfyForm";
+import { Form } from "../ui/form";
+
+const defaultValues =
+  process.env.NODE_ENV === "development"
+    ? {
+        email: "mukles.themefisher@gmail.com",
+      }
+    : {
+        email: "",
+      };
 
 const ForgotPasswordForm = () => {
-  const emailVerification = verifyEmail.bind(
-    null,
-    new Date().toISOString(),
-    true,
-  );
-  const { dispatch, error } = useResponse(emailVerification);
+  const [showVerifyForm, setVerifyForm] = useState(false);
+  const forgotPasswordForm = useForm<z.infer<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: defaultValues,
+  });
 
-  return (
-    <form className="mx-auto max-w-md" action={dispatch}>
-      <div className="mb-4">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Enter your email"
-          required
+  const { action, isPending } = useMutation(forgotPassword, {
+    onSuccess() {
+      toast.success("OTP sent to your email");
+      setVerifyForm(true);
+    },
+    onError() {
+      toast.error("Something went wrong");
+      setVerifyForm(false);
+    },
+  });
+
+  return showVerifyForm ? (
+    <>
+      <OtpVerifyForm email={forgotPasswordForm.getValues("email")} />
+    </>
+  ) : (
+    <Form {...forgotPasswordForm}>
+      <form action={action} className="mx-auto max-w-md">
+        <FormField
+          control={forgotPasswordForm.control}
+          name={"email"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="mb-3">Email</FormLabel>
+              <FormControl>
+                <Input placeholder="abc@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="mb-2">
-        <small className="text-red-600">{error}</small>
-      </div>
-
-      <Button
-        type="submit"
-        className=" focus:shadow-outline block w-full rounded bg-primary py-2 px-4 font-bold text-white hover:bg-primary/70 focus:outline-none"
-      >
-        Submit
-      </Button>
-    </form>
+        <Button
+          type="submit"
+          className="py-2 text-black px-4 font-bold w-full text-lg mt-4"
+          disabled={isPending}
+        >
+          {isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            "Forgot Password"
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 };
 

@@ -3,9 +3,11 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import { authOptions } from "./auth-option";
 import { InvalidCredentials } from "./lib/utils/error";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authOptions,
   providers: [
     Credentials({
       credentials: {
@@ -44,45 +46,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          image: profile.picture,
+          email: profile.email,
+          first_name: profile.given_name,
+          last_name: profile.family_name,
+        };
+      },
     }),
+
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      profile({ name, avatar_url }) {
+        const [firstName, lastName] = name?.split(" ");
+        return {
+          firstName,
+          lastName,
+          emailVerified: true,
+          provider: "Github",
+          image: avatar_url,
+        };
+      },
     }),
   ],
-  pages: {
-    signIn: "/signin",
-    newUser: "/signup",
-    error: "/signin",
-  },
-  secret: process.env.AUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.firstName = token.firstName;
-        session.user.lastName = token.lastName;
-        session.user.image = token.image;
-        // @ts-ignore
-        session.user.emailVerified = token.emailVerified;
-      }
-      return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id!;
-        token.email = user.email!;
-        token.firstName = user.firstName!;
-        token.lastName = user.lastName!;
-        token.image = user.image!;
-        // @ts-ignore
-        token.emailVerified = user.emailVerified!;
-      }
-      return token;
-    },
-  },
 });

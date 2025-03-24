@@ -48,8 +48,25 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
       success: true,
     };
   } catch (error: unknown) {
+    console.log(error);
     if (isRedirectError(error)) {
-      redirect("/");
+      function getFromValue(digest: string): string {
+        const urlPattern = /NEXT_REDIRECT;(?:replace|push);(.*?);/;
+        const match = digest.match(urlPattern);
+
+        if (match) {
+          try {
+            const url = new URL(match[1]);
+            return url.searchParams.get("from") || "/";
+          } catch {
+            // If URL construction fails, return "/"
+          }
+        }
+
+        return "/";
+      }
+
+      redirect(getFromValue(error.digest));
     }
     if (error instanceof z.ZodError) {
       return {
@@ -111,7 +128,6 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
     }
 
     if (error instanceof Error) {
-      console.log(error);
       return {
         error: {
           type: "SERVER_ERROR",

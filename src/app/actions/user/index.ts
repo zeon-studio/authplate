@@ -6,14 +6,15 @@ import { prisma } from "@/lib/prisma";
 import {
   loginUserSchema,
   registerUserSchema,
+  resetPasswordSchema,
   updateUserSchema,
 } from "@/lib/validation/user.schema";
 import { OtpVerification, User } from "@prisma/client";
 import bcryptjs from "bcryptjs";
 import { AuthError, CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { redirect } from "next/navigation";
 import { Result, safeAction } from "..";
+import { mailSender } from "../sender";
 
 export const createUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
@@ -66,23 +67,7 @@ export const loginUser = async (state: Result<any>, formData: FormData) => {
         }
       }
       if (isRedirectError(error)) {
-        function getFromValue(digest: string): string {
-          const urlPattern = /NEXT_REDIRECT;(?:replace|push);(.*?);/;
-          const match = digest.match(urlPattern);
-
-          if (match) {
-            try {
-              const url = new URL(match[1]);
-              return url.searchParams.get("from") || "/";
-            } catch {
-              // If URL construction fails, return "/"
-            }
-          }
-
-          return "/";
-        }
-
-        redirect(getFromValue(error.digest));
+        throw error;
       }
     }
   });
@@ -114,7 +99,7 @@ export const verifyUserWithPassword = async ({
   });
 };
 
-export const updatUser = async (state: Result<User>, formData: FormData) => {
+export const updateUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updateUserSchema.parse(data);
@@ -155,17 +140,146 @@ export const sendOtp = async (
     const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
     // Create or update OTP verification record
-    const verification = await prisma.otpVerification.create({
-      data: {
+    // Upsert OTP verification record
+    const verification = await prisma.otpVerification.upsert({
+      where: {
+        userId: user.id,
+      },
+      update: {
+        token: otp,
+        expires: expiresIn,
+      },
+      create: {
         token: otp,
         expires: expiresIn,
         userId: user.id,
       },
     });
 
-    // TODO: Implement email sending logic here
-    // Send OTP to user's email
+    // Send OTP via email
+    await mailSender.otpSender(user.email!, otp);
+    return verification;
+  });
+};
+
+// verify otp
+export const verifyOtp = async (
+  state: Result<OtpVerification>,
+  formData: FormData,
+) => {
+  return safeAction<OtpVerification>(async () => {
+    const data = Object.fromEntries(formData);
+    console.log({ data });
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: data.email as string },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Find OTP verification record
+    const verification = await prisma.otpVerification.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+    if (!verification) {
+      throw new Error("OTP not found");
+    }
+    // Check if OTP is expired
+    if (new Date(verification.expires) < new Date()) {
+      throw new Error("OTP expired");
+    }
+
+    // Check if OTP is correct
+    if (verification.token !== data.otp) {
+      throw new Error("Invalid OTP");
+    }
+    // delete otp
+    await prisma.otpVerification.delete({
+      where: {
+        userId: user.id,
+      },
+    });
 
     return verification;
+  });
+};
+
+// forgot password
+export const forgotPassword = async (
+  state: Result<OtpVerification>,
+  formData: FormData,
+) => {
+  return safeAction<OtpVerification>(async () => {
+    const data = Object.fromEntries(formData);
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: data.email as string },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Set expiration time (15 minutes from now)
+    const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    // Create or update OTP verification record
+    // Upsert OTP verification record
+    const verification = await prisma.otpVerification.upsert({
+      where: {
+        userId: user.id,
+      },
+      update: {
+        token: otp,
+        expires: expiresIn,
+      },
+      create: {
+        token: otp,
+        expires: expiresIn,
+        userId: user.id,
+      },
+    });
+    // Send OTP via email
+    await mailSender.otpSender(user.email!, otp);
+    return verification;
+  });
+};
+
+// reset password
+export const resetPassword = async (
+  state: Result<User>,
+  formData: FormData,
+) => {
+  return safeAction<User>(async () => {
+    const data = Object.fromEntries(formData);
+
+    resetPasswordSchema.parse(data);
+
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: data.email as string },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // after otp verification we are going to update the password
+
+    const encryptedPassword = await bcryptjs.hash(data.password as string, 10);
+    // update password
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: encryptedPassword,
+      },
+    });
+
+    return user;
   });
 };

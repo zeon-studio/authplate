@@ -73,3 +73,14 @@ export const loginUserSchema = z.object({
   email: baseUserSchema.shape.email,
   password: passwordSchema.shape.password,
 });
+
+// forgot password
+export const forgotPasswordSchema = z.object({
+  email: baseUserSchema.shape.email,
+});
+
+// reset password
+export const resetPasswordSchema = z.object({
+  password: passwordSchema.shape.password,
+  confirmPassword: passwordSchema.shape.password,
+});

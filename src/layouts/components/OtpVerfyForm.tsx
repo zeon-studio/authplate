@@ -1,6 +1,6 @@
 "use client";
 
-import { sendOtp } from "@/app/actions/user";
+import { verifyOtp } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import {
@@ -13,14 +13,21 @@ import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
-import { Timer } from "./timer";
+import ResetPasswordForm from "./Form/ResetPasswordForm";
+import { OtpTimer } from "./OtpTimer";
+import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-const OtpVerifyForm = () => {
-  const { data: session, status } = useSession();
+const OtpVerifyForm = ({ email }: { email?: string }) => {
+  const pathname = usePathname();
+  const isForgotPassword = pathname.includes("forgot-password");
+  const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
+  const { data: session, status, update } = useSession();
   const otpForm = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -28,13 +35,23 @@ const OtpVerifyForm = () => {
     },
   });
 
-  const { action, isPending } = useMutation(sendOtp, {
+  const { action, isPending } = useMutation(verifyOtp, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
         return;
       }
+      toast.error(error.message || "Something went Wrong!");
     },
-    onSuccess() {},
+    onSuccess() {
+      toast.success("OTP Verified!");
+      if (isForgotPassword) {
+        setShowResetPasswordForm(true);
+        return;
+      }
+      update({
+        emailVerified: true,
+      });
+    },
   });
 
   useEffect(() => {
@@ -43,14 +60,20 @@ const OtpVerifyForm = () => {
     }
   }, [session?.user.emailVerified, status]);
 
-  return (
-    <>
+  return showResetPasswordForm ? (
+    <ResetPasswordForm email={email!} />
+  ) : (
+    <div className="relative">
       <Form {...otpForm}>
-        <form action={action} className="space-y-3 text-left">
+        <form
+          id="otpVerification"
+          action={action}
+          className="space-y-3 text-left"
+        >
           <div className="mb-4 text-left">
             <Label className="from-input mb-2.5 inline-block">Enter OTP:</Label>
             <div className="space-y-2">
-              <InputOTP maxLength={6}>
+              <InputOTP name="otp" maxLength={6}>
                 <InputOTPGroup className="w-full">
                   <InputOTPSlot className="w-full" index={0} />
                   <InputOTPSlot className="w-full" index={1} />
@@ -59,21 +82,33 @@ const OtpVerifyForm = () => {
                 </InputOTPGroup>
               </InputOTP>
             </div>
+            <Input
+              type="hidden"
+              name="email"
+              value={session?.user.email! || email}
+            />
           </div>
-          <Timer email={session?.user.email!} />
-          <Button disabled={isPending} type="submit" className="w-full">
-            {isPending ? (
-              <>
-                Verifying
-                <Loader2 className="size-4 animate-spin ml-2" />
-              </>
-            ) : (
-              "Verify"
-            )}
-          </Button>
+
+          <div className="pt-10">
+            <Button disabled={isPending} type="submit" className="w-full ">
+              {isPending ? (
+                <>
+                  Verifying
+                  <Loader2 className="size-4 animate-spin ml-2" />
+                </>
+              ) : (
+                "Verify"
+              )}
+            </Button>
+          </div>
         </form>
+
+        <OtpTimer
+          email={session?.user.email! || email!}
+          className="absolute left-0 bottom-[47px] w-full"
+        />
       </Form>
-    </>
+    </div>
   );
 };
 
