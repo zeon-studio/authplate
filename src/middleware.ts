@@ -10,6 +10,7 @@ export default auth((req) => {
   const isAuth = !!req.auth;
   const pathname = nextUrl.pathname;
   const origin = nextUrl.origin;
+  console.log({ emailVerified });
 
   if (!emailVerified && isAuth && pathname !== "/otp") {
     return NextResponse.redirect(new URL(`/otp`, origin));

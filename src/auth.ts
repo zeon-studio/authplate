@@ -32,8 +32,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (result?.success === false) {
-          // set verification for otp
-
           throw new InvalidCredentials({
             message: result.error?.message || "Invalid credentials!",
             // @ts-ignore
@@ -48,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // @ts-ignore
       profile(profile) {
         return {
           image: profile.picture,
@@ -61,7 +60,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      // @ts-ignore
       profile({ name, avatar_url }) {
+        // @ts-ignore
         const [firstName, lastName] = name?.split(" ");
         return {
           firstName,

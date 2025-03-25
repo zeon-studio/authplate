@@ -2,7 +2,14 @@
 
 import { verifyOtp } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
@@ -17,40 +24,42 @@ import { redirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import ResetPasswordForm from "./Form/ResetPasswordForm";
 import { OtpTimer } from "./OtpTimer";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 const OtpVerifyForm = ({ email }: { email?: string }) => {
   const pathname = usePathname();
   const isForgotPassword = pathname.includes("forgot-password");
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
   const { data: session, status, update } = useSession();
-  const otpForm = useForm<z.infer<typeof otpSchema>>({
+  const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
     },
+    mode: "onChange",
   });
 
   const { action, isPending } = useMutation(verifyOtp, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
+        toast.error(error.message);
+        otpForm.trigger();
         return;
       }
       toast.error(error.message || "Something went Wrong!");
     },
-    onSuccess() {
+    async onSuccess() {
       toast.success("OTP Verified!");
       if (isForgotPassword) {
         setShowResetPasswordForm(true);
         return;
       }
-      update({
+      await update({
         emailVerified: true,
       });
+
       redirect("/");
     },
   });
@@ -72,16 +81,29 @@ const OtpVerifyForm = ({ email }: { email?: string }) => {
           className="space-y-3 text-left"
         >
           <div className="mb-4 text-left">
-            <Label className="from-input mb-2.5 inline-block">Enter OTP:</Label>
             <div className="space-y-2">
-              <InputOTP name="otp" maxLength={6}>
-                <InputOTPGroup className="w-full">
-                  <InputOTPSlot className="w-full" index={0} />
-                  <InputOTPSlot className="w-full" index={1} />
-                  <InputOTPSlot className="w-full" index={2} />
-                  <InputOTPSlot className="w-full" index={3} />
-                </InputOTPGroup>
-              </InputOTP>
+              <FormField
+                control={otpForm.control}
+                name="otp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Enter OTP:</FormLabel>
+                    <FormControl>
+                      <InputOTP maxLength={6} {...field}>
+                        <InputOTPGroup className="w-full">
+                          <InputOTPSlot className="w-full" index={0} />
+                          <InputOTPSlot className="w-full" index={1} />
+                          <InputOTPSlot className="w-full" index={2} />
+                          <InputOTPSlot className="w-full" index={3} />
+                          <InputOTPSlot className="w-full" index={4} />
+                          <InputOTPSlot className="w-full" index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <Input
               type="hidden"

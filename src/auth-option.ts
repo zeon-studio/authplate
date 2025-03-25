@@ -26,6 +26,7 @@ export const authOptions = {
     },
     async jwt({ token, user, trigger, session }) {
       if (trigger === "update") {
+        console.log({ session });
         token.emailVerified = session?.emailVerified!;
       }
 

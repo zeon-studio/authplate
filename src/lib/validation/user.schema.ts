@@ -22,8 +22,20 @@ const baseUserSchema = z.object({
     .url("Please provide a valid URL for the image.")
     .optional()
     .nullable(),
-  isTermsAccepted: z.boolean(),
-  provider: z.enum(["Credentials"]).default("Credentials"),
+  isTermsAccepted: z
+    .boolean({
+      required_error: "You must accept the terms and conditions",
+      invalid_type_error: "Terms acceptance must be a boolean value",
+    })
+    .refine((value) => value === true, {
+      message: "You must accept the terms and conditions",
+    }),
+  provider: z
+    .enum(["Credentials"], {
+      required_error: "Provider is required",
+      invalid_type_error: "Invalid provider type",
+    })
+    .default("Credentials"),
   accessToken: z.string(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),

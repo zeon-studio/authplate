@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import { Prisma } from "@prisma/client";
 import { CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -41,6 +42,8 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
 }
 
 export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
+  const { user } = (await auth()) || {};
+
   try {
     const response = await fn();
     return {
@@ -48,7 +51,6 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
       success: true,
     };
   } catch (error: unknown) {
-    console.log(error);
     if (isRedirectError(error)) {
       function getFromValue(digest: string): string {
         const urlPattern = /NEXT_REDIRECT;(?:replace|push);(.*?);/;
@@ -57,7 +59,10 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
         if (match) {
           try {
             const url = new URL(match[1]);
-            return url.searchParams.get("from") || "/";
+            const form = url.searchParams.get("from") || "/";
+            const redirectUrl = user?.emailVerified ? form : "/otp";
+            console.log({ form, redirectUrl });
+            return redirectUrl;
           } catch {
             // If URL construction fails, return "/"
           }

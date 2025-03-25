@@ -3,6 +3,7 @@ import "server-only";
 
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { otpSchema } from "@/lib/validation/otp.schema";
 import {
   loginUserSchema,
   registerUserSchema,
@@ -88,11 +89,16 @@ export const verifyUserWithPassword = async ({
     if (!user) {
       throw new Error("User not found");
     }
-
     const isValidPassword = await bcryptjs.compare(password, user.password!);
 
     if (!isValidPassword) {
       throw new Error("Invalid password");
+    }
+
+    if (!user.emailVerified) {
+      const formData = new FormData();
+      formData.append("email", email as string);
+      await sendOtp(null, formData);
     }
 
     return user;
@@ -169,7 +175,7 @@ export const verifyOtp = async (
 ) => {
   return safeAction<OtpVerification>(async () => {
     const data = Object.fromEntries(formData);
-    console.log({ data });
+    otpSchema.parse(data);
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email: data.email as string },
@@ -201,6 +207,15 @@ export const verifyOtp = async (
     await prisma.otpVerification.delete({
       where: {
         userId: user.id,
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        emailVerified: true,
       },
     });
 
