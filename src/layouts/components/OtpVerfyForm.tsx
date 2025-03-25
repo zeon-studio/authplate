@@ -13,7 +13,7 @@ import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -51,6 +51,7 @@ const OtpVerifyForm = ({ email }: { email?: string }) => {
       update({
         emailVerified: true,
       });
+      redirect("/");
     },
   });
 

@@ -32,6 +32,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (result?.success === false) {
+          // set verification for otp
+
           throw new InvalidCredentials({
             message: result.error?.message || "Invalid credentials!",
             // @ts-ignore

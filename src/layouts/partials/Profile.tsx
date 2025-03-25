@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Cloud,
   CreditCard,
@@ -34,16 +35,32 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
-export default function Profile({ profileUrl }: { profileUrl?: string }) {
+export default function Profile() {
   const { data: session } = useSession();
   const { user } = session || {};
+
+  const fallback = () => {
+    let firstName = user?.firstName;
+    let lastName = user?.lastName;
+
+    let firstInitial = firstName?.split(" ")[0]?.[0] || "";
+    let lastInitial = lastName?.split(" ")[0]?.[0] || "";
+
+    return firstInitial + lastInitial;
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          <User className="mr-2 h-4 w-4" />
-          <span>{user?.firstName}</span>
+          <Avatar className="size-7">
+            <AvatarImage
+              src={user?.image}
+              alt={user?.firstName + " " + user?.lastName}
+            />
+            <AvatarFallback className="text-xs">{fallback()}</AvatarFallback>
+          </Avatar>
+          <span className="ml-2 text-sm font-semibold">{user?.firstName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
