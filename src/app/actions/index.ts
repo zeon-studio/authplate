@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { Prisma } from "@prisma/client";
 import { CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -18,7 +17,8 @@ export type ErrorType =
   | "UNIQUE_CONSTRAINT"
   | "FOREIGN_KEY_CONSTRAINT"
   | "SERVER_ERROR"
-  | "AUTH_ERROR";
+  | "AUTH_ERROR"
+  | "OTP_REQUIRED";
 
 export type Result<T> =
   | { success: true; data: T }
@@ -42,8 +42,6 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
 }
 
 export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
-  const { user } = (await auth()) || {};
-
   try {
     const response = await fn();
     return {
@@ -59,9 +57,7 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
         if (match) {
           try {
             const url = new URL(match[1]);
-            const form = url.searchParams.get("from") || "/";
-            const redirectUrl = user?.emailVerified ? form : "/otp";
-            console.log({ form, redirectUrl });
+            const redirectUrl = url.searchParams.get("from") || "/";
             return redirectUrl;
           } catch {
             // If URL construction fails, return "/"
@@ -117,14 +113,15 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
     }
 
     if (error instanceof CredentialsSignin) {
+      const message = error.message.substring(
+        0,
+        error.message.indexOf(". Read more"),
+      );
       return {
         success: false,
         error: {
-          type: "AUTH_ERROR",
-          message: error.message.substring(
-            0,
-            error.message.indexOf(". Read more"),
-          ),
+          type: message === "User not verified" ? "OTP_REQUIRED" : "AUTH_ERROR",
+          message,
           details: {
             originalError: "Unknown error occurred",
           },
