@@ -1,18 +1,18 @@
 "use client";
 
-import { ENV, PADDLE_CLIENT_TOKEN } from "@/lib/constant";
-import { getPriceIdFromParams } from "@/lib/paddle/get-price-id";
-import { BillingPeriod } from "@/types/paddle";
+import { PADDLE_CLIENT_TOKEN, PADDLE_ENV } from "@/config/paddle";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PriceSection } from "./price-section";
 
 interface Props {
   userEmail?: string;
 }
+
+type BillingPeriod = "month" | "year" | "lifetime";
 
 export function CheckoutContents({ userEmail }: Props) {
   const params = useSearchParams();
@@ -26,10 +26,7 @@ export function CheckoutContents({ userEmail }: Props) {
     setCheckoutData(event);
   };
 
-  const priceId = getPriceIdFromParams({
-    planName: params.get("plan") || "",
-    billingPeriod: params.get("billing") as BillingPeriod,
-  });
+  const { priceId } = useParams<{ priceId: string }>();
 
   useEffect(() => {
     if (
@@ -39,7 +36,7 @@ export function CheckoutContents({ userEmail }: Props) {
     ) {
       initializePaddle({
         token: PADDLE_CLIENT_TOKEN,
-        environment: ENV,
+        environment: PADDLE_ENV,
         eventCallback: (event) => {
           if (event.data && event.name) {
             handleCheckoutEvents(event.data);
@@ -56,9 +53,7 @@ export function CheckoutContents({ userEmail }: Props) {
             frameInitialHeight: 450,
             frameStyle:
               "width: 100%; background-color: transparent; border: none",
-            successUrl: `/checkout/success?package=${params.get(
-              "plan",
-            )}&billing=${params.get("billing")}`,
+            successUrl: "/checkout/success",
           },
         },
       }).then(async (paddle) => {
@@ -73,7 +68,7 @@ export function CheckoutContents({ userEmail }: Props) {
             items: [{ priceId: priceId, quantity: 1 }],
             customData: {
               email: session?.user?.email,
-              name: session?.user?.userName,
+              name: session.user.firstName + " " + session.user.lastName,
               billingFrequency: params.get("billing") as BillingPeriod,
               package: params.get("plan") as string,
             },
@@ -81,7 +76,16 @@ export function CheckoutContents({ userEmail }: Props) {
         }
       });
     }
-  }, [paddle?.Initialized, priceId, status, userEmail]);
+  }, [
+    paddle?.Initialized,
+    params,
+    priceId,
+    session?.user?.email,
+    session?.user.firstName,
+    session?.user.lastName,
+    status,
+    userEmail,
+  ]);
 
   useEffect(() => {
     if (paddle && priceId && paddle.Initialized) {

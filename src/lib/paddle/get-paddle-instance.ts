@@ -1,9 +1,9 @@
+import { PADDLE_ENV } from "@/config/paddle";
 import { LogLevel, Paddle, PaddleOptions } from "@paddle/paddle-node-sdk";
-import { ENV } from "../constant";
 
 export function getPaddleInstance() {
   const paddleOptions: PaddleOptions = {
-    environment: ENV,
+    environment: PADDLE_ENV,
     logLevel: LogLevel.error,
   };
 
