@@ -42,6 +42,10 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
       router.push("/signin"); // redirect to signin page after resetting password
     },
     onError: ({ error }) => {
+      if (error.type === "VALIDATION_ERROR") {
+        resetPasswordForm.trigger();
+        return;
+      }
       toast.error(error.message || "Something went wrong");
     },
   });

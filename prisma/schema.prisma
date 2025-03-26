@@ -7,36 +7,97 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-
-
-
 enum Provider {
   CREDENTIALS
   GITHUB
   GOOGLE
 }
 
-model User {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  firstName            String?
-  lastName            String?
-  email               String?         @unique
-  emailVerified        Boolean
-  image               String?
-  password            String?
-  isTermsAccepted     Boolean
-  provider            Provider        @default(CREDENTIALS)
-  verifications        OtpVerification[]
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  PAUSED
+  TRIALING
+  LIFETIME // Added lifetime status
 }
- 
 
- model OtpVerification {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  token         String
-  expires       String
-  user          User       @relation(fields: [userId], references: [id])
-  userId   String @db.ObjectId @unique  // Ensure it's unique
- }
+enum PaymentStatus {
+  COMPLETED
+  FAILED
+  REFUNDED
+  PENDING
+}
+
+model User {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String?
+  lastName        String?
+  email           String?           @unique
+  emailVerified   Boolean
+  image           String?
+  password        String?
+  isTermsAccepted Boolean
+  provider        Provider          @default(CREDENTIALS)
+  verifications   OtpVerification[]
+  subscriptions   Subscription[]    // Relation to subscriptions
+  payments        Payment[]         // Relation to payments
+  customerId      String?           // Paddle or Stripe customer ID
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model OtpVerification {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  token   String
+  expires String
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String   @db.ObjectId @unique // Ensure it's unique
+}
+
+model Subscription {
+  id              String             @id @default(auto()) @map("_id") @db.ObjectId
+  user            User               @relation(fields: [userId], references: [id])
+  userId          String             @db.ObjectId
+  subscriptionId  String             // Paddle subscription ID
+  planId          String             // Paddle plan ID
+  status          SubscriptionStatus
+  startDate       DateTime
+  endDate         DateTime?          // Will be null for lifetime subscriptions
+  trialEndsAt     DateTime?
+  canceledAt      DateTime?
+  lastBillingDate DateTime?
+  nextBillingDate DateTime?          // Will be null for lifetime subscriptions
+  isLifetime      Boolean            @default(false) // Added to indicate lifetime subscription
+  payments        Payment[]          // Relation to payments
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model Payment {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String        @db.ObjectId
+  transactionId  String        // Payment provider's transaction ID
+  amount         Float
+  currency       String
+  status         PaymentStatus
+  paymentMethod  String?       // e.g., credit_card, paypal, etc.
+  billingPeriod  String?       // The period this payment covers
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Price {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  priceId     String   // Paddle price ID
+  productId   String   // Paddle product ID
+  amount      Float
+  currency    String
+  interval    String?  // monthly, yearly, lifetime, etc.
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyOtp } from "@/app/actions/user";
+import { verifyOtp } from "@/app/actions/otp";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,20 +19,24 @@ import { useMutation } from "@/hooks/useMutation";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { redirect, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import ResetPasswordForm from "./Form/ResetPasswordForm";
 import { OtpTimer } from "./OtpTimer";
 import { Input } from "./ui/input";
 
-const OtpVerifyForm = ({ email }: { email?: string }) => {
+type OtpVerifyFormProps = {
+  email: string;
+  password?: string;
+};
+
+const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   const pathname = usePathname();
   const isForgotPassword = pathname.includes("forgot-password");
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
-  const { data: session, status, update } = useSession();
   const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -56,19 +60,13 @@ const OtpVerifyForm = ({ email }: { email?: string }) => {
         setShowResetPasswordForm(true);
         return;
       }
-      await update({
-        emailVerified: true,
+      console.log("password", password);
+      signIn("credentials", {
+        email: email,
+        password: password!,
       });
-
-      redirect("/");
     },
   });
-
-  useEffect(() => {
-    if (status === "authenticated" && !session.user.emailVerified) {
-      // sent otp to email
-    }
-  }, [session?.user.emailVerified, status]);
 
   return showResetPasswordForm ? (
     <ResetPasswordForm email={email!} />
@@ -105,11 +103,7 @@ const OtpVerifyForm = ({ email }: { email?: string }) => {
                 )}
               />
             </div>
-            <Input
-              type="hidden"
-              name="email"
-              value={session?.user.email! || email}
-            />
+            <Input type="hidden" name="email" value={email} />
           </div>
 
           <div className="pt-10">
@@ -127,7 +121,7 @@ const OtpVerifyForm = ({ email }: { email?: string }) => {
         </form>
 
         <OtpTimer
-          email={session?.user.email! || email!}
+          email={email}
           className="absolute left-0 bottom-[47px] w-full"
         />
       </Form>

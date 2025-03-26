@@ -64,9 +64,3 @@ export const loginSchema = z.object({
       message: "Password must contain at least one special character",
     }),
 });
-
-export const otpSchema = z.object({
-  otp: z.string().refine((value) => String(value).length === 4, {
-    message: "OTP must be exactly 4 digits.",
-  }),
-});

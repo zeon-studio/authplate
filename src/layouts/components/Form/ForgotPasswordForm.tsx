@@ -15,11 +15,13 @@ import { useMutation } from "@/hooks/useMutation";
 import { forgotPasswordSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import OtpVerifyForm from "../OtpVerfyForm";
+
+type Props = {
+  onOtpRequired: (params: { email: string; password: string }) => void;
+};
 
 const defaultValues =
   process.env.NODE_ENV === "development"
@@ -30,8 +32,7 @@ const defaultValues =
         email: "",
       };
 
-const ForgotPasswordForm = () => {
-  const [showVerifyForm, setVerifyForm] = useState(false);
+const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
   const forgotPasswordForm = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: defaultValues,
@@ -40,19 +41,17 @@ const ForgotPasswordForm = () => {
   const { action, isPending } = useMutation(forgotPassword, {
     onSuccess() {
       toast.success("OTP sent to your email");
-      setVerifyForm(true);
+      onOtpRequired({
+        email: forgotPasswordForm.getValues("email")!,
+        password: "",
+      });
     },
     onError() {
       toast.error("Something went wrong");
-      setVerifyForm(false);
     },
   });
 
-  return showVerifyForm ? (
-    <>
-      <OtpVerifyForm email={forgotPasswordForm.getValues("email")} />
-    </>
-  ) : (
+  return (
     <Form {...forgotPasswordForm}>
       <form action={action} className="mx-auto max-w-md">
         <FormField

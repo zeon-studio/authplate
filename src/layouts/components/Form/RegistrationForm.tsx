@@ -39,7 +39,11 @@ const defaultValues =
         isTermsAccepted: false,
       };
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  onOtpRequired,
+}: {
+  onOtpRequired: (params: { email: string; password: string }) => void;
+}) {
   const registerForm = useForm<z.infer<typeof registerUserSchema>>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: defaultValues,
@@ -61,6 +65,10 @@ export default function RegisterForm() {
         description: "User registered successfully.",
       });
 
+      onOtpRequired({
+        email: registerForm.getValues("email")!,
+        password: registerForm.getValues("password")!,
+      });
       signIn("credentials", {
         email: registerForm.getValues("email"),
         password: registerForm.getValues("password"),

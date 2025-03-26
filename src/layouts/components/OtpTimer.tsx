@@ -1,4 +1,4 @@
-import { sendOtp } from "@/app/actions/user";
+import { sendOtp } from "@/app/actions/otp";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@/hooks/useMutation";
 import { cn } from "@/lib/utils/shadcn";

@@ -34,8 +34,8 @@ export default function SignIn() {
       </div>
       <div className="mx-auto max-w-md">
         <LoginForm
-          onOtpRequired={(email: string) => {
-            setLoginInfo((prev) => ({ ...prev, email }));
+          onOtpRequired={(params: { email: string; password: string }) => {
+            setLoginInfo((prev) => ({ ...prev, ...params }));
             setShowOtp(true);
           }}
         />

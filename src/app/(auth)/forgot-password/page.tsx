@@ -1,6 +1,18 @@
+"use client";
+
 import ForgotPasswordForm from "@/layouts/components/Form/ForgotPasswordForm";
+import OtpVerifyForm from "@/layouts/components/OtpVerfyForm";
+import { useState } from "react";
 
 export default function ForgotPasswordPage() {
+  const [loginInfo, setLoginInfo] = useState({
+    email: "",
+    password: "",
+  });
+  const [showOtp, setShowOtp] = useState(false);
+  if (showOtp) {
+    return <OtpVerifyForm {...loginInfo} />;
+  }
   return (
     <>
       <div className="text-center">
@@ -9,7 +21,12 @@ export default function ForgotPasswordPage() {
           Enter your email address to receive a password reset link.
         </p>
       </div>
-      <ForgotPasswordForm />
+      <ForgotPasswordForm
+        onOtpRequired={(params: { email: string; password: string }) => {
+          setLoginInfo((prev) => ({ ...prev, ...params }));
+          setShowOtp(true);
+        }}
+      />
     </>
   );
 }

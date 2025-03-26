@@ -31,7 +31,11 @@ const defaultValues =
         password: "password123$K",
       };
 
-const LoginForm = () => {
+const LoginForm = ({
+  onOtpRequired,
+}: {
+  onOtpRequired: (params: { email: string; password: string }) => void;
+}) => {
   const loginForm = useForm<z.infer<typeof loginUserSchema>>({
     resolver: zodResolver(loginUserSchema),
     defaultValues: defaultValues,
@@ -43,15 +47,19 @@ const LoginForm = () => {
         loginForm.trigger();
         return;
       }
+      if (error.type === "OTP_REQUIRED") {
+        onOtpRequired({
+          email: loginForm.getValues("email")!,
+          password: loginForm.getValues("password")!,
+        });
+        return;
+      }
       toast(error.type, {
         description: error.message,
       });
     },
     onSuccess() {
-      loginForm.reset();
-      toast("Success!", {
-        description: "User register in successfully.",
-      });
+      toast.success("Login successful");
     },
   });
 
