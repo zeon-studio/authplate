@@ -5,7 +5,7 @@ import ImageFallback from "@/helpers/ImageFallback";
 import MDXContent from "@/helpers/MDXContent";
 import { getSinglePage } from "@/lib/contentParser";
 import dateFormat from "@/lib/utils/dateFormat";
-import similerItems from "@/lib/utils/similarItems";
+import similarItems from "@/lib/utils/similarItems";
 import { humanize, markdownify, slugify } from "@/lib/utils/textConverter";
 import SeoMeta from "@/partials/SeoMeta";
 import { Post } from "@/types";
@@ -28,9 +28,14 @@ export const generateStaticParams: () => { single: string }[] = () => {
   return paths;
 };
 
-const PostSingle = ({ params }: { params: { single: string } }) => {
+const PostSingle = async ({
+  params,
+}: {
+  params: Promise<{ single: string }>;
+}) => {
+  const { single } = await params;
   const posts: Post[] = getSinglePage(blog_folder);
-  const post = posts.filter((page) => page.slug === params.single)[0];
+  const post = posts.filter((page) => page.slug === single)[0];
 
   const { frontmatter, content } = post;
   const {
@@ -43,7 +48,7 @@ const PostSingle = ({ params }: { params: { single: string } }) => {
     date,
     tags,
   } = frontmatter;
-  const similarPosts = similerItems(post, posts, post.slug!);
+  const similarPosts = similarItems(post, posts, post.slug!);
 
   return (
     <>

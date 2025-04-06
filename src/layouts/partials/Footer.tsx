@@ -1,10 +1,9 @@
 "use client";
 
 import Logo from "@/components/Logo";
-import Social from "@/components/Social";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
-import social from "@/config/social.json";
+import Social from "@/config/social";
 import { markdownify } from "@/lib/utils/textConverter";
 import Link from "next/link";
 
@@ -28,7 +27,19 @@ const Footer = () => {
             </ul>
           </div>
           <div className="mb-8 text-center lg:col-3 lg:mb-0 lg:mt-0 lg:text-right">
-            <Social source={social.main} className="social-icons" />
+            <div className="flex justify-center space-x-4 lg:justify-end">
+              {Social.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary-dark"
+                >
+                  <social.icon size={24} />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

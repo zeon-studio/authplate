@@ -19,10 +19,15 @@ export const generateStaticParams = () => {
 };
 
 // for all regular pages
-const RegularPages = ({ params }: { params: { regular: string } }) => {
+const RegularPages = async ({
+  params,
+}: {
+  params: Promise<{ regular: string }>;
+}) => {
+  const { regular } = await params;
   const regularData = getSinglePage("pages");
   const data = regularData.filter(
-    (page: RegularPage) => page.slug === params.regular,
+    (page: RegularPage) => page.slug === regular,
   )[0];
   const { frontmatter, content } = data;
   const { title, meta_title, description, image } = frontmatter;

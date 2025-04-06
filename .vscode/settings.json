@@ -2,12 +2,5 @@
   "files.associations": {
     "*.mdx": "markdown"
   },
-  "cSpell.words": [
-    "frontmatter",
-    "hookform",
-    "NEXTAUTH",
-    "signin",
-    "singup"
-  ],
-  "git.ignoreLimitWarning": true
+  "tailwindCSS.experimental.configFile": "src/styles/main.css"
 }

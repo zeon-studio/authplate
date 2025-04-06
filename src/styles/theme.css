@@ -9,40 +9,40 @@
 
 /* default colors */
 :root {
-  --body-color: hsl(0 0% 100%);
-  --primary-color: hsl(0 0% 0%);
-  --border-color: hsl(218 11% 65%);
-  --light-color: hsl(230 50% 98%);
-  --dark-color: hsl(221 39% 11%);
-  --accent-color: hsl(213 100% 50%);
-  --muted-color: hsl(216 12% 84%);
-  --danger-color: hsl(347 77% 50%);
-  --success-color: hsl(140 69% 38%);
-  --warning-color: hsl(46 86% 42%);
+  --body-color: #ffffff;
+  --primary-color: #000000;
+  --border-color: #a6b0c3;
+  --light-color: #f8fafc;
+  --dark-color: #1c1f26;
+  --accent-color: #007bff;
+  --muted-color: #d0d7e6;
+  --danger-color: #e63946;
+  --success-color: #3a9d23;
+  --warning-color: #d69f00;
 
-  --text-default-color: hsl(217 33% 17%);
-  --text-light-color: hsl(220 9% 46%);
-  --text-dark-color: hsl(228 40% 10%);
-  --text-muted-color: hsl(229 15% 41%);
-  --text-white-color: hsl(0 0% 100%);
+  --text-default-color: #2c3e50;
+  --text-light-color: #737373;
+  --text-dark-color: #1a1a1a;
+  --text-muted-color: #6b6b6b;
+  --text-white-color: #ffffff;
 }
 
 /* darkmode colors */
 .dark {
-  --body-color: hsl(0 0% 11%);
-  --primary-color: hsl(0 0% 100%);
-  --border-color: hsl(0 0% 24%);
-  --light-color: hsl(0 0% 13%);
-  --dark-color: hsl(0 0% 95%);
-  --accent-color: hsl(213 100% 64%);
-  --muted-color: hsl(0 0% 18%);
-  --danger-color: hsl(0 100% 50%);
-  --success-color: hsl(120 100% 50%);
-  --warning-color: hsl(30 100% 50%);
+  --body-color: #1c1c1c;
+  --primary-color: #ffffff;
+  --border-color: #3d3d3d;
+  --light-color: #212121;
+  --dark-color: #f2f2f2;
+  --accent-color: #00aaff;
+  --muted-color: #2e2e2e;
+  --danger-color: #ff0000;
+  --success-color: #00ff00;
+  --warning-color: #ffaa00;
 
-  --text-default-color: hsl(283 5% 70%);
-  --text-light-color: hsl(283 5% 70%);
-  --text-dark-color: hsl(0 0% 100%);
-  --text-muted-color: hsl(283 5% 70%);
-  --text-white-color: hsl(0 0% 0%);
+  --text-default-color: #b3b3b3;
+  --text-light-color: #b3b3b3;
+  --text-dark-color: #ffffff;
+  --text-muted-color: #b3b3b3;
+  --text-white-color: #000000;
 }
