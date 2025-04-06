@@ -1,10 +1,11 @@
 "use client";
 
+import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { PADDLE_CLIENT_TOKEN, PADDLE_ENV } from "@/config/paddle";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useSession } from "next-auth/react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PriceSection } from "./price-section";
 
@@ -12,21 +13,26 @@ interface Props {
   userEmail?: string;
 }
 
-type BillingPeriod = "month" | "year" | "lifetime";
-
 export function CheckoutContents({ userEmail }: Props) {
-  const params = useSearchParams();
   const { data: session, status } = useSession();
+  const { priceId } = useParams<{ priceId: string }>();
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(
     null,
   );
 
+  const plan = PricingTier.find((tier) => {
+    const ids = tier.priceId;
+    const priceIds = Object.values(ids);
+    if (priceIds.includes(priceId)) {
+      return true;
+    }
+    return false;
+  });
+
   const handleCheckoutEvents = (event: CheckoutEventsData) => {
     setCheckoutData(event);
   };
-
-  const { priceId } = useParams<{ priceId: string }>();
 
   useEffect(() => {
     if (
@@ -69,16 +75,15 @@ export function CheckoutContents({ userEmail }: Props) {
             customData: {
               email: session?.user?.email,
               name: session.user.firstName + " " + session.user.lastName,
-              billingFrequency: params.get("billing") as BillingPeriod,
-              package: params.get("plan") as string,
+              packageName: plan?.name,
             },
           });
         }
       });
     }
   }, [
+    plan,
     paddle?.Initialized,
-    params,
     priceId,
     session?.user?.email,
     session?.user.firstName,

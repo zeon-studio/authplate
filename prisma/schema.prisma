@@ -18,8 +18,8 @@ enum SubscriptionStatus {
   CANCELED
   PAST_DUE
   PAUSED
-  TRIALING
-  LIFETIME // Added lifetime status
+  TRIALING 
+  LIFETIME
 }
 
 enum PaymentStatus {
@@ -27,6 +27,14 @@ enum PaymentStatus {
   FAILED
   REFUNDED
   PENDING
+}
+
+enum BillingCycle  {
+  DAILY
+  WEEKLY
+  MONTHLY
+  ANNUAL
+  LIFETIME
 }
 
 model User {
@@ -59,8 +67,10 @@ model Subscription {
   id              String             @id @default(auto()) @map("_id") @db.ObjectId
   user            User               @relation(fields: [userId], references: [id])
   userId          String             @db.ObjectId
-  subscriptionId  String             // Paddle subscription ID
+  billingCycle    BillingCycle       // monthly, annual, etc.
+  orderId  String             @unique // Paddle subscription ID or Transection ID
   planId          String             // Paddle plan ID
+  planName        String
   status          SubscriptionStatus
   startDate       DateTime
   endDate         DateTime?          // Will be null for lifetime subscriptions
@@ -68,8 +78,7 @@ model Subscription {
   canceledAt      DateTime?
   lastBillingDate DateTime?
   nextBillingDate DateTime?          // Will be null for lifetime subscriptions
-  isLifetime      Boolean            @default(false) // Added to indicate lifetime subscription
-  payments        Payment[]          // Relation to payments
+  nextPaymentAmount Float?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 }
@@ -78,10 +87,14 @@ model Payment {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
   user           User          @relation(fields: [userId], references: [id])
   userId         String        @db.ObjectId
-  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
-  subscriptionId String        @db.ObjectId
+  orderId String?       // Paddle Order ID
   transactionId  String        // Payment provider's transaction ID
-  amount         Float
+  discountId     String?       // Paddle discount ID
+  totalAmount    Float
+  earnings       Float         // The amount of earnings for this payment
+  discountAmount Float?        // The amount of discount applied
+  taxAmount      Float         // The amount of tax applied
+  processingFee  Float         // The amount of processing fee
   currency       String
   status         PaymentStatus
   paymentMethod  String?       // e.g., credit_card, paypal, etc.

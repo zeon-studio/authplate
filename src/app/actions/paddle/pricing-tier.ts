@@ -1,3 +1,4 @@
+import { BillingCycle } from "@prisma/client";
 import { PackageType } from "./type";
 
 export interface Tier {
@@ -7,14 +8,7 @@ export interface Tier {
   description: string;
   features: string[];
   featured: boolean;
-  priceId:
-    | {
-        month: string;
-        year: string;
-      }
-    | {
-        lifetime: string;
-      };
+  priceId: Partial<Record<BillingCycle, string>>; // TODO: Add lifetime ke
 }
 
 export const PricingTier: Tier[] = [
@@ -34,7 +28,7 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      lifetime: "pri_01jksvc2keca5wq10q4r8w7y11",
+      [BillingCycle.LIFETIME]: "pri_01jksvc2keca5wq10q4r8w7y11",
     },
   },
   {
@@ -57,8 +51,8 @@ export const PricingTier: Tier[] = [
     ],
     featured: true,
     priceId: {
-      month: "pri_01jksv6m11bswv4fc1t8ymqk2g",
-      year: "pri_01jksv7n6c4m2rwwvpkbnqpkrw",
+      [BillingCycle.MONTHLY]: "pri_01jksv6m11bswv4fc1t8ymqk2g",
+      [BillingCycle.ANNUAL]: "pri_01jksv7n6c4m2rwwvpkbnqpkrw",
     },
   },
   {
@@ -83,8 +77,8 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      month: "pri_01jksvevphtkncjce1yvbep923",
-      year: "pri_01jksvh7ad31wyceybcxpww8ca",
+      [BillingCycle.MONTHLY]: "pri_01jksvevphtkncjce1yvbep923",
+      [BillingCycle.ANNUAL]: "pri_01jksvh7ad31wyceybcxpww8ca",
     },
   },
   {
@@ -107,7 +101,7 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      lifetime: "pri_01jksxd2n500m05cxxd61k41my",
+      [BillingCycle.LIFETIME]: "pri_01jksxd2n500m05cxxd61k41my",
     },
   },
 ];

@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       console.log("Missing signature from header");
     }
   } catch (e: unknown) {
+    console.log(e);
     // Handle error
     status = 500;
   }

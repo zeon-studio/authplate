@@ -1,5 +1,6 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { buttonVariants } from "@/layouts/components/ui/button";
+import { BillingCycle } from "@prisma/client";
 import Link from "next/link";
 
 export default function PurchasePage() {
@@ -7,7 +8,6 @@ export default function PurchasePage() {
     <div className="container">
       <div className="grid grid-cols-4 gap-4">
         {PricingTier.map((tier) => {
-          console.log(tier);
           return (
             <div
               key={tier.id}
@@ -31,9 +31,9 @@ export default function PurchasePage() {
               <Link
                 href={
                   "/checkout/" +
-                  ("lifetime" in tier.priceId
-                    ? tier.priceId.lifetime
-                    : tier.priceId.month)
+                  (BillingCycle.LIFETIME in tier.priceId
+                    ? tier.priceId[BillingCycle.LIFETIME]
+                    : tier.priceId[BillingCycle.MONTHLY])
                 }
                 className={buttonVariants({
                   className: "",
