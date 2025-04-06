@@ -22,9 +22,14 @@ export const generateStaticParams: () => { single?: string }[] = () => {
   return paths;
 };
 
-const AuthorSingle = ({ params }: { params: { single: string } }) => {
+const AuthorSingle = async ({
+  params,
+}: {
+  params: Promise<{ single: string }>;
+}) => {
+  const { single } = await params;
   const authors: Author[] = getSinglePage("authors");
-  const author = authors.filter((page) => page.slug === params.single)[0];
+  const author = authors.filter((page) => page.slug === single)[0];
   const { frontmatter, content } = author;
   const { title, social, meta_title, description, image } = frontmatter;
   const { blog_folder } = config.settings;

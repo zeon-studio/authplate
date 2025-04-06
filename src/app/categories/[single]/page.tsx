@@ -25,14 +25,19 @@ export const generateStaticParams: StaticParams = () => {
   return paths;
 };
 
-const CategorySingle = ({ params }: { params: { single: string } }) => {
+const CategorySingle = async ({
+  params,
+}: {
+  params: Promise<{ single: string }>;
+}) => {
+  const { single } = await params;
   const posts: Post[] = getSinglePage(blog_folder);
-  const filterByCategories = taxonomyFilter(posts, "categories", params.single);
+  const filterByCategories = taxonomyFilter(posts, "categories", single);
 
   return (
     <>
-      <SeoMeta title={humanize(params.single)} />
-      <PageHeader title={humanize(params.single)} />
+      <SeoMeta title={humanize(single)} />
+      <PageHeader title={humanize(single)} />
       <div className="section-sm pb-0">
         <div className="container">
           <div className="row">
