@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import { OtpVerification } from "@prisma/client";
 import { Result, safeAction } from "..";
@@ -16,7 +16,7 @@ export const sendOtp = async (
     const data = Object.fromEntries(formData);
 
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email: data.email as string },
     });
 
@@ -32,7 +32,7 @@ export const sendOtp = async (
 
     // Create or update OTP verification record
     // Upsert OTP verification record
-    const verification = await prisma.otpVerification.upsert({
+    const verification = await db.otpVerification.upsert({
       where: {
         userId: user.id,
       },
@@ -62,7 +62,7 @@ export const verifyOtp = async (
     const data = Object.fromEntries(formData);
     otpSchema.parse(data);
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email: data.email as string },
     });
 
@@ -71,7 +71,7 @@ export const verifyOtp = async (
     }
 
     // Find OTP verification record
-    const verification = await prisma.otpVerification.findUnique({
+    const verification = await db.otpVerification.findUnique({
       where: {
         userId: user.id,
       },
@@ -89,13 +89,13 @@ export const verifyOtp = async (
       throw new Error("Invalid OTP");
     }
     // delete otp
-    await prisma.otpVerification.delete({
+    await db.otpVerification.delete({
       where: {
         userId: user.id,
       },
     });
 
-    await prisma.user.update({
+    await db.user.update({
       where: {
         id: user.id,
       },

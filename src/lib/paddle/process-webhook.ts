@@ -1,5 +1,5 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import {
   EventEntity,
   EventName,
@@ -40,7 +40,7 @@ export class ProcessWebhook {
       firstBilledAt,
       items,
     } = eventData.data;
-    const subscription = await prisma.subscription.findUnique({
+    const subscription = await db.subscription.findUnique({
       where: {
         orderId: subscriptionId,
       },
@@ -50,7 +50,7 @@ export class ProcessWebhook {
       return;
     }
 
-    await prisma.subscription.update({
+    await db.subscription.update({
       where: {
         id: subscription.id,
       },
@@ -88,7 +88,7 @@ export class ProcessWebhook {
       return;
     }
 
-    await prisma.subscription.create({
+    await db.subscription.create({
       data: {
         userId: user!.id,
         planId: this.getPlanId(items)!,
@@ -126,7 +126,7 @@ export class ProcessWebhook {
     const processingFee = +(details?.totals?.fee ?? "0") / 100;
     const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
-    await prisma.payment.create({
+    await db.payment.create({
       data: {
         userId: user!.id,
         totalAmount: totalAmount,
@@ -164,7 +164,7 @@ export class ProcessWebhook {
       return;
     }
 
-    await prisma.subscription.create({
+    await db.subscription.create({
       data: {
         userId: user!.id,
         planId: this.getPlanId(items)!,
@@ -232,7 +232,7 @@ export class ProcessWebhook {
   }
 
   async getUserEmail(email: string) {
-    return await prisma.user.findUnique({
+    return await db.user.findUnique({
       where: {
         email: email,
       },

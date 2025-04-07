@@ -2,7 +2,7 @@
 import "server-only";
 
 import { signIn } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import {
   loginUserSchema,
   registerUserSchema,
@@ -25,7 +25,7 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
       isTermsAccepted: data.isTermsAccepted === "on",
     });
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email: validatedData.email! },
     });
 
@@ -35,7 +35,7 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
 
     const encryptedPassword = await bcryptjs.hash(validatedData.password, 10);
 
-    return await prisma.user.create({
+    return await db.user.create({
       data: {
         emailVerified: false,
         isTermsAccepted: true,
@@ -82,7 +82,7 @@ export const verifyUserWithPassword = async ({
   password: string;
 }): Promise<Result<User>> => {
   return safeAction(async () => {
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email },
     });
 
@@ -110,7 +110,7 @@ export const updateUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updateUserSchema.parse(data);
-    const user = await prisma.user.update({
+    const user = await db.user.update({
       where: {
         id: data.id as string,
       },
@@ -131,7 +131,7 @@ export const forgotPassword = async (
   return safeAction<OtpVerification>(async () => {
     const data = Object.fromEntries(formData);
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email: data.email as string },
     });
     if (!user) {
@@ -143,7 +143,7 @@ export const forgotPassword = async (
     const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
     // Create or update OTP verification record
     // Upsert OTP verification record
-    const verification = await prisma.otpVerification.upsert({
+    const verification = await db.otpVerification.upsert({
       where: {
         userId: user.id,
       },
@@ -174,7 +174,7 @@ export const resetPassword = async (
     resetPasswordSchema.parse(data);
 
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email: data.email as string },
     });
 
@@ -187,7 +187,7 @@ export const resetPassword = async (
     const encryptedPassword = await bcryptjs.hash(data.password as string, 10);
 
     // update password
-    await prisma.user.update({
+    await db.user.update({
       where: {
         id: user.id,
       },
