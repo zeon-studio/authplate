@@ -98,12 +98,10 @@ model Payment {
   currency       String
   status         PaymentStatus
   paymentMethod  String?       // e.g., credit_card, paypal, etc.
-  billingPeriod  String?       // The period this payment covers
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   subscription   Subscription? @relation(fields: [orderId], references: [orderId])
   orderId        String?       @unique
-
 }
 
 

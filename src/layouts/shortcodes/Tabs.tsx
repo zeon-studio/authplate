@@ -50,7 +50,7 @@ function Tabs({ children }: { children: ReactElement[] }) {
             //@ts-ignore
             ref={(ref) => (tabItemsRef.current[index] = ref)}
           >
-            {item.props.name}
+            {(item.props as { name: string }).name}
           </li>
         ))}
       </ul>
@@ -60,7 +60,7 @@ function Tabs({ children }: { children: ReactElement[] }) {
           key={index}
           className={`tab-content ${index === active ? "block" : "hidden"}`}
         >
-          {data.props.children}
+          {(data.props as { children: ReactElement }).children}
         </div>
       ))}
     </div>

@@ -30,18 +30,9 @@ export const generateStaticParams = () => {
   return paths;
 };
 
-function spreadPages(num: number): number[] {
-  let pages = [];
-
-  for (let i = 2; i <= num; i++) {
-    pages.push(i);
-  }
-
-  return pages;
-}
-
 // for all regular pages
-const Posts = ({ params }: { params: { page: number } }) => {
+const Posts = async (props: { params: Promise<{ page: string }> }) => {
+  const params = await props.params;
   const postIndex: Post = getListPage(`${blog_folder}/_index.md`);
   const { title, meta_title, description, image } = postIndex.frontmatter;
   const posts: Post[] = getSinglePage(blog_folder);

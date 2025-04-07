@@ -14,8 +14,8 @@ import { parseMoney } from "@/lib/paddle/parse-money";
 
 export default async function Billing() {
   const { user } = (await auth()) || {};
-
   const paymentHistories = await getUserPaymentHistory(user?.id!);
+
   if (!paymentHistories?.success) {
     return (
       <div className="flex flex-col items-center justify-center gap-4">
@@ -69,7 +69,7 @@ export default async function Billing() {
                   <TableCell>{payment.transactionId}</TableCell>
                   <TableCell>
                     {parseMoney(
-                      payment.totalAmount.toString(),
+                      (payment.totalAmount * 100).toString(),
                       payment.currency,
                     )}
                   </TableCell>

@@ -4,11 +4,45 @@ import { safeAction } from "..";
 
 export function getActiveSubscriptions(userId: string) {
   return safeAction(async () => {
+    const currentDate = new Date();
     return await db.subscription.findMany({
       where: {
         userId,
-        status: {
-          in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING],
+        OR: [
+          {
+            status: SubscriptionStatus.LIFETIME,
+          },
+          {
+            AND: [
+              {
+                lastBillingDate: {
+                  lte: currentDate,
+                },
+              },
+              {
+                nextBillingDate: {
+                  gte: currentDate,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  });
+}
+
+export function getExpiredSubscriptions(userId: string) {
+  return safeAction(async () => {
+    const currentDate = new Date();
+    return await db.subscription.findMany({
+      where: {
+        userId,
+        nextBillingDate: {
+          lt: currentDate,
         },
       },
       orderBy: {

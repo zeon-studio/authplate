@@ -6,8 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Subscription } from "@prisma/client";
+import { BillingCycle, Subscription, SubscriptionStatus } from "@prisma/client";
 import { CalendarClock, Clock } from "lucide-react";
+import { CancelSubscriptionDialog } from "./CancelSubscritpion";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-US", {
@@ -22,6 +23,33 @@ export default function SubscriptionCard({
 }: {
   subscription: Subscription;
 }) {
+  const currentDate = new Date();
+  let paymentInfo = (
+    <div className="flex items-center gap-3 text-sm">
+      <Clock className="h-4 w-4 text-muted-foreground" />
+      <span className="text-muted-foreground">
+        {/* @ts-ignore */}
+        Next payment on {formatDate(subscription.nextBillingDate)}
+      </span>
+    </div>
+  );
+
+  if (
+    subscription.status === SubscriptionStatus.CANCELED &&
+    subscription.lastBillingDate! < currentDate &&
+    subscription.nextBillingDate! > currentDate
+  ) {
+    paymentInfo = (
+      <div className="flex items-center gap-3 text-sm">
+        <Clock className="h-4 w-4 text-muted-foreground" />
+        <span className="text-muted-foreground">
+          {/* @ts-ignore */}
+          Subscription will be cancel {formatDate(subscription.nextBillingDate)}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <Card key={subscription.id}>
       <CardHeader className="pb-3">
@@ -33,7 +61,11 @@ export default function SubscriptionCard({
             </CardDescription>
           </div>
           <Badge
-            variant={subscription.status === "ACTIVE" ? "default" : "secondary"}
+            variant={
+              subscription.status === SubscriptionStatus.ACTIVE
+                ? "success"
+                : "destructive"
+            }
             className="capitalize"
           >
             {subscription.status.toLowerCase()}
@@ -51,13 +83,16 @@ export default function SubscriptionCard({
           </div>
 
           {/* Next Payment Info */}
-          <div className="flex items-center gap-3 text-sm">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">
-              {/* @ts-ignore */}
-              Next payment on {formatDate(subscription.nextBillingDate)}
-            </span>
-          </div>
+          {paymentInfo}
+          {/* Cancel Subscription Button */}
+          {subscription.status === "ACTIVE" &&
+            subscription.billingCycle !== BillingCycle.LIFETIME && (
+              <div className="pt-2">
+                <CancelSubscriptionDialog
+                  subscriptionId={subscription.orderId.toString()}
+                />
+              </div>
+            )}
         </div>
       </CardContent>
     </Card>

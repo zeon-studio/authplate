@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useDialog } from "@/hooks/useDialog";
+import { cancelSubscription } from "@/lib/paddle/cancelSubscritpion";
 
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface CancelSubscriptionDialogProps {
   subscriptionId: string;
@@ -27,10 +29,18 @@ export function CancelSubscriptionDialog({
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpenChange } = useDialog();
 
-  function handleCancelSubscription() {
+  async function handleCancelSubscription() {
     onOpenChange(false);
     setLoading(true);
-    console.log({ subscriptionId });
+    try {
+      await cancelSubscription(subscriptionId);
+      toast.success("Subscription cancelled successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong, please try again later");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

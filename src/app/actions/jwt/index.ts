@@ -9,6 +9,7 @@ export const createToken = async (
   const secret = process.env.JWT_SECRET;
   const expires = process.env.JWT_EXPIRES;
 
+  // @ts-ignore
   return jwt.sign(
     { sub: payload?.email, role: payload?.role },
     secret as Secret,

@@ -18,6 +18,7 @@ const NotFound = async () => {
                   name changed, or is temporarily unavailable.
                 </p>
               </div>
+              {/*  eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/" className="btn btn-primary mt-8">
                 Back to home
               </a>

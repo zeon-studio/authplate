@@ -3,8 +3,10 @@ import { db } from "@/lib/prisma";
 import {
   EventEntity,
   EventName,
+  SubscriptionStatus as PaddleSubscriptionStatus,
   SubscriptionCreatedEvent,
   SubscriptionItemNotification,
+  SubscriptionScheduledChangeNotification,
   SubscriptionUpdatedEvent,
   TransactionCompletedEvent,
   TransactionItemNotification,
@@ -37,8 +39,8 @@ export class ProcessWebhook {
       status,
       nextBilledAt,
       currentBillingPeriod,
-      firstBilledAt,
       items,
+      scheduledChange,
     } = eventData.data;
     const subscription = await db.subscription.findUnique({
       where: {
@@ -50,9 +52,25 @@ export class ProcessWebhook {
       return;
     }
 
+    if (scheduledChange?.action) {
+      await db.subscription.update({
+        where: {
+          id: subscription.id,
+        },
+        data: {
+          status: this.getSubscriptionStatus(scheduledChange),
+          ...(scheduledChange.action === "cancel" && {
+            canceledAt: new Date(),
+          }),
+        },
+      });
+
+      return;
+    }
+
     await db.subscription.update({
       where: {
-        id: subscription.id,
+        orderId: subscriptionId,
       },
       data: {
         status: this.getSubscriptionStatus(status),
@@ -61,9 +79,7 @@ export class ProcessWebhook {
           status === "trialing" ? currentBillingPeriod?.endsAt : null,
         planId: this.getPlanId(items)!,
         planName: this.getPlanName(items)!,
-        lastBillingDate: !subscription.lastBillingDate
-          ? firstBilledAt
-          : subscription.nextBillingDate,
+        lastBillingDate: items[0].previouslyBilledAt,
       },
     });
   }
@@ -185,9 +201,7 @@ export class ProcessWebhook {
   }
 
   getPlanId(
-    items:
-      | SubscriptionCreatedEvent["data"]["items"]
-      | TransactionCompletedEvent["data"]["items"],
+    items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
     const item = items[0];
     if (item instanceof SubscriptionItemNotification) {
@@ -200,9 +214,7 @@ export class ProcessWebhook {
   }
 
   getPlanName(
-    items:
-      | SubscriptionCreatedEvent["data"]["items"]
-      | TransactionCompletedEvent["data"]["items"],
+    items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
     const item = items[0];
     if (item instanceof TransactionItemNotification) {
@@ -214,7 +226,22 @@ export class ProcessWebhook {
     }
   }
 
-  getSubscriptionStatus(status: SubscriptionCreatedEvent["data"]["status"]) {
+  getSubscriptionStatus(
+    status: PaddleSubscriptionStatus | SubscriptionScheduledChangeNotification,
+  ) {
+    if (status instanceof SubscriptionScheduledChangeNotification) {
+      switch (status.action) {
+        case "cancel":
+          return SubscriptionStatus.CANCELED;
+        case "pause":
+          return SubscriptionStatus.PAUSED;
+        case "resume":
+          return SubscriptionStatus.ACTIVE;
+        default:
+          return SubscriptionStatus.ACTIVE;
+      }
+    }
+
     switch (status) {
       case "active":
         return SubscriptionStatus.ACTIVE;
@@ -240,9 +267,7 @@ export class ProcessWebhook {
   }
 
   getBillingCycle(
-    items:
-      | SubscriptionCreatedEvent["data"]["items"]
-      | TransactionCompletedEvent["data"]["items"],
+    items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ): BillingCycle {
     const currentId = this.getPlanId(items);
 
