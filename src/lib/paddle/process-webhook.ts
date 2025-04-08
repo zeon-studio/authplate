@@ -48,7 +48,7 @@ export class ProcessWebhook {
       },
     });
 
-    if (!subscription) {
+    if (!subscription || scheduledChange?.action === "cancel") {
       return;
     }
 
@@ -59,9 +59,6 @@ export class ProcessWebhook {
         },
         data: {
           status: this.getSubscriptionStatus(scheduledChange),
-          ...(scheduledChange.action === "cancel" && {
-            canceledAt: new Date(),
-          }),
         },
       });
 
