@@ -96,6 +96,7 @@ export class ProcessWebhook {
     const { email: userEmail } = customData as {
       email: string;
     };
+
     const user = await this.getUserEmail(userEmail);
     if (!user) {
       return;

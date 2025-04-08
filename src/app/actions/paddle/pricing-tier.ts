@@ -1,15 +1,5 @@
 import { BillingCycle } from "@prisma/client";
-import { PackageType } from "./type";
-
-export interface Tier {
-  name: string;
-  id: PackageType;
-  icon: string;
-  description: string;
-  features: string[];
-  featured: boolean;
-  priceId: Partial<Record<BillingCycle, string>>; // TODO: Add lifetime ke
-}
+import { PackageType, Tier } from "./type";
 
 export const PricingTier: Tier[] = [
   {
@@ -51,8 +41,7 @@ export const PricingTier: Tier[] = [
     ],
     featured: true,
     priceId: {
-      [BillingCycle.MONTHLY]: "pri_01jksv6m11bswv4fc1t8ymqk2g",
-      [BillingCycle.ANNUAL]: "pri_01jksv7n6c4m2rwwvpkbnqpkrw",
+      [BillingCycle.MONTHLY]: "pri_01jksv559557wq10b08f59652",
     },
   },
   {
@@ -78,7 +67,6 @@ export const PricingTier: Tier[] = [
     featured: false,
     priceId: {
       [BillingCycle.MONTHLY]: "pri_01jksvevphtkncjce1yvbep923",
-      [BillingCycle.ANNUAL]: "pri_01jksvh7ad31wyceybcxpww8ca",
     },
   },
   {

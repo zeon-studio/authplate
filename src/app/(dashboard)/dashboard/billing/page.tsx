@@ -1,5 +1,4 @@
 import { getUserPaymentHistory } from "@/app/actions/subscriptions";
-import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { auth } from "@/lib/auth";
 import { parseMoney } from "@/lib/paddle/parse-money";
 
 export default async function Billing() {

@@ -24,9 +24,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import ResetPasswordForm from "./Form/ResetPasswordForm";
-import { OtpTimer } from "./OtpTimer";
-import { Input } from "./ui/input";
+import { OtpTimer } from "../OtpTimer";
+import { Input } from "../ui/input";
+import ResetPasswordForm from "./ResetPasswordForm";
 
 type OtpVerifyFormProps = {
   email: string;

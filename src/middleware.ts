@@ -1,6 +1,6 @@
+import { authOptions } from "@/lib/auth/auth-option";
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "./auth-option";
 
 const { auth } = NextAuth(authOptions);
 const publicUrl = ["/signin", "/signup", "/forgot-password", "/otp"];
@@ -30,6 +30,7 @@ export const config = {
     "/",
     "/otp",
     "/forgot-password",
+    "/checkout",
     "/dashboard/:path*",
   ],
 };

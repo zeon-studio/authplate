@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
+import { auth } from "@/lib/auth";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";

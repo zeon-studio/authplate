@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import Profile from "../Profile";
+import Profile from "../UserProfileMenu";
 
 interface HeaderActionsProps {
   settings: {

@@ -1,4 +1,4 @@
-import { Tier } from "@/app/actions/paddle/pricing-tier";
+import { Tier } from "@/app/actions/paddle/type";
 import { BillingCycle } from "@prisma/client";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";

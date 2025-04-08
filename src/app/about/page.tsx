@@ -9,10 +9,7 @@ const About = async () => {
   const data: RegularPage = getListPage("about/_index.md");
   const { frontmatter, content } = data;
   const { title, meta_title, description, image } = frontmatter;
-  // const session = await getServerSession(authOptions);
-  // if (!session) {
-  //   redirect("/login");
-  // }
+
   return (
     <>
       <SeoMeta

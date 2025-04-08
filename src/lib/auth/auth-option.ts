@@ -1,5 +1,5 @@
 import { NextAuthConfig } from "next-auth";
-import { db } from "./lib/prisma";
+import { db } from "../prisma";
 
 export const authOptions = {
   providers: [],

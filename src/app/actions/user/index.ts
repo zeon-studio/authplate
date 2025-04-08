@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { signIn } from "@/auth";
+import { signIn } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import {
   loginUserSchema,

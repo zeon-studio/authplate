@@ -1,7 +1,7 @@
 import { PricingTier } from "@/actions/paddle/pricing-tier";
 import { getActiveSubscriptions } from "@/actions/subscriptions";
-import { auth } from "@/auth";
 import PricingCard from "@/layouts/components/PricingCard";
+import { auth } from "@/lib/auth";
 
 export default async function Page() {
   const { user } = (await auth()) || {};

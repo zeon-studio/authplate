@@ -1,7 +1,7 @@
 "use client";
 
 import ForgotPasswordForm from "@/layouts/components/Form/ForgotPasswordForm";
-import OtpVerifyForm from "@/layouts/components/OtpVerfyForm";
+import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { useState } from "react";
 
 export default function ForgotPasswordPage() {

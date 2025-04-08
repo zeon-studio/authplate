@@ -2,7 +2,7 @@
 
 import LoginForm from "@/components/Form/LoginForm";
 import { Button } from "@/components/ui/button";
-import OtpVerifyForm from "@/layouts/components/OtpVerfyForm";
+import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
 import { signIn } from "next-auth/react";
 import Link from "next/link";

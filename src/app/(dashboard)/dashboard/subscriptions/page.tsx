@@ -2,13 +2,13 @@ import {
   getActiveSubscriptions,
   getExpiredSubscriptions,
 } from "@/app/actions/subscriptions";
-import { auth } from "@/auth";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/layouts/components/ui/tabs";
+import { auth } from "@/lib/auth";
 import SubscriptionCard from "./_components/SubscriptionCard";
 
 export default async function Subscriptions() {

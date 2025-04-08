@@ -1,7 +1,7 @@
 "use client";
 
 import RegisterForm from "@/components/Form/RegistrationForm";
-import OtpVerifyForm from "@/layouts/components/OtpVerfyForm";
+import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { Button } from "@/layouts/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";

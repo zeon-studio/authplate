@@ -1,10 +1,10 @@
 import { verifyUserWithPassword } from "@/actions/user";
+import { authOptions } from "@/lib/auth/auth-option";
+import { InvalidCredentials } from "@/lib/utils/error";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import { authOptions } from "./auth-option";
-import { InvalidCredentials } from "./lib/utils/error";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authOptions,
