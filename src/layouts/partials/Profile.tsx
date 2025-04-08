@@ -1,5 +1,6 @@
 "use client";
 
+import { icons } from "@/components/Icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,9 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import menu from "@/config/menu.json";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CreditCard, LogOut, Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -50,24 +52,17 @@ export default function Profile() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link className="cursor-pointer" href={"/dashboard/subscriptions"}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Subscriptions</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={"/dashboard/billing"}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={"/dashboard/settings"}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
+          {menu.dashboard.map((item, index) => {
+            const Icon = icons[item.icon as keyof typeof icons];
+            return (
+              <DropdownMenuItem key={index} asChild>
+                <Link href={item.url} className="cursor-pointer">
+                  <Icon className="mr-2 h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>

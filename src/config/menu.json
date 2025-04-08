@@ -44,19 +44,21 @@
       ]
     }
   ],
-  "sidebar": [
+  "dashboard": [
     {
       "name": "Subscriptions",
-      "url": "/dashboard/subscriptions"
+      "url": "/dashboard/subscriptions",
+      "icon": "Subscription"
     },
-
     {
       "name": "Billing",
-      "url": "/dashboard/billing"
+      "url": "/dashboard/billing",
+      "icon": "CreditCard"
     },
     {
-      "name": "Settings",
-      "url": "/dashboard/settings"
+      "name": "Account Settings",
+      "url": "/dashboard/settings",
+      "icon": "Settings"
     }
   ],
   "footer": [

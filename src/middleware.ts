@@ -24,5 +24,12 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/signin", "/signup/", "/"],
+  matcher: [
+    "/signin",
+    "/signup/",
+    "/",
+    "/otp",
+    "/forgot-password",
+    "/dashboard/:path*",
+  ],
 };

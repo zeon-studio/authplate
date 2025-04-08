@@ -78,7 +78,14 @@ export const registerUserSchema = userSchema
   );
 
 // Schema for updating user, omitting the email field
-export const updateUserSchema = baseUserSchema.omit({ email: true });
+export const updateUserSchema = baseUserSchema.omit({
+  email: true,
+  isTermsAccepted: true,
+  provider: true,
+  accessToken: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 // Login schema, only email and password are required
 export const loginUserSchema = z.object({
@@ -94,5 +101,13 @@ export const forgotPasswordSchema = z.object({
 // reset password
 export const resetPasswordSchema = z.object({
   password: passwordSchema.shape.password,
+  confirmPassword: passwordSchema.shape.password,
+});
+
+// update password
+
+export const updatePasswordSchema = z.object({
+  oldPassword: passwordSchema.shape.password,
+  newPassword: passwordSchema.shape.password,
   confirmPassword: passwordSchema.shape.password,
 });

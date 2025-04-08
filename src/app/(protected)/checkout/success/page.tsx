@@ -28,7 +28,7 @@ export default function SuccessPage() {
           </p>
           <Button variant={"secondary"} asChild={true}>
             {session?.user ? (
-              <Link href={"/dashboard"}>Go to Dashboard</Link>
+              <Link href={"/dashboard/subscriptions"}>Go to Dashboard</Link>
             ) : (
               <Link href={"/"}>Go to Home</Link>
             )}
