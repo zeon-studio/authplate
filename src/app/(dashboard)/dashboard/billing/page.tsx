@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { auth } from "@/lib/auth";
-import { parseMoney } from "@/lib/paddle/parse-money";
+import { parseMoney } from "@/lib/paddle/parseMoney";
 
 export default async function Billing() {
   const { user } = (await auth()) || {};

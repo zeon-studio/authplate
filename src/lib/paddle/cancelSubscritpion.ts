@@ -4,7 +4,7 @@ import { SubscriptionStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { db } from "../prisma";
-import { getPaddleInstance } from "./get-paddle-instance";
+import { getPaddleInstance } from "./getPaddleInstance";
 
 export async function cancelSubscription(subscriptionId: string) {
   const paddle = getPaddleInstance();

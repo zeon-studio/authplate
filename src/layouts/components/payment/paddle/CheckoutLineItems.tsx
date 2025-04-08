@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 
-import { formatMoney } from "@/lib/paddle/parse-money";
+import { formatMoney } from "@/lib/paddle/parseMoney";
 interface LoadingTextProps {
   value: number | undefined;
   currencyCode: string | undefined;

@@ -7,7 +7,7 @@ import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PriceSection } from "./price-section";
+import { PriceSection } from "./PriceSection";
 
 interface Props {
   userEmail?: string;

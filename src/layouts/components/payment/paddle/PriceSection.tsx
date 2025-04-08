@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
-import { CheckoutLineItems } from "./checkout-line-items";
-import { CheckoutPriceAmount } from "./checkout-price-amount";
-import { CheckoutPriceContainer } from "./checkout-price-container";
+import { CheckoutLineItems } from "./CheckoutLineItems";
+import { CheckoutPriceAmount } from "./CheckoutPriceAmount";
+import { CheckoutPriceContainer } from "./CheckoutPriceContainer";
 
 export function PriceSection({
   checkoutData,

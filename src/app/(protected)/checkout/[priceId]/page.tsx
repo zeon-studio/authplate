@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckoutContents } from "@/layouts/components/payment/paddle/checkout-contents";
+import { CheckoutContents } from "@/layouts/components/payment/paddle/CheckoutContents";
 import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
