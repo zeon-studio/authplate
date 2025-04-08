@@ -13,7 +13,7 @@
     "migrate:prod": "prisma migrate deploy",
     "lint": "next lint",
     "format": "prettier -w ./src",
-    "generate": "prisma generate",
+    "postinstall": "prisma generate",
     "generate-json": "node scripts/jsonGenerator.js",
     "remove-darkmode": "node scripts/removeDarkmode.js && yarn format"
   },
