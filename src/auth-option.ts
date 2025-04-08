@@ -13,11 +13,6 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    authorized({ auth }) {
-      console.log({ auth });
-      return !!auth?.user;
-    },
-
     async signIn({ user, account }) {
       if (account?.type === "credentials") {
         return !!user.emailVerified;
@@ -29,8 +24,8 @@ export const authOptions = {
         },
         create: {
           email: user.email,
-          firstName: user.name,
-          lastName: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           image: user.image,
           emailVerified: true,
           isTermsAccepted: true,
@@ -41,6 +36,8 @@ export const authOptions = {
         },
       });
 
+      user.firstName = dbUser.firstName || "";
+      user.lastName = dbUser.lastName || "";
       user.image = dbUser.image;
       user.emailVerified = dbUser.emailVerified;
       user.id = dbUser.id;

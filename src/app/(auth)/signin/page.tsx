@@ -43,8 +43,7 @@ export default function SignIn() {
           <div className="w-full text-center">Or Continue With</div>
           <Button
             onClick={async () => {
-              const abc = await signIn("google");
-              console.log(abc);
+              await signIn("google");
             }}
             className="w-full"
           >

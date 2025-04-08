@@ -1,11 +1,33 @@
-import { getListPage } from "@/lib/contentParser";
-import Pricing from "@/partials/Pricing";
-import { Pricing as PricingType } from "@/types";
+import { PricingTier } from "@/actions/paddle/pricing-tier";
+import { getActiveSubscriptions } from "@/actions/subscriptions";
+import { auth } from "@/auth";
+import PricingCard from "@/layouts/components/PricingCard";
 
-const Home = async () => {
-  const { frontmatter: pricing } = getListPage<PricingType>("pricing/index.md");
+export default async function Page() {
+  const { user } = (await auth()) || {};
+  const currentActiveSubscriptions = await getActiveSubscriptions(user?.id!);
 
-  return <Pricing {...pricing} />;
-};
+  if (!currentActiveSubscriptions?.success) {
+    return <div>Something went wrong</div>;
+  }
 
-export default Home;
+  return (
+    <section className="section bg-light/30" id="pricing">
+      <div className="container">
+        <div className="grid grid-cols-4 gap-4">
+          {PricingTier.map((tier) => {
+            const priceIds = Object.values(tier.priceId);
+
+            const isActive = currentActiveSubscriptions.data.some(
+              (subscription) => priceIds.includes(subscription.planId),
+            );
+
+            return (
+              <PricingCard isActive={isActive} key={tier.id} tier={tier} />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

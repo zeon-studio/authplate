@@ -20,8 +20,6 @@ import Link from "next/link";
 
 export default function Profile() {
   const { data: session } = useSession();
-
-  console.log(session);
   const { user } = session || {};
 
   const fallback = () => {
