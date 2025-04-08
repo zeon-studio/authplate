@@ -76,6 +76,9 @@ export const verifyOtp = async (
         userId: user.id,
       },
     });
+
+    console.log({ verification });
+
     if (!verification) {
       throw new Error("OTP not found");
     }

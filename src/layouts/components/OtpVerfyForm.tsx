@@ -48,7 +48,6 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   const { action, isPending } = useMutation(verifyOtp, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
-        toast.error(error.message);
         otpForm.trigger();
         return;
       }
@@ -60,7 +59,6 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
         setShowResetPasswordForm(true);
         return;
       }
-      console.log("password", password);
       signIn("credentials", {
         email: email,
         password: password!,

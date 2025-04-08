@@ -7,6 +7,7 @@ import {
   loginUserSchema,
   registerUserSchema,
   resetPasswordSchema,
+  updatePasswordSchema,
   updateUserSchema,
 } from "@/lib/validation/user.schema";
 import { OtpVerification, User } from "@prisma/client";
@@ -17,6 +18,7 @@ import { Result, safeAction } from "..";
 import { sendOtp } from "../otp";
 import { mailSender } from "../sender";
 
+// register user
 export const createUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
@@ -35,7 +37,7 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
 
     const encryptedPassword = await bcryptjs.hash(validatedData.password, 10);
 
-    return await db.user.create({
+    const newUser = await db.user.create({
       data: {
         emailVerified: false,
         isTermsAccepted: true,
@@ -46,6 +48,12 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
         provider: "CREDENTIALS",
       },
     });
+
+    // send otp
+    const formDataOtp = new FormData();
+    formDataOtp.append("email", newUser.email!);
+    sendOtp(null, formDataOtp);
+    return newUser;
   });
 };
 
@@ -106,6 +114,7 @@ export const verifyUserWithPassword = async ({
   });
 };
 
+// update user
 export const updateUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
@@ -117,6 +126,7 @@ export const updateUser = async (state: Result<User>, formData: FormData) => {
       data: {
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
+        image: validatedData.image,
       },
     });
     return user;
@@ -183,10 +193,53 @@ export const resetPassword = async (
     }
 
     // after otp verification we are going to update the password
-
     const encryptedPassword = await bcryptjs.hash(data.password as string, 10);
 
     // update password
+    await db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: encryptedPassword,
+      },
+    });
+
+    return user;
+  });
+};
+
+// oauth login
+export const updatePassword = async (
+  state: Result<User>,
+  formData: FormData,
+) => {
+  return safeAction<User>(async () => {
+    const data = Object.fromEntries(formData);
+    const validatedData = updatePasswordSchema.parse(data);
+    const user = await db.user.findUnique({
+      where: { email: validatedData.email },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // verify password
+    const isValidPassword = await bcryptjs.compare(
+      validatedData.oldPassword,
+      user.password!,
+    );
+
+    if (!isValidPassword) {
+      throw new Error("Invalid password");
+    }
+
+    const encryptedPassword = await bcryptjs.hash(
+      validatedData.newPassword,
+      10,
+    );
+
     await db.user.update({
       where: {
         id: user.id,

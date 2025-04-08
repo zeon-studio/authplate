@@ -20,6 +20,7 @@ const baseUserSchema = z.object({
   image: z
     .string()
     .url("Please provide a valid URL for the image.")
+    .or(z.literal(""))
     .optional()
     .nullable(),
   isTermsAccepted: z
@@ -106,8 +107,18 @@ export const resetPasswordSchema = z.object({
 
 // update password
 
-export const updatePasswordSchema = z.object({
-  oldPassword: passwordSchema.shape.password,
-  newPassword: passwordSchema.shape.password,
-  confirmPassword: passwordSchema.shape.password,
-});
+export const updatePasswordSchema = z
+  .object({
+    oldPassword: passwordSchema.shape.password,
+    newPassword: passwordSchema.shape.password,
+    confirmPassword: passwordSchema.shape.password,
+    email: baseUserSchema.shape.email,
+  })
+  .refine((data) => data.newPassword !== data.oldPassword, {
+    message: "New password must be different from the old password",
+    path: ["newPassword"],
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

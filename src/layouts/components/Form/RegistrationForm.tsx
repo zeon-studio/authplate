@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { useMutation } from "@/hooks/useMutation";
 import { registerUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,7 +24,7 @@ const defaultValues =
     ? {
         firstName: "John",
         lastName: "Doe",
-        email: "EMAIL",
+        email: "mukles.themefisher@gmail.com",
         password: "Password123!",
         confirmPassword: "Password123!",
         isTermsAccepted: true,
@@ -68,10 +67,6 @@ export default function RegisterForm({
       onOtpRequired({
         email: registerForm.getValues("email")!,
         password: registerForm.getValues("password")!,
-      });
-      signIn("credentials", {
-        email: registerForm.getValues("email"),
-        password: registerForm.getValues("password"),
       });
     },
   });

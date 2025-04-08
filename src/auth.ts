@@ -46,13 +46,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      // @ts-ignore
       profile(profile) {
         return {
           image: profile.picture,
           email: profile.email,
-          first_name: profile.given_name,
-          last_name: profile.family_name,
+          firstName: profile.given_name,
+          lastName: profile.family_name,
+          provider: "Google",
+          emailVerified: true,
         };
       },
     }),
@@ -60,10 +61,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-      // @ts-ignore
       profile({ name, avatar_url }) {
-        // @ts-ignore
-        const [firstName, lastName] = name?.split(" ");
+        const nameParts = name?.split(" ") || [];
+        const firstName = nameParts[0];
+        const lastName = nameParts[1];
+
         return {
           firstName,
           lastName,

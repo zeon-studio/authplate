@@ -1,4 +1,5 @@
 import { NextAuthConfig } from "next-auth";
+import { db } from "./lib/prisma";
 
 export const authOptions = {
   providers: [],
@@ -12,10 +13,37 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    authorized({ auth }) {
+      console.log({ auth });
+      return !!auth?.user;
+    },
+
     async signIn({ user, account }) {
       if (account?.type === "credentials") {
         return !!user.emailVerified;
       }
+
+      const dbUser = await db.user.upsert({
+        where: {
+          email: user.email!,
+        },
+        create: {
+          email: user.email,
+          firstName: user.name,
+          lastName: user.name,
+          image: user.image,
+          emailVerified: true,
+          isTermsAccepted: true,
+          provider: account?.provider === "google" ? "GOOGLE" : "GITHUB",
+        },
+        update: {
+          emailVerified: true,
+        },
+      });
+
+      user.image = dbUser.image;
+      user.emailVerified = dbUser.emailVerified;
+      user.id = dbUser.id;
 
       return true;
     },
@@ -33,7 +61,9 @@ export const authOptions = {
     },
     async jwt({ token, user, trigger, session }) {
       if (trigger === "update") {
-        console.log({ session });
+        token.firstName = session?.firstName!;
+        token.lastName = session?.lastName!;
+        token.image = session?.image!;
         token.emailVerified = session?.emailVerified!;
       }
 

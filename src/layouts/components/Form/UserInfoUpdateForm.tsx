@@ -1,5 +1,6 @@
 "use client";
 
+import { updateUser } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,24 +11,51 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useMutation } from "@/hooks/useMutation";
 import { updateUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 export default function UserInfoUpdateForm() {
+  const { data: session, update } = useSession();
   const profileForm = useForm<z.infer<typeof updateUserSchema>>({
     resolver: zodResolver(updateUserSchema),
+    mode: "onChange",
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      image: "",
+      firstName: session?.user.firstName,
+      lastName: session?.user.lastName,
+      image: session?.user.image ?? "",
+    },
+  });
+
+  const { action, isPending } = useMutation(updateUser, {
+    onError({ error }) {
+      if (error.type === "VALIDATION_ERROR") {
+        profileForm.trigger();
+        return;
+      }
+      toast(error.type, {
+        description: error.message,
+      });
+    },
+    onSuccess() {
+      update({
+        ...profileForm.getValues(),
+      });
+      toast("Success!", {
+        description: "User info updated successfully.",
+      });
     },
   });
 
   return (
     <Form {...profileForm}>
-      <form className="space-y-4">
+      <form action={action} className="space-y-4">
+        <Input type="hidden" name="id" value={session?.user.id} />
+
         <FormField
           control={profileForm.control}
           name="firstName"
@@ -73,7 +101,13 @@ export default function UserInfoUpdateForm() {
           )}
         />
 
-        <Button type="submit">Update profile</Button>
+        <Button
+          disabled={isPending}
+          type="submit"
+          className="font-bold text-lg w-full"
+        >
+          {isPending ? "Loading..." : "Update Profile"}
+        </Button>
       </form>
     </Form>
   );

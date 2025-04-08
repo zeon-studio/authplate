@@ -28,7 +28,7 @@ const defaultValues =
       }
     : {
         email: "mukles.themefisher@gmail.com",
-        password: "password123$K",
+        password: "Password123!",
       };
 
 const LoginForm = ({

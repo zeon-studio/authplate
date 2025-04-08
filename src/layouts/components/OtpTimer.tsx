@@ -14,8 +14,8 @@ export function OtpTimer({
   className?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(2);
+  const [seconds, setSeconds] = useState(59);
   const { action, isPending } = useMutation(sendOtp, {
     onSuccess() {
       setMinutes(2);

@@ -11,7 +11,6 @@ declare module "next-auth" {
       lastName?: string;
       image?: string;
       emailVerified: boolean;
-      accessToken: string | null;
       provider: "Google" | "Github" | "Credentials";
     };
   }
@@ -23,7 +22,6 @@ declare module "next-auth" {
     email: string;
     image?: string;
     emailVerified: boolean;
-    accessToken: string | null;
     provider: "Google" | "Github" | "Credentials";
   }
 }
@@ -36,7 +34,6 @@ declare module "next-auth/jwt" {
     email: string;
     image?: string;
     emailVerified: boolean;
-    accessToken: string | null;
     provider: "Google" | "Github" | "Credentials";
   }
 }
