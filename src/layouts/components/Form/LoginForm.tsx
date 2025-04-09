@@ -75,7 +75,7 @@ const LoginForm = ({
               <FormItem>
                 <FormLabel className="mb-3">
                   Email
-                  <span className="text-red-500">*</span>
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="abc@example.com" {...field} />
@@ -93,7 +93,7 @@ const LoginForm = ({
               <FormItem>
                 <FormLabel>
                   Password
-                  <span className="text-red-500">*</span>
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <PasswordInput

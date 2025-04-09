@@ -26,7 +26,7 @@ const Contact = async () => {
               <form action={contact_form_action} method="POST">
                 <div className="mb-6">
                   <label htmlFor="name" className="form-label">
-                    Full Name <span className="text-red-500">*</span>
+                    Full Name <span className="text-destructive">*</span>
                   </label>
                   <input
                     id="name"
@@ -38,7 +38,7 @@ const Contact = async () => {
                 </div>
                 <div className="mb-6">
                   <label htmlFor="email" className="form-label">
-                    Working Mail <span className="text-red-500">*</span>
+                    Working Mail <span className="text-destructive">*</span>
                   </label>
                   <input
                     id="email"
@@ -50,7 +50,7 @@ const Contact = async () => {
                 </div>
                 <div className="mb-6">
                   <label htmlFor="message" className="form-label">
-                    Anything else? <span className="text-red-500">*</span>
+                    Anything else? <span className="text-destructive">*</span>
                   </label>
                   <textarea
                     id="message"
