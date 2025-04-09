@@ -11,6 +11,7 @@ import SeoMeta from "@/partials/SeoMeta";
 import { Post } from "@/types";
 import { CircleUser, Clock, Folder } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 const { blog_folder } = config.settings;
 
@@ -36,6 +37,10 @@ const PostSingle = async ({
   const { single } = await params;
   const posts: Post[] = getSinglePage(blog_folder);
   const post = posts.filter((page) => page.slug === single)[0];
+
+  if (!post) {
+    return notFound();
+  }
 
   const { frontmatter, content } = post;
   const {

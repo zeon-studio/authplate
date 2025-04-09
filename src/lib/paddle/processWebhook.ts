@@ -19,6 +19,10 @@ import {
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
+    console.log({
+      type: eventData.eventType,
+      data: eventData.data,
+    });
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
         this.subscriptionCreated(eventData);
@@ -116,86 +120,94 @@ export class ProcessWebhook {
   }
 
   async paymentCreated(eventData: TransactionCompletedEvent) {
-    const {
-      id: transactionId,
-      subscriptionId,
-      details,
-      customData,
-      discountId,
-      currencyCode,
-    } = eventData.data;
+    try {
+      const {
+        id: transactionId,
+        subscriptionId,
+        details,
+        customData,
+        discountId,
+        currencyCode,
+      } = eventData.data;
 
-    const { email: userEmail } = customData as {
-      email: string;
-    };
+      const { email: userEmail } = customData as {
+        email: string;
+      };
 
-    const user = await this.getUserEmail(userEmail);
+      const user = await this.getUserEmail(userEmail);
 
-    if (!user) {
-      return;
+      if (!user) {
+        return;
+      }
+
+      const earnings = +(details?.totals?.total ?? "0") / 100;
+      const taxAmount = +(details?.totals?.tax ?? "0") / 100;
+      const processingFee = +(details?.totals?.fee ?? "0") / 100;
+      const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
+
+      await db.payment.create({
+        data: {
+          userId: user!.id,
+          totalAmount: totalAmount,
+          taxAmount: taxAmount,
+          processingFee: processingFee,
+          earnings: earnings,
+          currency: currencyCode,
+          paymentMethod: "paddle",
+          status: PaymentStatus.COMPLETED,
+          orderId: subscriptionId || transactionId,
+          transactionId: transactionId,
+          discountId: discountId ?? null,
+        },
+      });
+    } catch (error) {
+      console.log(error);
     }
-
-    const earnings = +(details?.totals?.total ?? "0") / 100;
-    const taxAmount = +(details?.totals?.tax ?? "0") / 100;
-    const processingFee = +(details?.totals?.fee ?? "0") / 100;
-    const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
-
-    await db.payment.create({
-      data: {
-        userId: user!.id,
-        totalAmount: totalAmount,
-        taxAmount: taxAmount,
-        processingFee: processingFee,
-        earnings: earnings,
-        currency: currencyCode,
-        paymentMethod: "paddle",
-        status: PaymentStatus.COMPLETED,
-        orderId: subscriptionId || transactionId,
-        transactionId: transactionId,
-        discountId: discountId ?? null,
-      },
-    });
   }
 
   async subscriptionCreated(eventData: SubscriptionCreatedEvent) {
-    const {
-      id: subscriptionId,
-      transactionId,
-      customData,
-      nextBilledAt,
-      currentBillingPeriod,
-      firstBilledAt,
-      items,
-    } = eventData.data;
+    try {
+      const {
+        id: subscriptionId,
+        transactionId,
+        customData,
+        nextBilledAt,
+        currentBillingPeriod,
+        firstBilledAt,
+        items,
+      } = eventData.data;
 
-    const { email: userEmail } = customData as {
-      email: string;
-    };
+      const { email: userEmail } = customData as {
+        email: string;
+      };
 
-    const user = await this.getUserEmail(userEmail);
+      const user = await this.getUserEmail(userEmail);
 
-    if (!user) {
-      return;
+      if (!user) {
+        return;
+      }
+
+      await db.subscription.create({
+        data: {
+          userId: user!.id,
+          planId: this.getPlanId(items)!,
+          status: this.getSubscriptionStatus(eventData.data.status),
+          lastBillingDate: firstBilledAt!,
+          orderId: subscriptionId || transactionId,
+          canceledAt: null,
+          startDate: currentBillingPeriod?.startsAt || firstBilledAt!,
+          trialEndsAt:
+            eventData.data.status === "trialing"
+              ? currentBillingPeriod?.endsAt
+              : null,
+          nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
+          planName: this.getPlanName(items)!,
+          billingCycle: this.getBillingCycle(items),
+        },
+      });
+    } catch (error) {
+      console.log(error);
     }
-
-    await db.subscription.create({
-      data: {
-        userId: user!.id,
-        planId: this.getPlanId(items)!,
-        status: this.getSubscriptionStatus(eventData.data.status),
-        lastBillingDate: firstBilledAt!,
-        orderId: subscriptionId || transactionId,
-        canceledAt: null,
-        startDate: currentBillingPeriod?.startsAt || firstBilledAt!,
-        trialEndsAt:
-          eventData.data.status === "trialing"
-            ? currentBillingPeriod?.endsAt
-            : null,
-        nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
-        planName: this.getPlanName(items)!,
-        billingCycle: this.getBillingCycle(items),
-      },
-    });
   }
 
   getPlanId(

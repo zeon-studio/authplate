@@ -8,15 +8,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "next start",
+    "preview": "next build",
     "lint": "next lint",
     "format": "prettier -w ./src",
     "postinstall": "prisma generate",
     "generate-json": "node scripts/jsonGenerator.js",
     "remove-darkmode": "node scripts/removeDarkmode.js && yarn format"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
