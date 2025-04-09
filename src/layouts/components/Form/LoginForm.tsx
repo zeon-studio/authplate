@@ -109,17 +109,15 @@ const LoginForm = ({
         </div>
 
         <div className="flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
+          <Link href="/forgot-password" className="text-sm">
             Forgot Password?
           </Link>
         </div>
 
         <Button
           type="submit"
-          className="py-2 px-4 font-bold w-full text-lg mt-4"
+          size={"lg"}
+          className="font-bold w-full text-lg mt-4"
           disabled={isPending}
         >
           {isPending ? <Loader2 className="size-4 animate-spin" /> : "Login"}

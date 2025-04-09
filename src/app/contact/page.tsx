@@ -1,7 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import config from "@/config/config.json";
 import { getListPage } from "@/lib/contentParser";
 import PageHeader from "@/partials/PageHeader";
@@ -29,45 +25,44 @@ const Contact = async () => {
             <div className="mx-auto md:col-10 lg:col-6">
               <form action={contact_form_action} method="POST">
                 <div className="mb-6">
-                  <Label htmlFor="name">
+                  <label htmlFor="name" className="form-label">
                     Full Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
+                  </label>
+                  <input
                     id="name"
-                    placeholder="Full Name"
-                    color="gray"
-                    type="text"
                     name="name"
-                    required
+                    className="form-input"
+                    placeholder="John Doe"
+                    type="text"
                   />
                 </div>
                 <div className="mb-6">
-                  <Label htmlFor="name">
-                    Working Mail <span className="text-red-500">*</span>{" "}
-                  </Label>
-                  <Input
+                  <label htmlFor="email" className="form-label">
+                    Working Mail <span className="text-red-500">*</span>
+                  </label>
+                  <input
                     id="email"
                     name="email"
                     className="form-input"
                     placeholder="john.doe@email.com"
                     type="email"
-                    required
                   />
                 </div>
                 <div className="mb-6">
-                  <Label htmlFor="message">
-                    {" "}
+                  <label htmlFor="message" className="form-label">
                     Anything else? <span className="text-red-500">*</span>
-                  </Label>
-                  <Textarea
-                    placeholder="Message goes here..."
+                  </label>
+                  <textarea
                     id="message"
+                    name="message"
+                    className="form-input"
+                    placeholder="Message goes here..."
                     rows={8}
-                  />
+                  ></textarea>
                 </div>
-                <Button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary">
                   Submit
-                </Button>
+                </button>
               </form>
             </div>
           </div>

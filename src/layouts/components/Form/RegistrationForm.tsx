@@ -158,7 +158,7 @@ export default function RegisterForm({
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
+                <FormLabel className="mb-3">
                   Confirm Password
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -187,7 +187,7 @@ export default function RegisterForm({
                       className="accent-black"
                     />
                   </FormControl>
-                  <FormLabel htmlFor="terms">
+                  <FormLabel className="mb-0" htmlFor="terms">
                     Accept terms and conditions
                   </FormLabel>
                 </div>

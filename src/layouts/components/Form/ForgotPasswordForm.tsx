@@ -59,7 +59,7 @@ const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
           name={"email"}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="mb-3">Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="abc@example.com" {...field} />
               </FormControl>
@@ -69,7 +69,8 @@ const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
         />
         <Button
           type="submit"
-          className="py-2 text-black px-4 font-bold w-full text-lg mt-4"
+          size={"lg"}
+          className="text-black px-4 font-bold w-full text-lg mt-4"
           disabled={isPending}
         >
           {isPending ? (

@@ -40,12 +40,7 @@ export function HeaderActions({ settings }: HeaderActionsProps) {
           asChild
           className="h-auto"
         >
-          <Link
-            className="btn btn-outline-primary btn-sm hidden lg:inline-block"
-            href="/signin"
-          >
-            Sign in
-          </Link>
+          <Link href="/signin">Sign in</Link>
         </Button>
       ) : (
         <Profile />

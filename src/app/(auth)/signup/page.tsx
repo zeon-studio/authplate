@@ -3,6 +3,8 @@
 import RegisterForm from "@/components/Form/RegistrationForm";
 import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { Button } from "@/layouts/components/ui/button";
+import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -49,12 +51,27 @@ export default function Register() {
         </span>
       </div>
 
-      <div>
-        <Button className="w-full bg-primary text-white py-2 rounded-md">
-          Continue with Google
+      <div className="space-y-4">
+        <Button
+          onClick={async () => {
+            await signIn("google");
+          }}
+          size={"lg"}
+          className="w-full font-semibold mt-3"
+        >
+          <SiGoogle size={23} className="mr-3 inline-block" />
+          <span>Login With Goggle</span>
         </Button>
-        <Button className="w-full bg-white text-black py-2 rounded-md mt-2">
-          Continue with Github
+
+        <Button
+          onClick={() => {
+            signIn("github");
+          }}
+          className="w-full font-semibold"
+          size={"lg"}
+        >
+          <SiGithub size={24} className="mr-3 inline-block" />
+          <span>Login With Github</span>
         </Button>
       </div>
     </>

@@ -12,7 +12,7 @@ const Header = () => {
 
   return (
     <header
-      className={`header z-30 ${settings.sticky_header && "sticky top-0"}`}
+      className={`header z-30 border-b border-b-border/50 ${settings.sticky_header && "sticky top-0"}`}
     >
       <nav className="navbar container">
         <div className="order-0">

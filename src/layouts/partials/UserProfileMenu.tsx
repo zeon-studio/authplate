@@ -35,7 +35,7 @@ export default function Profile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button className="px-1" variant="outline">
           <Avatar className="size-7">
             <AvatarImage
               src={user?.image}
@@ -45,7 +45,9 @@ export default function Profile() {
               {fallback()}
             </AvatarFallback>
           </Avatar>
-          <span className="ml-2 text-sm font-semibold">{user?.firstName}</span>
+          <span className="ml-2 text-sm font-semibold flex-1">
+            {user?.firstName}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">

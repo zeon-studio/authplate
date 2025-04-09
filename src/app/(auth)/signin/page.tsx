@@ -39,15 +39,22 @@ export default function SignIn() {
             setShowOtp(true);
           }}
         />
+
+        <div className="relative mt-6 w-full h-[1px] bg-[#B3B8C2] mb-4">
+          <span className="absolute bg-light z-10 inline-block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-2">
+            Or Continue With
+          </span>
+        </div>
+
         <div className="space-y-5 mt-5">
-          <div className="w-full text-center">Or Continue With</div>
           <Button
             onClick={async () => {
               await signIn("google");
             }}
-            className="w-full"
+            size={"lg"}
+            className="w-full text-lg font-semibold"
           >
-            <SiGoogle size={23} className="mr-3 inline-block" />
+            <SiGoogle size={30} className="mr-1.5 inline-block" />
             <span>Login With Goggle</span>
           </Button>
 
@@ -55,9 +62,10 @@ export default function SignIn() {
             onClick={() => {
               signIn("github");
             }}
-            className="w-full"
+            className="w-full text-lg font-semibold"
+            size={"lg"}
           >
-            <SiGithub size={24} className="mr-3 inline-block" />
+            <SiGithub size={30} className="mr-1.5 inline-block" />
             <span>Login With Github</span>
           </Button>
         </div>
