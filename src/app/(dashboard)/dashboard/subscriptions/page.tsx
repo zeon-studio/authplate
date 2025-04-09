@@ -47,7 +47,7 @@ export default async function Subscriptions() {
             <TabsTrigger value="expired">Expired Subscriptions</TabsTrigger>
           </TabsList>
           <TabsContent value="active">
-            <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
               {currentActiveSubscriptions?.data?.map((subscription) => (
                 <SubscriptionCard
                   key={subscription.id}
@@ -62,7 +62,7 @@ export default async function Subscriptions() {
             </div>
           </TabsContent>
           <TabsContent value="expired">
-            <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
               {expiredSubscriptions?.data?.map((subscription) => (
                 <SubscriptionCard
                   key={subscription.id}
