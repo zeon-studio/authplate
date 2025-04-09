@@ -105,7 +105,12 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
           </div>
 
           <div className="pt-10">
-            <Button disabled={isPending} type="submit" className="w-full ">
+            <Button
+              size={"lg"}
+              disabled={isPending}
+              type="submit"
+              className="w-full "
+            >
               {isPending ? (
                 <>
                   Verifying

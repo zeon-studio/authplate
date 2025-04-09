@@ -60,15 +60,14 @@ export default function RegisterForm({
       });
     },
     onSuccess() {
-      registerForm.reset();
       toast("Success!", {
         description: "User registered successfully.",
       });
-
       onOtpRequired({
         email: registerForm.getValues("email")!,
         password: registerForm.getValues("password")!,
       });
+      registerForm.reset();
     },
   });
 
