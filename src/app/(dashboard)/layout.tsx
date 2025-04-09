@@ -1,6 +1,5 @@
 import menu from "@/config/menu.json";
 import { icons } from "@/layouts/components/Icons";
-import { Separator } from "@/layouts/components/ui/separator";
 import NavLink from "@/layouts/partials/NavLink";
 
 const sidebarMenu = menu.dashboard;
@@ -11,8 +10,6 @@ export default async function DashboardLayout({
 }) {
   return (
     <>
-      <Separator className="bg-border/50" />
-
       {/* Sidebar */}
       <div className="flex">
         <aside className="max-w-64 w-full border-r border-r-border/50">
