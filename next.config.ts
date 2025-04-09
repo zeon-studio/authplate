@@ -4,7 +4,9 @@ module.exports = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
-    serverActions: true,
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
   },
   images: {
     remotePatterns: [

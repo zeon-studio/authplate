@@ -22,7 +22,7 @@ export default function Register() {
       <div className="text-center mb-12">
         <h1 className="h2 font-semibold">Create an account</h1>
         <p className="text-center">
-          Already have an account? Sign in?{" "}
+          Already have an account?{" "}
           <Link
             className="font-semibold text-primary cursor-pointer"
             href="/signin"
