@@ -2,9 +2,10 @@
 
 module.exports = {
   reactStrictMode: true,
-  basePath: "",
-  trailingSlash: false,
   output: "standalone",
+  experimental: {
+    serverActions: true,
+  },
   images: {
     remotePatterns: [
       {

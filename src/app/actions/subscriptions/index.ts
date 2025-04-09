@@ -1,4 +1,4 @@
-import { db } from "@/lib/prisma";
+import db from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 import { safeAction } from "..";
 

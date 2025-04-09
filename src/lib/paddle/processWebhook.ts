@@ -1,5 +1,5 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import { db } from "@/lib/prisma";
+import db from "@/lib/prisma";
 import {
   EventEntity,
   EventName,
@@ -19,16 +19,12 @@ import {
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
-    console.log({
-      type: eventData.eventType,
-      data: eventData.data,
-    });
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
         this.subscriptionCreated(eventData);
         break;
       case EventName.TransactionCompleted:
-        this.lifetimeSubscriptionCreated(eventData);
+        // this.lifetimeSubscriptionCreated(eventData);
         this.paymentCreated(eventData);
         break;
       case EventName.SubscriptionUpdated:
@@ -130,9 +126,10 @@ export class ProcessWebhook {
         currencyCode,
       } = eventData.data;
 
-      const { email: userEmail } = customData as {
-        email: string;
-      };
+      const { email: userEmail } =
+        (customData as {
+          email: string;
+        }) || {};
 
       const user = await this.getUserEmail(userEmail);
 
@@ -177,9 +174,10 @@ export class ProcessWebhook {
         items,
       } = eventData.data;
 
-      const { email: userEmail } = customData as {
-        email: string;
-      };
+      const { email: userEmail } =
+        (customData as {
+          email: string;
+        }) || {};
 
       const user = await this.getUserEmail(userEmail);
 
@@ -269,11 +267,17 @@ export class ProcessWebhook {
   }
 
   async getUserEmail(email: string) {
-    return await db.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
+    try {
+      const user = await db.user.findUnique({
+        where: {
+          email: email,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getBillingCycle(

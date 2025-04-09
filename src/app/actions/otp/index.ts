@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { db } from "@/lib/prisma";
+import db from "@/lib/prisma";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import { OtpVerification } from "@prisma/client";
 import { Result, safeAction } from "..";
