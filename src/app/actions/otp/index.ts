@@ -62,6 +62,9 @@ export const verifyOtp = async (
     const data = Object.fromEntries(formData);
     otpSchema.parse(data);
     // Find user by email
+
+    console.log({ data });
+
     const user = await db.user.findUnique({
       where: { email: data.email as string },
     });
