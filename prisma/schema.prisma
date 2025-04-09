@@ -33,6 +33,7 @@ enum BillingCycle  {
   DAILY
   WEEKLY
   MONTHLY
+  QUARTERLY
   ANNUAL
   LIFETIME
 }
