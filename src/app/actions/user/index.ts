@@ -52,7 +52,7 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
     // send otp
     const formDataOtp = new FormData();
     formDataOtp.append("email", newUser.email!);
-    sendOtp(null, formDataOtp);
+    await sendOtp(null, formDataOtp);
     return newUser;
   });
 };

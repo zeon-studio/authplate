@@ -24,7 +24,7 @@ export class ProcessWebhook {
         this.subscriptionCreated(eventData);
         break;
       case EventName.TransactionCompleted:
-        // this.lifetimeSubscriptionCreated(eventData);
+        this.lifetimeSubscriptionCreated(eventData);
         this.paymentCreated(eventData);
         break;
       case EventName.SubscriptionUpdated:
