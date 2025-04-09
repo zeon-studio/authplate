@@ -14,7 +14,7 @@ export default async function Page() {
   return (
     <section className="section bg-light/30" id="pricing">
       <div className="container">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {PricingTier.map((tier) => {
             const priceIds = Object.values(tier.priceId);
 
@@ -23,7 +23,9 @@ export default async function Page() {
             );
 
             return (
-              <PricingCard isActive={isActive} key={tier.id} tier={tier} />
+              <div className="w-full h-full max-lg:max-w-lg" key={tier.id}>
+                <PricingCard isActive={isActive} key={tier.id} tier={tier} />
+              </div>
             );
           })}
         </div>

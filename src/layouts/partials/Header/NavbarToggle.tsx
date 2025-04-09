@@ -7,7 +7,7 @@ export function NavbarToggle() {
       <Input id="nav-toggle" type="checkbox" className="hidden" />
       <Label
         htmlFor="nav-toggle"
-        className="order-3 cursor-pointer flex items-center lg:hidden text-text-dark  lg:order-1"
+        className="order-3 cursor-pointer flex items-center lg:hidden text-text-dark  lg:order-1 ml-4"
       >
         <svg
           id="show-button"

@@ -13,7 +13,7 @@ export default function PricingCard({
   return (
     <div
       key={tier.id}
-      className="relative overflow-hidden rounded-2xl border bg-background p-6 shadow-sm transition-all hover:shadow-md flex flex-col justify-between"
+      className="relative overflow-hidden rounded-2xl border bg-background p-6 shadow-sm transition-all hover:shadow-md flex flex-col justify-between h-full"
     >
       <div className="space-y-5">
         <div className="space-y-2">
@@ -40,7 +40,7 @@ export default function PricingCard({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="text-sm">{feature}</span>
+              <span className="text-base">{feature}</span>
             </li>
           ))}
         </ul>
@@ -48,7 +48,11 @@ export default function PricingCard({
 
       <div className="mt-6">
         {isActive && (
-          <Button className="w-full" disabled>
+          <Button
+            className="w-full !text-base h-auto !py-2.5"
+            size="lg"
+            disabled
+          >
             Active plan
           </Button>
         )}
@@ -62,7 +66,7 @@ export default function PricingCard({
                 : tier.priceId[BillingCycle.MONTHLY])
             }
             className={buttonVariants({
-              className: "w-full",
+              className: "w-full !text-base h-auto !py-2.5",
               size: "lg",
             })}
           >

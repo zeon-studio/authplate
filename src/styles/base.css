@@ -1,5 +1,5 @@
 html {
-  @apply text-base-sm md:text-base;
+  @apply text-base;
 }
 
 body {

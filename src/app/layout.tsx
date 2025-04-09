@@ -27,7 +27,7 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   return (
-    <html suppressHydrationWarning={true} lang="en">
+    <html suppressHydrationWarning={true} lang="en" className="text-base">
       <head>
         {/* responsive meta */}
         <meta
@@ -54,7 +54,7 @@ export default async function RootLayout({
 
       <body
         suppressHydrationWarning={true}
-        className={`${fontPrimary.variable} ${fontSecondary.variable}`}
+        className={`${fontPrimary.variable} ${fontSecondary.variable} text-base`}
       >
         <TwSizeIndicator />
         <Providers session={session}>
