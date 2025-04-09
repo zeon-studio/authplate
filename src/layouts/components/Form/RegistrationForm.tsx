@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import PasswordInput from "../PasswordInput";
 
 const defaultValues =
   process.env.NODE_ENV === "development"
@@ -140,7 +141,7 @@ export default function RegisterForm({
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     type="password"
                     placeholder="Enter password"
                     {...field}
@@ -162,7 +163,7 @@ export default function RegisterForm({
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <PasswordInput type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import PasswordInput from "../PasswordInput";
 
 const defaultValues =
   process.env.NODE_ENV === "production"
@@ -95,7 +96,7 @@ const LoginForm = ({
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     type="password"
                     placeholder="Enter password"
                     {...field}

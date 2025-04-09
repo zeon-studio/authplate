@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
@@ -56,7 +57,7 @@ export default function UpdatePasswordForm() {
             <FormItem>
               <FormLabel>Current Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" {...field} />
+                <PasswordInput placeholder="Current password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,7 +70,11 @@ export default function UpdatePasswordForm() {
             <FormItem>
               <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" {...field} />
+                <PasswordInput
+                  placeholder="New Password"
+                  type="password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,7 +87,11 @@ export default function UpdatePasswordForm() {
             <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" {...field} />
+                <Input
+                  placeholder="Confirm new password"
+                  type="password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
