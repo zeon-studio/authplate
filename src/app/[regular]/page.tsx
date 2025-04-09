@@ -3,6 +3,7 @@ import { getSinglePage } from "@/lib/contentParser";
 import PageHeader from "@/partials/PageHeader";
 import SeoMeta from "@/partials/SeoMeta";
 import { RegularPage } from "@/types";
+import { notFound } from "next/navigation";
 
 // remove dynamicParams
 export const dynamicParams = false;
@@ -29,6 +30,10 @@ const RegularPages = async ({
   const data = regularData.filter(
     (page: RegularPage) => page.slug === regular,
   )[0];
+
+  if (!data) {
+    return notFound();
+  }
   const { frontmatter, content } = data;
   const { title, meta_title, description, image } = frontmatter;
 
