@@ -6,7 +6,7 @@ const OtpVerificationSchema = new Schema({
   expires: { type: Date, required: true },
 });
 
-const OtpVerificationModel =
+const OtpVerification =
   models.OtpVerification || model("OtpVerification", OtpVerificationSchema);
 
-export default OtpVerificationModel;
+export default OtpVerification;

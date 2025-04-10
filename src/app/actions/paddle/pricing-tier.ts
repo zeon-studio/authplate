@@ -1,9 +1,4 @@
-export const BillingCycle = {
-  DAILY: "daily",
-  MONTHLY: "monthly",
-  YEARLY: "yearly",
-  LIFETIME: "lifetime",
-};
+import { BillingCycle } from "@/models/Subscription/type";
 
 export const PricingTier = [
   {

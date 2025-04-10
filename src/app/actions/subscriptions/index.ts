@@ -1,15 +1,18 @@
-import PaymentModel from "@/models/Payment";
-import SubscriptionModel from "@/models/Subscription";
+import { connectToMongoDB } from "@/lib/mongoose";
+import Payment from "@/models/Payment";
+import Subscription from "@/models/Subscription";
+import { BillingCycle } from "@/models/Subscription/type";
 import { safeAction } from "..";
 
 export function getActiveSubscriptions(userId: string) {
   return safeAction(async () => {
+    await connectToMongoDB();
     const currentDate = new Date();
-    return await SubscriptionModel.find({
+    return await Subscription.find({
       userId,
       $or: [
         {
-          status: "LIFETIME",
+          status: BillingCycle.LIFETIME,
         },
         {
           $and: [
@@ -32,8 +35,9 @@ export function getActiveSubscriptions(userId: string) {
 
 export function getExpiredSubscriptions(userId: string) {
   return safeAction(async () => {
+    await connectToMongoDB();
     const currentDate = new Date();
-    return await SubscriptionModel.find({
+    return await Subscription.find({
       userId,
       nextBillingDate: {
         $lt: currentDate,
@@ -45,7 +49,8 @@ export function getExpiredSubscriptions(userId: string) {
 // get user payment history
 export function getUserPaymentHistory(userId: string) {
   return safeAction(async () => {
-    return await PaymentModel.find({
+    await connectToMongoDB();
+    return await Payment.find({
       userId,
     })
       .populate({

@@ -1,8 +1,10 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import connectMongo from "@/lib/mongoose";
-import PaymentModel from "@/models/Payment";
-import SubscriptionModel from "@/models/Subscription";
-import UserModel from "@/models/User";
+import { connectToMongoDB } from "@/lib/mongoose";
+import Payment from "@/models/Payment";
+import { PaymentStatus } from "@/models/Payment/type";
+import Subscription from "@/models/Subscription";
+import { BillingCycle, SubscriptionStatus } from "@/models/Subscription/type";
+import User from "@/models/User";
 import {
   EventEntity,
   EventName,
@@ -15,61 +17,24 @@ import {
   TransactionItemNotification,
 } from "@paddle/paddle-node-sdk";
 
-// Replace invalid `db` usage with Mongoose models
-const subscriptionsCollection = SubscriptionModel;
-const usersCollection = UserModel;
-const paymentsCollection = PaymentModel;
-
-// Added missing definitions for `SubscriptionStatus`, `BillingCycle`, and `PaymentStatus`
-
-const SubscriptionStatus = {
-  ACTIVE: "active",
-  CANCELED: "canceled",
-  PAST_DUE: "past_due",
-  TRIALING: "trialing",
-  PAUSED: "paused",
-  LIFETIME: "lifetime",
-};
-
-// Adjusted `BillingCycle` logic to ensure correct type usage
-const BillingCycle = {
-  DAILY: "daily",
-  MONTHLY: "monthly",
-  YEARLY: "yearly",
-  LIFETIME: "lifetime",
-} as const;
-
-type BillingCycleType = keyof typeof BillingCycle;
-
-const PaymentStatus = {
-  COMPLETED: "completed",
-  PENDING: "pending",
-  FAILED: "failed",
-};
-
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
-    await connectMongo();
-    console.log("Processing event:", eventData.eventType);
+    await connectToMongoDB();
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
-        console.log("Handling subscription created event");
         this.subscriptionCreated(eventData);
         break;
       case EventName.TransactionCompleted:
-        console.log("Handling transaction completed event");
         this.lifetimeSubscriptionCreated(eventData);
         this.paymentCreated(eventData);
         break;
       case EventName.SubscriptionUpdated:
-        console.log("Handling subscription updated event");
         this.subscriptionUpdated(eventData);
         break;
     }
   }
 
   async subscriptionUpdated(eventData: SubscriptionUpdatedEvent) {
-    console.log("Starting subscription update process");
     const {
       id: subscriptionId,
       status,
@@ -79,19 +44,16 @@ export class ProcessWebhook {
       scheduledChange,
     } = eventData.data;
 
-    console.log("Finding subscription with orderId:", subscriptionId);
-    const subscription = await subscriptionsCollection.findOne({
+    const subscription = await Subscription.findOne({
       orderId: subscriptionId,
     });
 
     if (!subscription || scheduledChange?.action === "cancel") {
-      console.log("Subscription not found or scheduled for cancellation");
       return;
     }
 
     if (scheduledChange?.action) {
-      console.log("Processing scheduled change:", scheduledChange.action);
-      await subscriptionsCollection.updateOne(
+      await Subscription.updateOne(
         { id: subscription.id },
         {
           $set: {
@@ -102,8 +64,7 @@ export class ProcessWebhook {
       return;
     }
 
-    console.log("Updating subscription details");
-    await subscriptionsCollection.updateOne(
+    await Subscription.updateOne(
       { orderId: subscriptionId },
       {
         $set: {
@@ -120,7 +81,6 @@ export class ProcessWebhook {
   }
 
   async lifetimeSubscriptionCreated(eventData: TransactionCompletedEvent) {
-    console.log("Starting lifetime subscription creation process");
     const {
       id: transactionId,
       customData,
@@ -129,7 +89,6 @@ export class ProcessWebhook {
     } = eventData.data;
 
     if (subscriptionId) {
-      console.log("Subscription ID exists, skipping lifetime creation");
       return;
     }
 
@@ -137,15 +96,12 @@ export class ProcessWebhook {
       email: string;
     };
 
-    console.log("Finding user with email:", userEmail);
     const user = await this.getUserEmail(userEmail);
     if (!user) {
-      console.log("User not found");
       return;
     }
 
-    console.log("Creating lifetime subscription");
-    await subscriptionsCollection.insertOne({
+    await Subscription.insertOne({
       userId: user!.id,
       planId: this.getPlanId(items)!,
       status: SubscriptionStatus.LIFETIME,
@@ -173,22 +129,18 @@ export class ProcessWebhook {
           email: string;
         }) || {};
 
-      console.log("Finding user with email:", userEmail);
       const user = await this.getUserEmail(userEmail);
 
       if (!user) {
-        console.log("User not found");
         return;
       }
 
-      console.log("Calculating payment amounts");
       const earnings = +(details?.totals?.total ?? "0") / 100;
       const taxAmount = +(details?.totals?.tax ?? "0") / 100;
       const processingFee = +(details?.totals?.fee ?? "0") / 100;
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
-      console.log("Creating payment record");
-      await paymentsCollection.insertOne({
+      await Payment.insertOne({
         userId: user!.id,
         totalAmount: totalAmount,
         taxAmount: taxAmount,
@@ -208,7 +160,6 @@ export class ProcessWebhook {
 
   async subscriptionCreated(eventData: SubscriptionCreatedEvent) {
     try {
-      console.log("Starting subscription creation process");
       const {
         id: subscriptionId,
         transactionId,
@@ -224,16 +175,13 @@ export class ProcessWebhook {
           email: string;
         }) || {};
 
-      console.log("Finding user with email:", userEmail);
       const user = await this.getUserEmail(userEmail);
 
       if (!user) {
-        console.log("User not found");
         return;
       }
 
-      console.log("Creating subscription record");
-      await subscriptionsCollection.insertOne({
+      await Subscription.insertOne({
         userId: user!.id,
         planId: this.getPlanId(items)!,
         status: this.getSubscriptionStatus(eventData.data.status),
@@ -318,7 +266,7 @@ export class ProcessWebhook {
   async getUserEmail(email: string) {
     try {
       console.log("Finding user by email:", email);
-      const user = await usersCollection.findOne({
+      const user = await User.findOne({
         email: email,
       });
 
@@ -328,25 +276,24 @@ export class ProcessWebhook {
     }
   }
 
-  // Updated logic to use `BillingCycleType`
+  // Updated logic to use `BillingCycle`
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
-  ): BillingCycleType {
+  ): BillingCycle {
     console.log("Getting billing cycle");
     const currentId = this.getPlanId(items);
 
     if (!currentId) {
       console.log("No plan ID found, defaulting to daily billing");
-      return "DAILY";
+      return BillingCycle.DAILY;
     }
 
-    const cycle = PricingTier.reduce<BillingCycleType>((acc, tier) => {
+    const cycle = PricingTier.reduce<BillingCycle>((acc, tier) => {
       const ids = Object.entries(tier.priceId as Record<string, unknown>);
       const found = ids.find(([, id]) => id === currentId);
-      return found ? (found[0] as BillingCycleType) : acc;
-    }, "DAILY");
+      return found ? (found[0] as BillingCycle) : acc;
+    }, BillingCycle.DAILY);
 
-    console.log("Determined billing cycle:", cycle);
     return cycle;
   }
 }

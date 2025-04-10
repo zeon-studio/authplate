@@ -1,6 +1,7 @@
 "use server";
 import "server-only";
 
+import { connectToMongoDB } from "@/lib/mongoose";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import OtpVerificationModel from "@/models/OtpVerification";
 import UserModel from "@/models/User";
@@ -14,6 +15,7 @@ export const sendOtp = async (
   formData: FormData,
 ) => {
   return safeAction<OtpVerification>(async () => {
+    await connectToMongoDB();
     const data = Object.fromEntries(formData);
 
     // Find user by email
@@ -49,11 +51,10 @@ export const verifyOtp = async (
   formData: FormData,
 ) => {
   return safeAction<OtpVerification>(async () => {
+    await connectToMongoDB();
     const data = Object.fromEntries(formData);
     otpSchema.parse(data);
     // Find user by email
-
-    console.log({ data });
 
     const user = await UserModel.findOne({ email: data.email as string });
 

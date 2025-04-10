@@ -1,16 +1,15 @@
 "use server";
 import { safeAction } from "@/app/actions";
-import connectMongo from "@/lib/mongoose";
+import { connectToMongoDB } from "@/lib/mongoose";
 import SubscriptionModel from "@/models/Subscription";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { getPaddleInstance } from "./getPaddleInstance";
 
-await connectMongo();
-
 export async function cancelSubscription(subscriptionId: string) {
   const paddle = getPaddleInstance();
   return await safeAction(async () => {
+    await connectToMongoDB();
     const response = await paddle.subscriptions.cancel(subscriptionId, {
       effectiveFrom: "next_billing_period",
     });

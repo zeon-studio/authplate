@@ -12,6 +12,6 @@ const UserSchema = new Schema({
   provider: { type: String },
 });
 
-const UserModel = models?.User || model("User", UserSchema);
+const User = models?.User || model("User", UserSchema);
 
-export default UserModel;
+export default User;

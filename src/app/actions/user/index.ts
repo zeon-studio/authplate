@@ -2,6 +2,7 @@
 import "server-only";
 
 import { signIn } from "@/lib/auth";
+import { connectToMongoDB } from "@/lib/mongoose";
 import {
   loginUserSchema,
   registerUserSchema,
@@ -10,7 +11,7 @@ import {
   updateUserSchema,
 } from "@/lib/validation/user.schema";
 import OtpVerificationModel from "@/models/OtpVerification";
-import UserModel from "@/models/User";
+import User from "@/models/User";
 import { OtpVerification } from "@/types";
 import bcryptjs from "bcryptjs";
 import { AuthError, CredentialsSignin } from "next-auth";
@@ -18,18 +19,18 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { Result, safeAction } from "..";
 import { sendOtp } from "../otp";
 import { mailSender } from "../sender";
-import { User } from "./types";
+import { User as TUser } from "./types";
 
 // register user
-export const createUser = async (state: Result<User>, formData: FormData) => {
-  return safeAction<User>(async () => {
+export const createUser = async (state: Result<TUser>, formData: FormData) => {
+  return safeAction<TUser>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = registerUserSchema.parse({
       ...data,
       isTermsAccepted: data.isTermsAccepted === "on",
     });
 
-    const existingUser = await UserModel.findOne({
+    const existingUser = await User.findOne({
       email: validatedData.email!,
     });
 
@@ -39,7 +40,7 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
 
     const encryptedPassword = await bcryptjs.hash(validatedData.password, 10);
 
-    const newUser = await UserModel.create({
+    const newUser = await User.create({
       emailVerified: false,
       isTermsAccepted: true,
       email: validatedData.email,
@@ -88,11 +89,9 @@ export const verifyUserWithPassword = async ({
 }: {
   email: string;
   password: string;
-}): Promise<Result<User>> => {
+}): Promise<Result<TUser>> => {
   return safeAction(async () => {
-    const user = await UserModel.findOne({ email });
-
-    console.log(await UserModel.find());
+    const user = await User.findOne({ email });
 
     if (!user) {
       throw new Error("User not found");
@@ -115,11 +114,11 @@ export const verifyUserWithPassword = async ({
 };
 
 // update user
-export const updateUser = async (state: Result<User>, formData: FormData) => {
-  return safeAction<User>(async () => {
+export const updateUser = async (state: Result<TUser>, formData: FormData) => {
+  return safeAction<TUser>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updateUserSchema.parse(data);
-    const user = await UserModel.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       data.id as string,
       {
         firstName: validatedData.firstName,
@@ -140,7 +139,7 @@ export const forgotPassword = async (
   return safeAction<OtpVerification>(async () => {
     const data = Object.fromEntries(formData);
     // Find user by email
-    const user = await UserModel.findOne({ email: data.email as string });
+    const user = await User.findOne({ email: data.email as string });
     if (!user) {
       throw new Error("User not found");
     }
@@ -168,16 +167,16 @@ export const forgotPassword = async (
 
 // reset password
 export const resetPassword = async (
-  state: Result<User>,
+  state: Result<TUser>,
   formData: FormData,
 ) => {
-  return safeAction<User>(async () => {
+  return safeAction<TUser>(async () => {
     const data = Object.fromEntries(formData);
 
     resetPasswordSchema.parse(data);
 
     // Find user by email
-    const user = await UserModel.findOne({ email: data.email as string });
+    const user = await User.findOne({ email: data.email as string });
 
     if (!user) {
       throw new Error("User not found");
@@ -187,7 +186,7 @@ export const resetPassword = async (
     const encryptedPassword = await bcryptjs.hash(data.password as string, 10);
 
     // update password
-    await UserModel.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       user.id,
       {
         password: encryptedPassword,
@@ -201,13 +200,14 @@ export const resetPassword = async (
 
 // oauth login
 export const updatePassword = async (
-  state: Result<User>,
+  state: Result<TUser>,
   formData: FormData,
 ) => {
-  return safeAction<User>(async () => {
+  return safeAction<TUser>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updatePasswordSchema.parse(data);
-    const user = await UserModel.findOne({ email: validatedData.email });
+    await connectToMongoDB();
+    const user = await User.findOne({ email: validatedData.email });
 
     if (!user) {
       throw new Error("User not found");
@@ -228,7 +228,7 @@ export const updatePassword = async (
       10,
     );
 
-    await UserModel.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       user.id,
       {
         password: encryptedPassword,

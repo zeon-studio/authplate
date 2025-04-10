@@ -1,24 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Connection } from "mongoose";
 
-const connectMongo = async () => {
+let cachedConnection: Connection | null = null;
+
+export async function connectToMongoDB() {
+  if (cachedConnection) {
+    console.log("Using cached db connection");
+    return cachedConnection;
+  }
   try {
-    if (!process.env.DATABASE_URL) {
-      throw new Error(
-        "DATABASE_URL is not defined in the environment variables.",
-      );
-    }
-
-    if (mongoose.connection?.readyState === 0) {
-      console.log("Connecting to MongoDB...");
-      await mongoose.connect(process.env.DATABASE_URL);
-      console.log("Successfully connected to MongoDB.");
-    } else {
-      console.log("Already connected to MongoDB.");
-    }
+    // If no cached connection exists, establish a new connection to MongoDB
+    const cnx = await mongoose.connect(process.env.DATABASE_URL!);
+    // Cache the connection for future use
+    cachedConnection = cnx.connection;
+    // Log message indicating a new MongoDB connection is established
+    console.log("New mongodb connection established");
+    // Return the newly established connection
+    return cachedConnection;
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    // If an error occurs during connection, log the error and throw it
+    console.log(error);
     throw error;
   }
-};
-
-export default connectMongo;
+}
