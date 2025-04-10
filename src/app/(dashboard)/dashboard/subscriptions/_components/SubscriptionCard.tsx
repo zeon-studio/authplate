@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BillingCycle, Subscription, SubscriptionStatus } from "@prisma/client";
 import { CalendarClock, Clock } from "lucide-react";
 import { CancelSubscriptionDialog } from "./CancelSubscritpion";
 
@@ -21,7 +20,7 @@ function formatDate(date: string) {
 export default function SubscriptionCard({
   subscription,
 }: {
-  subscription: Subscription;
+  subscription: any;
 }) {
   const currentDate = new Date();
   let paymentInfo = (
@@ -35,7 +34,7 @@ export default function SubscriptionCard({
   );
 
   if (
-    subscription.status === SubscriptionStatus.CANCELED &&
+    subscription.status === "CANCELED" &&
     subscription.lastBillingDate! < currentDate &&
     subscription.nextBillingDate! > currentDate
   ) {
@@ -62,9 +61,7 @@ export default function SubscriptionCard({
           </div>
           <Badge
             variant={
-              subscription.status === SubscriptionStatus.ACTIVE
-                ? "success"
-                : "destructive"
+              subscription.status === "ACTIVE" ? "success" : "destructive"
             }
             className="capitalize"
           >
@@ -86,7 +83,7 @@ export default function SubscriptionCard({
           {paymentInfo}
           {/* Cancel Subscription Button */}
           {subscription.status === "ACTIVE" &&
-            subscription.billingCycle !== BillingCycle.LIFETIME && (
+            subscription.billingCycle !== "LIFETIME" && (
               <div className="pt-2">
                 <CancelSubscriptionDialog
                   subscriptionId={subscription.orderId.toString()}

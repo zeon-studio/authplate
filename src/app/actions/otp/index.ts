@@ -1,9 +1,10 @@
 "use server";
 import "server-only";
 
-import db from "@/lib/prisma";
 import { otpSchema } from "@/lib/validation/otp.schema";
-import { OtpVerification } from "@prisma/client";
+import OtpVerificationModel from "@/models/OtpVerification";
+import UserModel from "@/models/User";
+import { OtpVerification } from "@/types";
 import { Result, safeAction } from "..";
 import { mailSender } from "../sender";
 
@@ -16,9 +17,7 @@ export const sendOtp = async (
     const data = Object.fromEntries(formData);
 
     // Find user by email
-    const user = await db.user.findUnique({
-      where: { email: data.email as string },
-    });
+    const user = await UserModel.findOne({ email: data.email as string });
 
     if (!user) {
       throw new Error("User not found");
@@ -32,20 +31,11 @@ export const sendOtp = async (
 
     // Create or update OTP verification record
     // Upsert OTP verification record
-    const verification = await db.otpVerification.upsert({
-      where: {
-        userId: user.id,
-      },
-      update: {
-        token: otp,
-        expires: expiresIn,
-      },
-      create: {
-        token: otp,
-        expires: expiresIn,
-        userId: user.id,
-      },
-    });
+    const verification = await OtpVerificationModel.findOneAndUpdate(
+      { userId: user.id },
+      { token: otp, expires: expiresIn },
+      { upsert: true, new: true },
+    );
 
     // Send OTP via email
     await mailSender.otpSender(user.email!, otp);
@@ -65,49 +55,33 @@ export const verifyOtp = async (
 
     console.log({ data });
 
-    const user = await db.user.findUnique({
-      where: { email: data.email as string },
-    });
+    const user = await UserModel.findOne({ email: data.email as string });
 
     if (!user) {
       throw new Error("User not found");
     }
 
     // Find OTP verification record
-    const verification = await db.otpVerification.findUnique({
-      where: {
-        userId: user.id,
-      },
+    const otpVerification = await OtpVerificationModel.findOne({
+      userId: user.id,
     });
-
-    if (!verification) {
-      throw new Error("OTP not found");
+    if (!otpVerification) {
+      throw new Error("OTP verification record not found");
     }
     // Check if OTP is expired
-    if (new Date(verification.expires) < new Date()) {
+    if (new Date(otpVerification.expires) < new Date()) {
       throw new Error("OTP expired");
     }
 
     // Check if OTP is correct
-    if (verification.token !== data.otp) {
+    if (otpVerification.token !== data.otp) {
       throw new Error("Invalid OTP");
     }
     // delete otp
-    await db.otpVerification.delete({
-      where: {
-        userId: user.id,
-      },
-    });
+    await OtpVerificationModel.deleteOne({ userId: user.id });
 
-    await db.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        emailVerified: true,
-      },
-    });
+    await UserModel.findByIdAndUpdate(user.id, { emailVerified: true });
 
-    return verification;
+    return otpVerification;
   });
 };

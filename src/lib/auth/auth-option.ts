@@ -1,4 +1,4 @@
-import db from "@/lib/prisma";
+import { findOrCreateUser } from "@/server/user-service";
 import { NextAuthConfig } from "next-auth";
 
 export const authOptions = {
@@ -18,23 +18,7 @@ export const authOptions = {
         return !!user.emailVerified;
       }
 
-      const dbUser = await db.user.upsert({
-        where: {
-          email: user.email!,
-        },
-        create: {
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          image: user.image,
-          emailVerified: true,
-          isTermsAccepted: true,
-          provider: account?.provider === "google" ? "GOOGLE" : "GITHUB",
-        },
-        update: {
-          emailVerified: true,
-        },
-      });
+      const dbUser = await findOrCreateUser(user, account);
 
       user.firstName = dbUser.firstName || "";
       user.lastName = dbUser.lastName || "";

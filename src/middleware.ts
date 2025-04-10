@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth/auth-option";
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 
+// Ensure no imports or logic related to mongoose or database operations are present
 const { auth } = NextAuth(authOptions);
 const publicUrl = ["/signin", "/signup", "/forgot-password", "/otp"];
 export default auth((req) => {

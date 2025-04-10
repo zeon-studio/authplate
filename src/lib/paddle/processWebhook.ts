@@ -1,5 +1,8 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import db from "@/lib/prisma";
+import connectMongo from "@/lib/mongoose";
+import PaymentModel from "@/models/Payment";
+import SubscriptionModel from "@/models/Subscription";
+import UserModel from "@/models/User";
 import {
   EventEntity,
   EventName,
@@ -11,14 +14,42 @@ import {
   TransactionCompletedEvent,
   TransactionItemNotification,
 } from "@paddle/paddle-node-sdk";
-import {
-  BillingCycle,
-  PaymentStatus,
-  SubscriptionStatus,
-} from "@prisma/client";
+
+// Replace invalid `db` usage with Mongoose models
+const subscriptionsCollection = SubscriptionModel;
+const usersCollection = UserModel;
+const paymentsCollection = PaymentModel;
+
+// Added missing definitions for `SubscriptionStatus`, `BillingCycle`, and `PaymentStatus`
+
+const SubscriptionStatus = {
+  ACTIVE: "active",
+  CANCELED: "canceled",
+  PAST_DUE: "past_due",
+  TRIALING: "trialing",
+  PAUSED: "paused",
+  LIFETIME: "lifetime",
+};
+
+// Adjusted `BillingCycle` logic to ensure correct type usage
+const BillingCycle = {
+  DAILY: "daily",
+  MONTHLY: "monthly",
+  YEARLY: "yearly",
+  LIFETIME: "lifetime",
+} as const;
+
+type BillingCycleType = keyof typeof BillingCycle;
+
+const PaymentStatus = {
+  COMPLETED: "completed",
+  PENDING: "pending",
+  FAILED: "failed",
+};
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
+    await connectMongo();
     console.log("Processing event:", eventData.eventType);
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
@@ -49,10 +80,8 @@ export class ProcessWebhook {
     } = eventData.data;
 
     console.log("Finding subscription with orderId:", subscriptionId);
-    const subscription = await db.subscription.findUnique({
-      where: {
-        orderId: subscriptionId,
-      },
+    const subscription = await subscriptionsCollection.findOne({
+      orderId: subscriptionId,
     });
 
     if (!subscription || scheduledChange?.action === "cancel") {
@@ -62,32 +91,32 @@ export class ProcessWebhook {
 
     if (scheduledChange?.action) {
       console.log("Processing scheduled change:", scheduledChange.action);
-      await db.subscription.update({
-        where: {
-          id: subscription.id,
+      await subscriptionsCollection.updateOne(
+        { id: subscription.id },
+        {
+          $set: {
+            status: this.getSubscriptionStatus(scheduledChange),
+          },
         },
-        data: {
-          status: this.getSubscriptionStatus(scheduledChange),
-        },
-      });
+      );
       return;
     }
 
     console.log("Updating subscription details");
-    await db.subscription.update({
-      where: {
-        orderId: subscriptionId,
+    await subscriptionsCollection.updateOne(
+      { orderId: subscriptionId },
+      {
+        $set: {
+          status: this.getSubscriptionStatus(status),
+          nextBillingDate: nextBilledAt,
+          trialEndsAt:
+            status === "trialing" ? currentBillingPeriod?.endsAt : null,
+          planId: this.getPlanId(items)!,
+          planName: this.getPlanName(items)!,
+          lastBillingDate: items[0].previouslyBilledAt,
+        },
       },
-      data: {
-        status: this.getSubscriptionStatus(status),
-        nextBillingDate: nextBilledAt,
-        trialEndsAt:
-          status === "trialing" ? currentBillingPeriod?.endsAt : null,
-        planId: this.getPlanId(items)!,
-        planName: this.getPlanName(items)!,
-        lastBillingDate: items[0].previouslyBilledAt,
-      },
-    });
+    );
   }
 
   async lifetimeSubscriptionCreated(eventData: TransactionCompletedEvent) {
@@ -116,16 +145,14 @@ export class ProcessWebhook {
     }
 
     console.log("Creating lifetime subscription");
-    await db.subscription.create({
-      data: {
-        userId: user!.id,
-        planId: this.getPlanId(items)!,
-        status: SubscriptionStatus.LIFETIME,
-        orderId: subscriptionId || transactionId,
-        planName: this.getPlanName(items)!,
-        startDate: new Date(),
-        billingCycle: BillingCycle.LIFETIME,
-      },
+    await subscriptionsCollection.insertOne({
+      userId: user!.id,
+      planId: this.getPlanId(items)!,
+      status: SubscriptionStatus.LIFETIME,
+      orderId: subscriptionId || transactionId,
+      planName: this.getPlanName(items)!,
+      startDate: new Date(),
+      billingCycle: BillingCycle.LIFETIME,
     });
   }
 
@@ -161,20 +188,18 @@ export class ProcessWebhook {
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
       console.log("Creating payment record");
-      await db.payment.create({
-        data: {
-          userId: user!.id,
-          totalAmount: totalAmount,
-          taxAmount: taxAmount,
-          processingFee: processingFee,
-          earnings: earnings,
-          currency: currencyCode,
-          paymentMethod: "paddle",
-          status: PaymentStatus.COMPLETED,
-          orderId: subscriptionId || transactionId,
-          transactionId: transactionId,
-          discountId: discountId ?? null,
-        },
+      await paymentsCollection.insertOne({
+        userId: user!.id,
+        totalAmount: totalAmount,
+        taxAmount: taxAmount,
+        processingFee: processingFee,
+        earnings: earnings,
+        currency: currencyCode,
+        paymentMethod: "paddle",
+        status: PaymentStatus.COMPLETED,
+        orderId: subscriptionId || transactionId,
+        transactionId: transactionId,
+        discountId: discountId ?? null,
       });
     } catch (error) {
       console.log("Error creating payment:", error);
@@ -208,23 +233,21 @@ export class ProcessWebhook {
       }
 
       console.log("Creating subscription record");
-      await db.subscription.create({
-        data: {
-          userId: user!.id,
-          planId: this.getPlanId(items)!,
-          status: this.getSubscriptionStatus(eventData.data.status),
-          lastBillingDate: firstBilledAt!,
-          orderId: subscriptionId || transactionId,
-          canceledAt: null,
-          startDate: currentBillingPeriod?.startsAt || firstBilledAt!,
-          trialEndsAt:
-            eventData.data.status === "trialing"
-              ? currentBillingPeriod?.endsAt
-              : null,
-          nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
-          planName: this.getPlanName(items)!,
-          billingCycle: this.getBillingCycle(items),
-        },
+      await subscriptionsCollection.insertOne({
+        userId: user!.id,
+        planId: this.getPlanId(items)!,
+        status: this.getSubscriptionStatus(eventData.data.status),
+        lastBillingDate: firstBilledAt!,
+        orderId: subscriptionId || transactionId,
+        canceledAt: null,
+        startDate: currentBillingPeriod?.startsAt || firstBilledAt!,
+        trialEndsAt:
+          eventData.data.status === "trialing"
+            ? currentBillingPeriod?.endsAt
+            : null,
+        nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
+        planName: this.getPlanName(items)!,
+        billingCycle: this.getBillingCycle(items),
       });
     } catch (error) {
       console.log("Error creating subscription:", error);
@@ -295,10 +318,8 @@ export class ProcessWebhook {
   async getUserEmail(email: string) {
     try {
       console.log("Finding user by email:", email);
-      const user = await db.user.findUnique({
-        where: {
-          email: email,
-        },
+      const user = await usersCollection.findOne({
+        email: email,
       });
 
       return user;
@@ -307,23 +328,23 @@ export class ProcessWebhook {
     }
   }
 
+  // Updated logic to use `BillingCycleType`
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
-  ): BillingCycle {
+  ): BillingCycleType {
     console.log("Getting billing cycle");
     const currentId = this.getPlanId(items);
 
     if (!currentId) {
       console.log("No plan ID found, defaulting to daily billing");
-      return BillingCycle.DAILY;
+      return "DAILY";
     }
 
-    const cycle = PricingTier.reduce<BillingCycle>((acc, tier) => {
-      const ids = Object.entries(tier.priceId);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const found = ids.find(([_, id]) => id === currentId);
-      return found ? (found[0] as BillingCycle) : acc;
-    }, BillingCycle.DAILY);
+    const cycle = PricingTier.reduce<BillingCycleType>((acc, tier) => {
+      const ids = Object.entries(tier.priceId as Record<string, unknown>);
+      const found = ids.find(([, id]) => id === currentId);
+      return found ? (found[0] as BillingCycleType) : acc;
+    }, "DAILY");
 
     console.log("Determined billing cycle:", cycle);
     return cycle;

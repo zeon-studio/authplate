@@ -12,13 +12,7 @@ export type RegularPage = {
   content: string;
   slug?: string;
 };
-// export type Prices = {
-//   product: string | Stripe.Product | Stripe.DeletedProduct;
-//   id: string;
-//   interval: Stripe.Price.Recurring.Interval | undefined;
-//   amount: number;
-//   currency: string;
-// };
+
 export type Product = {
   name: string;
   id: string;
@@ -111,33 +105,6 @@ export type Button = {
   link: string;
 };
 
-interface PricingCard {
-  name: string;
-  content: string;
-  currency: string;
-  monthly_price: string;
-  yearly_price: string;
-  featured: boolean;
-  button_label: string;
-  button_link: string;
-  services: string[];
-}
-
-type Package = "monthly" | "yearly";
-
-interface Pricing {
-  title: string;
-  description: string;
-  offer: string;
-  monthly_yearly_toggle: Package;
-  billing: {
-    monthly: string;
-    annually: string;
-  };
-  pricing_card: PricingCard[];
-  draft: boolean;
-}
-
 export type SubscriptionData = {
   subscription_id: string;
   product_id: string | Stripe.Product | Stripe.DeletedProduct;
@@ -146,3 +113,19 @@ export type SubscriptionData = {
   subscription_item_id: string;
   subscription_interval: string;
 };
+
+export interface OtpVerification {
+  userId: string;
+  token: string;
+  expires: Date;
+}
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      mongoClient: MongoClient | undefined;
+    }
+  }
+}
+
+export {};

@@ -2,7 +2,6 @@
 import "server-only";
 
 import { signIn } from "@/lib/auth";
-import db from "@/lib/prisma";
 import {
   loginUserSchema,
   registerUserSchema,
@@ -10,13 +9,16 @@ import {
   updatePasswordSchema,
   updateUserSchema,
 } from "@/lib/validation/user.schema";
-import { OtpVerification, User } from "@prisma/client";
+import OtpVerificationModel from "@/models/OtpVerification";
+import UserModel from "@/models/User";
+import { OtpVerification } from "@/types";
 import bcryptjs from "bcryptjs";
 import { AuthError, CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { Result, safeAction } from "..";
 import { sendOtp } from "../otp";
 import { mailSender } from "../sender";
+import { User } from "./types";
 
 // register user
 export const createUser = async (state: Result<User>, formData: FormData) => {
@@ -27,8 +29,8 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
       isTermsAccepted: data.isTermsAccepted === "on",
     });
 
-    const existingUser = await db.user.findUnique({
-      where: { email: validatedData.email! },
+    const existingUser = await UserModel.findOne({
+      email: validatedData.email!,
     });
 
     if (existingUser) {
@@ -37,16 +39,14 @@ export const createUser = async (state: Result<User>, formData: FormData) => {
 
     const encryptedPassword = await bcryptjs.hash(validatedData.password, 10);
 
-    const newUser = await db.user.create({
-      data: {
-        emailVerified: false,
-        isTermsAccepted: true,
-        email: validatedData.email,
-        firstName: validatedData.firstName,
-        lastName: validatedData.lastName,
-        password: encryptedPassword,
-        provider: "CREDENTIALS",
-      },
+    const newUser = await UserModel.create({
+      emailVerified: false,
+      isTermsAccepted: true,
+      email: validatedData.email,
+      firstName: validatedData.firstName,
+      lastName: validatedData.lastName,
+      password: encryptedPassword,
+      provider: "CREDENTIALS",
     });
 
     // send otp
@@ -90,9 +90,9 @@ export const verifyUserWithPassword = async ({
   password: string;
 }): Promise<Result<User>> => {
   return safeAction(async () => {
-    const user = await db.user.findUnique({
-      where: { email },
-    });
+    const user = await UserModel.findOne({ email });
+
+    console.log(await UserModel.find());
 
     if (!user) {
       throw new Error("User not found");
@@ -119,16 +119,15 @@ export const updateUser = async (state: Result<User>, formData: FormData) => {
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updateUserSchema.parse(data);
-    const user = await db.user.update({
-      where: {
-        id: data.id as string,
-      },
-      data: {
+    const user = await UserModel.findByIdAndUpdate(
+      data.id as string,
+      {
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
         image: validatedData.image,
       },
-    });
+      { new: true },
+    );
     return user;
   });
 };
@@ -141,9 +140,7 @@ export const forgotPassword = async (
   return safeAction<OtpVerification>(async () => {
     const data = Object.fromEntries(formData);
     // Find user by email
-    const user = await db.user.findUnique({
-      where: { email: data.email as string },
-    });
+    const user = await UserModel.findOne({ email: data.email as string });
     if (!user) {
       throw new Error("User not found");
     }
@@ -153,20 +150,16 @@ export const forgotPassword = async (
     const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
     // Create or update OTP verification record
     // Upsert OTP verification record
-    const verification = await db.otpVerification.upsert({
-      where: {
-        userId: user.id,
+    const verification = await OtpVerificationModel.findOneAndUpdate(
+      { userId: user.id },
+      {
+        $set: {
+          token: otp,
+          expires: expiresIn,
+        },
       },
-      update: {
-        token: otp,
-        expires: expiresIn,
-      },
-      create: {
-        token: otp,
-        expires: expiresIn,
-        userId: user.id,
-      },
-    });
+      { upsert: true, new: true },
+    );
     // Send OTP via email
     await mailSender.otpSender(user.email!, otp);
     return verification;
@@ -184,9 +177,7 @@ export const resetPassword = async (
     resetPasswordSchema.parse(data);
 
     // Find user by email
-    const user = await db.user.findUnique({
-      where: { email: data.email as string },
-    });
+    const user = await UserModel.findOne({ email: data.email as string });
 
     if (!user) {
       throw new Error("User not found");
@@ -196,14 +187,13 @@ export const resetPassword = async (
     const encryptedPassword = await bcryptjs.hash(data.password as string, 10);
 
     // update password
-    await db.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
+    await UserModel.findByIdAndUpdate(
+      user.id,
+      {
         password: encryptedPassword,
       },
-    });
+      { new: true },
+    );
 
     return user;
   });
@@ -217,9 +207,7 @@ export const updatePassword = async (
   return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updatePasswordSchema.parse(data);
-    const user = await db.user.findUnique({
-      where: { email: validatedData.email },
-    });
+    const user = await UserModel.findOne({ email: validatedData.email });
 
     if (!user) {
       throw new Error("User not found");
@@ -240,14 +228,13 @@ export const updatePassword = async (
       10,
     );
 
-    await db.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
+    await UserModel.findByIdAndUpdate(
+      user.id,
+      {
         password: encryptedPassword,
       },
-    });
+      { new: true },
+    );
 
     return user;
   });

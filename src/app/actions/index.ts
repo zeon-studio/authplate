@@ -1,6 +1,5 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
 import { CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
@@ -78,38 +77,6 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
           details: formatZodErrors(error),
         },
       };
-    }
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (error.code) {
-        case "P2002": // Unique constraint violation
-          return {
-            success: false,
-            error: {
-              type: "UNIQUE_CONSTRAINT",
-              message: "A record with this unique identifier already exists",
-              details: { field: error.meta?.target },
-            },
-          };
-        case "P2003": // Foreign key constraint violation
-          return {
-            success: false,
-            error: {
-              type: "FOREIGN_KEY_CONSTRAINT",
-              message: "Related record not found",
-              details: { field: error.meta?.field_name },
-            },
-          };
-        case "P2025": // Record not found
-          return {
-            success: false,
-            error: {
-              type: "NOT_FOUND",
-              message: "Record not found",
-              details: error.meta,
-            },
-          };
-      }
     }
 
     if (error instanceof CredentialsSignin) {

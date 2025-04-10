@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,17 +22,40 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/actions/*": ["./src/app/actions/*"],
-      "@/components/*": ["./src/layouts/components/*"],
-      "@/layouts/*": ["./src/layouts/*"],
-      "@/helpers/*": ["./src/layouts/helpers/*"],
-      "@/partials/*": ["./src/layouts/partials/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/shortcodes/*": ["./src/layouts/shortcodes/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/actions/*": [
+        "./src/app/actions/*"
+      ],
+      "@/components/*": [
+        "./src/layouts/components/*"
+      ],
+      "@/layouts/*": [
+        "./src/layouts/*"
+      ],
+      "@/helpers/*": [
+        "./src/layouts/helpers/*"
+      ],
+      "@/partials/*": [
+        "./src/layouts/partials/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/shortcodes/*": [
+        "./src/layouts/shortcodes/*"
+      ]
     },
-    "target": "ES2024"
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

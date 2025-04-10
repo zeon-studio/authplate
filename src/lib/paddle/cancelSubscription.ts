@@ -1,10 +1,12 @@
 "use server";
 import { safeAction } from "@/app/actions";
-import db from "@/lib/prisma";
-import { SubscriptionStatus } from "@prisma/client";
+import connectMongo from "@/lib/mongoose";
+import SubscriptionModel from "@/models/Subscription";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { getPaddleInstance } from "./getPaddleInstance";
+
+await connectMongo();
 
 export async function cancelSubscription(subscriptionId: string) {
   const paddle = getPaddleInstance();
@@ -12,15 +14,15 @@ export async function cancelSubscription(subscriptionId: string) {
     const response = await paddle.subscriptions.cancel(subscriptionId, {
       effectiveFrom: "next_billing_period",
     });
-    await db.subscription.update({
-      where: {
-        orderId: subscriptionId,
+    await SubscriptionModel.findOneAndUpdate(
+      { orderId: subscriptionId },
+      {
+        $set: {
+          status: "CANCELED",
+          canceledAt: new Date(),
+        },
       },
-      data: {
-        status: SubscriptionStatus.CANCELED,
-        canceledAt: new Date(),
-      },
-    });
+    );
     revalidatePath("/dashboard/subscriptions");
     return JSON.parse(JSON.stringify(response));
   });

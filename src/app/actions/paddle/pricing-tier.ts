@@ -1,10 +1,14 @@
-import { BillingCycle } from "@prisma/client";
-import { PackageType, Tier } from "./type";
+export const BillingCycle = {
+  DAILY: "daily",
+  MONTHLY: "monthly",
+  YEARLY: "yearly",
+  LIFETIME: "lifetime",
+};
 
-export const PricingTier: Tier[] = [
+export const PricingTier = [
   {
-    name: PackageType.BASIC,
-    id: PackageType.BASIC,
+    name: "Basic",
+    id: "basic",
     icon: "/assets/icons/price-tiers/free-icon.svg",
     description: "Free forever. Enjoy our services for free.",
     features: [
@@ -22,8 +26,8 @@ export const PricingTier: Tier[] = [
     },
   },
   {
-    name: PackageType.PREMIUM,
-    id: PackageType.PREMIUM,
+    name: "Premium",
+    id: "premium",
     icon: "/assets/icons/price-tiers/basic-icon.svg",
     description: "$27/month (Billed annually).",
     features: [
@@ -45,8 +49,8 @@ export const PricingTier: Tier[] = [
     },
   },
   {
-    name: PackageType.PREMIUM_LIFETIME,
-    id: PackageType.PREMIUM_LIFETIME,
+    name: "Premium Lifetime",
+    id: "premium_lifetime",
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [
@@ -69,10 +73,9 @@ export const PricingTier: Tier[] = [
       [BillingCycle.MONTHLY]: "pri_01jrewt8t819qw8qh3bq225rmg",
     },
   },
-
   {
-    name: PackageType.ENTERPRISE,
-    id: PackageType.ENTERPRISE,
+    name: "Enterprise",
+    id: "enterprise",
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [

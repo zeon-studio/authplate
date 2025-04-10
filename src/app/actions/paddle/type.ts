@@ -1,11 +1,15 @@
-import { BillingCycle } from "@prisma/client";
+export const BillingCycle = {
+  DAILY: "daily",
+  MONTHLY: "monthly",
+  YEARLY: "yearly",
+  LIFETIME: "lifetime",
+};
 
-export enum PackageType {
-  BASIC = "BASIC",
-  PREMIUM = "PREMIUM",
-  PREMIUM_LIFETIME = "PREMIUM LIFETIME",
-  ENTERPRISE = "ENTERPRISE",
-}
+export type PackageType =
+  | "BASIC"
+  | "PREMIUM"
+  | "PREMIUM_LIFETIME"
+  | "ENTERPRISE";
 
 type OneKeyOnly<T> = {
   [K in keyof T]: {
@@ -20,5 +24,5 @@ export interface Tier {
   description: string;
   features: string[];
   featured: boolean;
-  priceId: OneKeyOnly<Record<BillingCycle, string>>;
+  priceId: OneKeyOnly<Record<keyof typeof BillingCycle, string>>;
 }

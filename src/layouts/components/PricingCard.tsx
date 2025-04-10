@@ -1,6 +1,17 @@
-import { Tier } from "@/app/actions/paddle/type";
+import { BillingCycle } from "@/app/actions/paddle/pricing-tier";
+import { PackageType } from "@/app/actions/paddle/type";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
+
+export type Tier = {
+  name: string;
+  id: PackageType;
+  icon: string;
+  description: string;
+  features: string[];
+  featured: boolean;
+  priceId: { [BillingCycle.LIFETIME]: string };
+};
 
 export default function PricingCard({
   tier,

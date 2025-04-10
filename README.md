@@ -80,16 +80,6 @@ JWT_SECRET="your_jwt_secret"
 JWT_EXPIRES="1d" # Example: 1d, 7d, 1h
 ```
 
-2. Set up your database:
-
-```bash
-# Generate Prisma client
-npx prisma generate
-
-# Push schema to database (if needed)
-npx prisma db push
-```
-
 3. Start the development server:
 
 ```bash
@@ -103,25 +93,32 @@ Your app should now be running at [http://localhost:3000](http://localhost:3000)
 Authplate supports multiple authentication methods:
 
 ### Social Authentication
+
 - **Google**: Create credentials in the [Google Cloud Console](https://console.cloud.google.com/)
 - **GitHub**: Register a new OAuth application in [GitHub Developer Settings](https://github.com/settings/developers)
 
 ### Email Authentication
+
 Authplate uses Nodemailer for email-based authentication:
+
 1. Configure your email provider settings
 2. For Gmail, you may need to create an [App Password](https://support.google.com/accounts/answer/185833)
 
 ## 💰 Payment Integration
+
 Authplate supports two payment providers:
+
 - **Paddle**
 - **Stripe** (Coming Soon)
 
 ### Paddle Setup
+
 1. Create a [Paddle account](https://paddle.com)
 2. Get your API keys from the Paddle Dashboard
 3. Configure webhooks for subscription management
 
 ### Stripe Integration
+
 Stripe integration is coming soon in a future update. The codebase includes placeholders for Stripe configuration but this feature is not yet fully implemented.
 
 ## 💰 Pricing Configuration
@@ -172,25 +169,6 @@ interface Tier {
 ### Adding Billing Cycles
 
 To add more billing options:
-
-1. Extend the `BillingCycle` enum in your Prisma schema:
-
-```prisma
-enum BillingCycle {
-  DAILY
-  WEEKLY
-  MONTHLY
-  QUARTERLY
-  ANNUAL
-  LIFETIME
-}
-```
-
-2. Regenerate your Prisma client:
-
-```bash
-npx prisma generate
-```
 
 ### Best Practices
 
