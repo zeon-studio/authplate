@@ -26,7 +26,7 @@ export default function SuccessPage() {
           <p className={"pb-16 text-lg"}>
             Success! Your payment is complete, and you’re all set.
           </p>
-          <Button variant={"secondary"} asChild={true}>
+          <Button size={"lg"} asChild={true}>
             {session?.user ? (
               <Link href={"/dashboard/subscriptions"}>Go to Dashboard</Link>
             ) : (

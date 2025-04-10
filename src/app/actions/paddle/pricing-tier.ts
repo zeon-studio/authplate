@@ -3,8 +3,8 @@ import { PackageType, Tier } from "./type";
 
 export const PricingTier: Tier[] = [
   {
-    name: PackageType.HOBBY,
-    id: PackageType.HOBBY,
+    name: PackageType.BASIC,
+    id: PackageType.BASIC,
     icon: "/assets/icons/price-tiers/free-icon.svg",
     description: "Free forever. Enjoy our services for free.",
     features: [
@@ -18,12 +18,12 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      [BillingCycle.LIFETIME]: "pri_01jksvc2keca5wq10q4r8w7y11",
+      [BillingCycle.LIFETIME]: "pri_01jrewpbc6wsbajb7y7gh913d4",
     },
   },
   {
-    name: PackageType.TEAM,
-    id: PackageType.TEAM,
+    name: PackageType.PREMIUM,
+    id: PackageType.PREMIUM,
     icon: "/assets/icons/price-tiers/basic-icon.svg",
     description: "$27/month (Billed annually).",
     features: [
@@ -41,9 +41,35 @@ export const PricingTier: Tier[] = [
     ],
     featured: true,
     priceId: {
-      [BillingCycle.MONTHLY]: "pri_01jksv559557wq10b08f59652",
+      [BillingCycle.MONTHLY]: "pri_01jrewrwbxm27z0evg0gdh2y0p",
     },
   },
+  {
+    name: PackageType.PREMIUM_LIFETIME,
+    id: PackageType.PREMIUM_LIFETIME,
+    icon: "/assets/icons/price-tiers/pro-icon.svg",
+    description: "Get in touch with us to get this plan.",
+    features: [
+      "Unlimited Organizations",
+      "Unlimited Users",
+      "Unlimited sites",
+      "Github, GitLab, BitBucket Repositories",
+      "AI Assistant",
+      "SEO Suggestions",
+      "Deployment Status",
+      "Custom",
+      "Content Scheduling",
+      "Analytics",
+      "White Label?",
+      "Custom Branding",
+      "Premium Support",
+    ],
+    featured: false,
+    priceId: {
+      [BillingCycle.MONTHLY]: "pri_01jrewt8t819qw8qh3bq225rmg",
+    },
+  },
+
   {
     name: PackageType.ENTERPRISE,
     id: PackageType.ENTERPRISE,
@@ -66,30 +92,7 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      [BillingCycle.MONTHLY]: "pri_01jksvevphtkncjce1yvbep923",
-    },
-  },
-  {
-    name: PackageType.TEAM_LIFETIME,
-    id: PackageType.TEAM_LIFETIME,
-    icon: "/assets/icons/price-tiers/pro-icon.svg",
-    description: "100 slots remaining",
-    features: [
-      "3 Organization",
-      "5 Users per organization",
-      "Up to 15 sites (Public + Private Repo)",
-      "Github, GitLab, BitBucket Repositories",
-      "AI Assistant",
-      "SEO Suggestions",
-      "Deployment Status",
-      "2 Roles",
-      "Content Scheduling",
-      "Analytics",
-      "Premium support",
-    ],
-    featured: false,
-    priceId: {
-      [BillingCycle.LIFETIME]: "pri_01jksxd2n500m05cxxd61k41my",
+      [BillingCycle.MONTHLY]: "",
     },
   },
 ];

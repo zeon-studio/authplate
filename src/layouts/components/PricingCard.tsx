@@ -1,5 +1,4 @@
 import { Tier } from "@/app/actions/paddle/type";
-import { BillingCycle } from "@prisma/client";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
 
@@ -10,10 +9,11 @@ export default function PricingCard({
   tier: Tier;
   isActive: boolean;
 }) {
+  const priceId = Object.values(tier.priceId)[0];
   return (
     <div
       key={tier.id}
-      className="relative overflow-hidden rounded-2xl border bg-background p-6 shadow-sm transition-all hover:shadow-md flex flex-col justify-between h-full"
+      className="relative overflow-hidden rounded-2xl border border-border/50 bg-background p-6 shadow-sm transition-all hover:shadow-md flex flex-col justify-between h-full"
     >
       <div className="space-y-5">
         <div className="space-y-2">
@@ -59,18 +59,13 @@ export default function PricingCard({
 
         {!isActive && (
           <Link
-            href={
-              "/checkout/" +
-              (BillingCycle.LIFETIME in tier.priceId
-                ? tier.priceId[BillingCycle.LIFETIME]
-                : tier.priceId[BillingCycle.MONTHLY])
-            }
+            href={priceId ? `/checkout/${priceId}` : `/contact`}
             className={buttonVariants({
               className: "w-full !text-base h-auto !py-2.5",
               size: "lg",
             })}
           >
-            Get Started
+            {priceId ? "Get Started" : "Contact us"}
           </Link>
         )}
       </div>

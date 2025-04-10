@@ -1,10 +1,10 @@
 import { BillingCycle } from "@prisma/client";
 
 export enum PackageType {
-  HOBBY = "hobby",
-  TEAM = "team",
-  ENTERPRISE = "enterprise",
-  TEAM_LIFETIME = "team_lifetime",
+  BASIC = "BASIC",
+  PREMIUM = "PREMIUM",
+  PREMIUM_LIFETIME = "PREMIUM LIFETIME",
+  ENTERPRISE = "ENTERPRISE",
 }
 
 type OneKeyOnly<T> = {
