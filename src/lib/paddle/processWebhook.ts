@@ -19,26 +19,21 @@ import {
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
-    console.log("Processing event:", eventData.eventType);
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
-        console.log("Handling subscription created event");
         this.subscriptionCreated(eventData);
         break;
       case EventName.TransactionCompleted:
-        console.log("Handling transaction completed event");
         this.lifetimeSubscriptionCreated(eventData);
         this.paymentCreated(eventData);
         break;
       case EventName.SubscriptionUpdated:
-        console.log("Handling subscription updated event");
         this.subscriptionUpdated(eventData);
         break;
     }
   }
 
   async subscriptionUpdated(eventData: SubscriptionUpdatedEvent) {
-    console.log("Starting subscription update process");
     const {
       id: subscriptionId,
       status,
@@ -48,7 +43,6 @@ export class ProcessWebhook {
       scheduledChange,
     } = eventData.data;
 
-    console.log("Finding subscription with orderId:", subscriptionId);
     const subscription = await db.subscription.findUnique({
       where: {
         orderId: subscriptionId,
@@ -56,12 +50,10 @@ export class ProcessWebhook {
     });
 
     if (!subscription || scheduledChange?.action === "cancel") {
-      console.log("Subscription not found or scheduled for cancellation");
       return;
     }
 
     if (scheduledChange?.action) {
-      console.log("Processing scheduled change:", scheduledChange.action);
       await db.subscription.update({
         where: {
           id: subscription.id,
@@ -73,7 +65,6 @@ export class ProcessWebhook {
       return;
     }
 
-    console.log("Updating subscription details");
     await db.subscription.update({
       where: {
         orderId: subscriptionId,
@@ -91,7 +82,6 @@ export class ProcessWebhook {
   }
 
   async lifetimeSubscriptionCreated(eventData: TransactionCompletedEvent) {
-    console.log("Starting lifetime subscription creation process");
     const {
       id: transactionId,
       customData,
@@ -100,7 +90,6 @@ export class ProcessWebhook {
     } = eventData.data;
 
     if (subscriptionId) {
-      console.log("Subscription ID exists, skipping lifetime creation");
       return;
     }
 
@@ -108,14 +97,11 @@ export class ProcessWebhook {
       email: string;
     };
 
-    console.log("Finding user with email:", userEmail);
     const user = await this.getUserEmail(userEmail);
     if (!user) {
-      console.log("User not found");
       return;
     }
 
-    console.log("Creating lifetime subscription");
     await db.subscription.create({
       data: {
         userId: user!.id,
@@ -131,7 +117,6 @@ export class ProcessWebhook {
 
   async paymentCreated(eventData: TransactionCompletedEvent) {
     try {
-      console.log("Starting payment creation process");
       const {
         id: transactionId,
         subscriptionId,
@@ -146,21 +131,17 @@ export class ProcessWebhook {
           email: string;
         }) || {};
 
-      console.log("Finding user with email:", userEmail);
       const user = await this.getUserEmail(userEmail);
 
       if (!user) {
-        console.log("User not found");
         return;
       }
 
-      console.log("Calculating payment amounts");
       const earnings = +(details?.totals?.total ?? "0") / 100;
       const taxAmount = +(details?.totals?.tax ?? "0") / 100;
       const processingFee = +(details?.totals?.fee ?? "0") / 100;
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
-      console.log("Creating payment record");
       await db.payment.create({
         data: {
           userId: user!.id,
@@ -183,7 +164,6 @@ export class ProcessWebhook {
 
   async subscriptionCreated(eventData: SubscriptionCreatedEvent) {
     try {
-      console.log("Starting subscription creation process");
       const {
         id: subscriptionId,
         transactionId,
@@ -199,15 +179,12 @@ export class ProcessWebhook {
           email: string;
         }) || {};
 
-      console.log("Finding user with email:", userEmail);
       const user = await this.getUserEmail(userEmail);
 
       if (!user) {
-        console.log("User not found");
         return;
       }
 
-      console.log("Creating subscription record");
       await db.subscription.create({
         data: {
           userId: user!.id,
@@ -234,7 +211,6 @@ export class ProcessWebhook {
   getPlanId(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
-    console.log("Getting plan ID");
     const item = items[0];
     if (item instanceof SubscriptionItemNotification) {
       return item.price?.id || item.product?.id;
@@ -248,7 +224,6 @@ export class ProcessWebhook {
   getPlanName(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
-    console.log("Getting plan name");
     const item = items[0];
     if (item instanceof TransactionItemNotification) {
       return item.price?.name;
@@ -262,7 +237,6 @@ export class ProcessWebhook {
   getSubscriptionStatus(
     status: PaddleSubscriptionStatus | SubscriptionScheduledChangeNotification,
   ) {
-    console.log("Getting subscription status");
     if (status instanceof SubscriptionScheduledChangeNotification) {
       switch (status.action) {
         case "cancel":
@@ -294,7 +268,6 @@ export class ProcessWebhook {
 
   async getUserEmail(email: string) {
     try {
-      console.log("Finding user by email:", email);
       const user = await db.user.findUnique({
         where: {
           email: email,
@@ -310,11 +283,9 @@ export class ProcessWebhook {
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ): BillingCycle {
-    console.log("Getting billing cycle");
     const currentId = this.getPlanId(items);
 
     if (!currentId) {
-      console.log("No plan ID found, defaulting to daily billing");
       return BillingCycle.DAILY;
     }
 
@@ -325,7 +296,6 @@ export class ProcessWebhook {
       return found ? (found[0] as BillingCycle) : acc;
     }, BillingCycle.DAILY);
 
-    console.log("Determined billing cycle:", cycle);
     return cycle;
   }
 }

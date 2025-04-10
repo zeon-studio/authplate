@@ -24,7 +24,7 @@ export default async function Page() {
 
             return (
               <div className="w-full h-full max-lg:max-w-lg" key={tier.id}>
-                <PricingCard isActive={isActive} key={tier.id} tier={tier} />
+                <PricingCard isActive={false} key={tier.id} tier={tier} />
               </div>
             );
           })}
