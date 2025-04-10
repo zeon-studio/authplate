@@ -1,4 +1,5 @@
 import { Tier } from "@/app/actions/paddle/type";
+import { humanize } from "@/lib/utils/textConverter";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
 
@@ -18,7 +19,7 @@ export default function PricingCard({
       <div className="space-y-5">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight capitalize">
-            {tier.name.replace("_", " ")}
+            {humanize(tier.name)}
           </h2>
           <p className="text-muted-foreground">{tier.description}</p>
         </div>

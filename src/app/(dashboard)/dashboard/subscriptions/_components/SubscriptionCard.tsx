@@ -6,9 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { humanize } from "@/lib/utils/textConverter";
 import { BillingCycle, Subscription, SubscriptionStatus } from "@prisma/client";
 import { CalendarClock, Clock } from "lucide-react";
-import { CancelSubscriptionDialog } from "./CancelSubscritpion";
+import { CancelSubscriptionDialog } from "./CancelSubscription";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-US", {
@@ -55,7 +56,7 @@ export default function SubscriptionCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{subscription.planName}</CardTitle>
+            <CardTitle>{humanize(subscription.planName)}</CardTitle>
             <CardDescription className="mt-1">
               Order ID: {subscription.orderId}
             </CardDescription>
