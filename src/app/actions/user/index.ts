@@ -233,6 +233,7 @@ export const updatePassword = async (
     }).select({
       email: 1,
       password: 1,
+      _id: 0,
     });
 
     if (!user) {
@@ -244,8 +245,6 @@ export const updatePassword = async (
       validatedData.oldPassword,
       user.password!,
     );
-
-    console.log({ isValidPassword });
 
     if (!isValidPassword) {
       throw new Error("Invalid password");

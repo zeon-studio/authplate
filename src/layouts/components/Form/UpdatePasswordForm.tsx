@@ -18,25 +18,16 @@ import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-const defaultValues =
-  process.env.NODE_ENV === "development"
-    ? {
-        oldPassword: "Password123$",
-        newPassword: "Password123$1",
-        confirmPassword: "Password123$1",
-      }
-    : {
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      };
-
 export default function UpdatePasswordForm() {
   const { data: session } = useSession();
   const passwordForm = useForm<z.infer<typeof updatePasswordSchema>>({
     resolver: zodResolver(updatePasswordSchema),
     mode: "onChange",
-    defaultValues: defaultValues,
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
   });
 
   const { action, isPending } = useMutation(updatePassword, {
