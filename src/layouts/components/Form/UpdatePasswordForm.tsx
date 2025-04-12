@@ -1,4 +1,4 @@
-import { updatePassword } from "@/app/actions/user";
+import { resetPassword } from "@/app/actions/user";
 import {
   Form,
   FormControl,
@@ -30,7 +30,7 @@ export default function UpdatePasswordForm() {
     },
   });
 
-  const { action, isPending } = useMutation(updatePassword, {
+  const { action, isPending } = useMutation(resetPassword, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
         passwordForm.trigger();

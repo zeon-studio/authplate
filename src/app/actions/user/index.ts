@@ -217,16 +217,51 @@ export const resetPassword = async (
   });
 };
 
-// oauth login
-export const oauthLogin = async (
+// update password
+export const updatePassword = async (
   state: Result<UserType>,
   formData: FormData,
 ) => {
   return safeAction<UserType>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updatePasswordSchema.parse(data);
+
     await connectToMongoDB();
-    const user = await User.findOne({ email: validatedData.email });
+    // Find user by email
+    const user = await User.findOne({
+      email: validatedData.email,
+    }).select({
+      email: 1,
+      password: 1,
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // verify password
+    const isValidPassword = await bcryptjs.compare(
+      validatedData.oldPassword,
+      user.password!,
+    );
+
+    if (!isValidPassword) {
+      throw new Error("Invalid password");
+    }
+
+    const encryptedPassword = await bcryptjs.hash(
+      validatedData.newPassword,
+      10,
+    );
+
+    await User.updateOne(
+      {
+        email: validatedData.email,
+      },
+      {
+        password: encryptedPassword,
+      },
+    );
 
     return user;
   });
