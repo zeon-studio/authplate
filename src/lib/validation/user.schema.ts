@@ -37,7 +37,6 @@ const baseUserSchema = z.object({
       invalid_type_error: "Invalid provider type",
     })
     .default("Credentials"),
-  accessToken: z.string(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
 });
@@ -62,7 +61,6 @@ export const userSchema = baseUserSchema.merge(passwordSchema);
 export const registerUserSchema = userSchema
   .omit({
     provider: true,
-    accessToken: true,
     createdAt: true,
     updatedAt: true,
   })
@@ -83,7 +81,6 @@ export const updateUserSchema = baseUserSchema.omit({
   email: true,
   isTermsAccepted: true,
   provider: true,
-  accessToken: true,
   createdAt: true,
   updatedAt: true,
 });

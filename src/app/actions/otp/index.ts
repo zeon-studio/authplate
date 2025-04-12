@@ -4,17 +4,17 @@ import "server-only";
 import { connectToMongoDB } from "@/lib/mongoose";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import OtpVerificationModel from "@/models/OtpVerification";
+import { IOtpVerification } from "@/models/OtpVerification/type";
 import UserModel from "@/models/User";
-import { OtpVerification } from "@/types";
 import { Result, safeAction } from "..";
 import { mailSender } from "../sender";
 
 // sent otp to email
 export const sendOtp = async (
-  state: Result<OtpVerification>,
+  state: Result<IOtpVerification>,
   formData: FormData,
 ) => {
-  return safeAction<OtpVerification>(async () => {
+  return safeAction<IOtpVerification>(async () => {
     await connectToMongoDB();
     const data = Object.fromEntries(formData);
 
@@ -31,31 +31,41 @@ export const sendOtp = async (
     // Set expiration time (15 minutes from now)
     const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
-    // Create or update OTP verification record
     // Upsert OTP verification record
-    const verification = await OtpVerificationModel.findOneAndUpdate(
-      { userId: user.id },
+    const abc = await OtpVerificationModel.findOneAndUpdate(
+      { userId: user._id },
       { token: otp, expires: expiresIn },
       { upsert: true, new: true },
     );
 
+    // Create or update OTP verification record
+    // Upsert OTP verification record
+    const verification = await OtpVerificationModel.findOneAndUpdate(
+      { userId: user._id },
+      { token: otp, expires: expiresIn },
+      { upsert: true, new: true },
+    ).select({
+      token: 1,
+      _id: 0,
+    });
+
     // Send OTP via email
     await mailSender.otpSender(user.email!, otp);
-    return verification;
+    return verification.toJSON();
   });
 };
 
 // verify otp
 export const verifyOtp = async (
-  state: Result<OtpVerification>,
+  state: Result<IOtpVerification>,
   formData: FormData,
 ) => {
-  return safeAction<OtpVerification>(async () => {
-    await connectToMongoDB();
+  return safeAction<IOtpVerification>(async () => {
     const data = Object.fromEntries(formData);
     otpSchema.parse(data);
     // Find user by email
 
+    await connectToMongoDB();
     const user = await UserModel.findOne({ email: data.email as string });
 
     if (!user) {
@@ -65,7 +75,12 @@ export const verifyOtp = async (
     // Find OTP verification record
     const otpVerification = await OtpVerificationModel.findOne({
       userId: user.id,
+    }).select({
+      token: 1,
+      expires: 1,
+      _id: 0,
     });
+
     if (!otpVerification) {
       throw new Error("OTP verification record not found");
     }
@@ -83,6 +98,6 @@ export const verifyOtp = async (
 
     await UserModel.findByIdAndUpdate(user.id, { emailVerified: true });
 
-    return otpVerification;
+    return otpVerification.toJSON();
   });
 };

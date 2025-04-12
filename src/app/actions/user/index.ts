@@ -10,28 +10,30 @@ import {
   updatePasswordSchema,
   updateUserSchema,
 } from "@/lib/validation/user.schema";
-import OtpVerificationModel from "@/models/OtpVerification";
-import User from "@/models/User";
-import { OtpVerification } from "@/types";
+import { IOtpVerification } from "@/models/OtpVerification/type";
+import User from "@/models/User/index";
+import { UserType } from "@/models/User/type";
 import bcryptjs from "bcryptjs";
 import { AuthError, CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { Result, safeAction } from "..";
 import { sendOtp } from "../otp";
-import { mailSender } from "../sender";
-import { User as TUser } from "./types";
 
 // register user
-export const createUser = async (state: Result<TUser>, formData: FormData) => {
-  return safeAction<TUser>(async () => {
+export const createUser = async (
+  state: Result<UserType>,
+  formData: FormData,
+) => {
+  return safeAction<UserType>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = registerUserSchema.parse({
       ...data,
       isTermsAccepted: data.isTermsAccepted === "on",
     });
 
+    await connectToMongoDB();
     const existingUser = await User.findOne({
-      email: validatedData.email!,
+      email: validatedData.email,
     });
 
     if (existingUser) {
@@ -54,7 +56,10 @@ export const createUser = async (state: Result<TUser>, formData: FormData) => {
     const formDataOtp = new FormData();
     formDataOtp.append("email", newUser.email!);
     await sendOtp(null, formDataOtp);
-    return newUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, _id, ...userWithoutPassword } = newUser.toObject();
+
+    return userWithoutPassword as UserType;
   });
 };
 
@@ -63,6 +68,7 @@ export const loginUser = async (state: Result<any>, formData: FormData) => {
     const data = Object.fromEntries(formData);
     const validatedData = loginUserSchema.parse(data);
     try {
+      connectToMongoDB();
       return await signIn("credentials", validatedData);
     } catch (error) {
       if (error instanceof AuthError) {
@@ -89,9 +95,18 @@ export const verifyUserWithPassword = async ({
 }: {
   email: string;
   password: string;
-}): Promise<Result<TUser>> => {
+}): Promise<Result<UserType>> => {
   return safeAction(async () => {
-    const user = await User.findOne({ email });
+    await connectToMongoDB();
+
+    const user = await User.findOne({ email }).select({
+      email: 1,
+      password: 1,
+      emailVerified: 1,
+      firstName: 1,
+      lastName: 1,
+      image: 1,
+    });
 
     if (!user) {
       throw new Error("User not found");
@@ -114,8 +129,11 @@ export const verifyUserWithPassword = async ({
 };
 
 // update user
-export const updateUser = async (state: Result<TUser>, formData: FormData) => {
-  return safeAction<TUser>(async () => {
+export const updateUser = async (
+  state: Result<UserType>,
+  formData: FormData,
+) => {
+  return safeAction<UserType>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updateUserSchema.parse(data);
     const user = await User.findByIdAndUpdate(
@@ -125,56 +143,52 @@ export const updateUser = async (state: Result<TUser>, formData: FormData) => {
         lastName: validatedData.lastName,
         image: validatedData.image,
       },
-      { new: true },
+      { new: true, runValidators: true },
     );
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     return user;
   });
 };
 
 // forgot password
 export const forgotPassword = async (
-  state: Result<OtpVerification>,
+  state: Result<IOtpVerification>,
   formData: FormData,
 ) => {
-  return safeAction<OtpVerification>(async () => {
+  return safeAction<IOtpVerification>(async () => {
     const data = Object.fromEntries(formData);
+    await connectToMongoDB();
     // Find user by email
     const user = await User.findOne({ email: data.email as string });
     if (!user) {
       throw new Error("User not found");
     }
-    // Generate 6 digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // Set expiration time (15 minutes from now)
-    const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-    // Create or update OTP verification record
-    // Upsert OTP verification record
-    const verification = await OtpVerificationModel.findOneAndUpdate(
-      { userId: user.id },
-      {
-        $set: {
-          token: otp,
-          expires: expiresIn,
-        },
-      },
-      { upsert: true, new: true },
-    );
-    // Send OTP via email
-    await mailSender.otpSender(user.email!, otp);
-    return verification;
+
+    formData.append("email", data.email);
+    const verification = await sendOtp(null, formData);
+    if (!verification?.success) {
+      throw new Error("Something went wrong");
+    }
+
+    return verification.data;
   });
 };
 
 // reset password
 export const resetPassword = async (
-  state: Result<TUser>,
+  state: Result<UserType>,
   formData: FormData,
 ) => {
-  return safeAction<TUser>(async () => {
+  return safeAction<UserType>(async () => {
     const data = Object.fromEntries(formData);
 
     resetPasswordSchema.parse(data);
 
+    await connectToMongoDB();
     // Find user by email
     const user = await User.findOne({ email: data.email as string });
 
@@ -192,7 +206,12 @@ export const resetPassword = async (
         password: encryptedPassword,
       },
       { new: true },
-    );
+    ).select({
+      _id: 0,
+      password: 0,
+      __v: 0,
+      updatedAt: 0,
+    });
 
     return user;
   });
@@ -200,10 +219,10 @@ export const resetPassword = async (
 
 // oauth login
 export const updatePassword = async (
-  state: Result<TUser>,
+  state: Result<UserType>,
   formData: FormData,
 ) => {
-  return safeAction<TUser>(async () => {
+  return safeAction<UserType>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = updatePasswordSchema.parse(data);
     await connectToMongoDB();

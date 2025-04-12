@@ -17,6 +17,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import PasswordInput from "../PasswordInput";
 
 const defaultValues =
   process.env.NODE_ENV === "development"
@@ -65,7 +66,7 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     type="password"
                     placeholder="Enter password"
                     {...field}
@@ -87,7 +88,7 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     type="password"
                     placeholder="Enter password"
                     {...field}

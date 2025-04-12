@@ -2,6 +2,7 @@ import { connectToMongoDB } from "@/lib/mongoose";
 import Payment from "@/models/Payment";
 import Subscription from "@/models/Subscription";
 import { BillingCycle } from "@/models/Subscription/type";
+import { Types } from "mongoose";
 import { safeAction } from "..";
 
 export function getActiveSubscriptions(userId: string) {
@@ -50,13 +51,39 @@ export function getExpiredSubscriptions(userId: string) {
 export function getUserPaymentHistory(userId: string) {
   return safeAction(async () => {
     await connectToMongoDB();
-    return await Payment.find({
-      userId,
-    })
-      .populate({
-        path: "subscription",
-        select: "billingCycle planName status planId",
-      })
-      .sort({ createdAt: -1 });
+    const histories = await Payment.aggregate([
+      {
+        $match: { userId: new Types.ObjectId(userId) },
+      },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "orderId",
+          foreignField: "orderId",
+          as: "subscription",
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $unwind: "$subscription",
+      },
+      {
+        $project: {
+          totalAmount: 1,
+          taxAmount: 1,
+          amount: 1,
+          status: 1,
+          currency: 1,
+          paymentMethod: 1,
+          paymentStatus: 1,
+          orderId: 1,
+          subscription: 1,
+          createdAt: 1,
+        },
+      },
+    ]);
+    return histories;
   });
 }

@@ -101,7 +101,7 @@ export class ProcessWebhook {
       return;
     }
 
-    await Subscription.insertOne({
+    await Subscription.create({
       userId: user!.id,
       planId: this.getPlanId(items)!,
       status: SubscriptionStatus.LIFETIME,
@@ -114,7 +114,6 @@ export class ProcessWebhook {
 
   async paymentCreated(eventData: TransactionCompletedEvent) {
     try {
-      console.log("Starting payment creation process");
       const {
         id: transactionId,
         subscriptionId,
@@ -140,7 +139,7 @@ export class ProcessWebhook {
       const processingFee = +(details?.totals?.fee ?? "0") / 100;
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
-      await Payment.insertOne({
+      await Payment.create({
         userId: user!.id,
         totalAmount: totalAmount,
         taxAmount: taxAmount,
@@ -181,7 +180,7 @@ export class ProcessWebhook {
         return;
       }
 
-      await Subscription.insertOne({
+      await Subscription.create({
         userId: user!.id,
         planId: this.getPlanId(items)!,
         status: this.getSubscriptionStatus(eventData.data.status),
@@ -205,7 +204,6 @@ export class ProcessWebhook {
   getPlanId(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
-    console.log("Getting plan ID");
     const item = items[0];
     if (item instanceof SubscriptionItemNotification) {
       return item.price?.id || item.product?.id;
@@ -219,7 +217,6 @@ export class ProcessWebhook {
   getPlanName(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ) {
-    console.log("Getting plan name");
     const item = items[0];
     if (item instanceof TransactionItemNotification) {
       return item.price?.name;
@@ -233,7 +230,6 @@ export class ProcessWebhook {
   getSubscriptionStatus(
     status: PaddleSubscriptionStatus | SubscriptionScheduledChangeNotification,
   ) {
-    console.log("Getting subscription status");
     if (status instanceof SubscriptionScheduledChangeNotification) {
       switch (status.action) {
         case "cancel":
@@ -265,7 +261,6 @@ export class ProcessWebhook {
 
   async getUserEmail(email: string) {
     try {
-      console.log("Finding user by email:", email);
       const user = await User.findOne({
         email: email,
       });
@@ -280,11 +275,9 @@ export class ProcessWebhook {
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ): BillingCycle {
-    console.log("Getting billing cycle");
     const currentId = this.getPlanId(items);
 
     if (!currentId) {
-      console.log("No plan ID found, defaulting to daily billing");
       return BillingCycle.DAILY;
     }
 

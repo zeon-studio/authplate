@@ -49,6 +49,7 @@ const LoginForm = ({
         return;
       }
       if (error.type === "OTP_REQUIRED") {
+        console.log(error);
         onOtpRequired({
           email: loginForm.getValues("email")!,
           password: loginForm.getValues("password")!,

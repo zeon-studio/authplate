@@ -68,6 +68,7 @@ export default async function Billing() {
                   </TableCell>
                 </TableRow>
               )}
+
               {paymentHistories.data.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell>

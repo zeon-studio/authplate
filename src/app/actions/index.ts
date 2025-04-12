@@ -40,7 +40,9 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
   );
 }
 
-export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
+export async function safeAction<T>(
+  fn: () => Promise<T> | T,
+): Promise<Result<T>> {
   try {
     const response = await fn();
     return {

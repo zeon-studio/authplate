@@ -104,28 +104,3 @@ export type Button = {
   label: string;
   link: string;
 };
-
-export type SubscriptionData = {
-  subscription_id: string;
-  product_id: string | Stripe.Product | Stripe.DeletedProduct;
-  pricing_id: string;
-  customer_id: string | Customer | DeletedCustomer;
-  subscription_item_id: string;
-  subscription_interval: string;
-};
-
-export interface OtpVerification {
-  userId: string;
-  token: string;
-  expires: Date;
-}
-
-declare global {
-  namespace NodeJS {
-    interface Global {
-      mongoClient: MongoClient | undefined;
-    }
-  }
-}
-
-export {};

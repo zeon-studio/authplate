@@ -8,10 +8,8 @@ interface Props {
 }
 
 export function CheckoutPriceContainer({ checkoutData }: Props) {
-  console.log(checkoutData);
   const recurringTotal =
     checkoutData?.recurring_totals?.total ?? checkoutData?.totals.total;
-  console.log(recurringTotal);
 
   return (
     <>
