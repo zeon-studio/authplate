@@ -1,4 +1,4 @@
-// types/next-auth.d.ts
+import { Provider } from "@prisma/client";
 import type { DefaultUser } from "next-auth";
 import "next-auth/jwt";
 
@@ -11,7 +11,7 @@ declare module "next-auth" {
       lastName?: string;
       image?: string;
       emailVerified: boolean;
-      provider: "Google" | "Github" | "Credentials";
+      provider: Provider;
     };
   }
 
@@ -22,7 +22,7 @@ declare module "next-auth" {
     email: string;
     image?: string;
     emailVerified: boolean;
-    provider: "Google" | "Github" | "Credentials";
+    provider: Provider;
   }
 }
 
@@ -34,6 +34,6 @@ declare module "next-auth/jwt" {
     email: string;
     image?: string;
     emailVerified: boolean;
-    provider: "Google" | "Github" | "Credentials";
+    provider: Provider;
   }
 }

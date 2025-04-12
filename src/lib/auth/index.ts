@@ -1,6 +1,7 @@
 import { verifyUserWithPassword } from "@/actions/user";
 import { authOptions } from "@/lib/auth/auth-option";
 import { InvalidCredentials } from "@/lib/utils/error";
+import { Provider } from "@prisma/client";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
@@ -52,7 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: profile.email,
           firstName: profile.given_name,
           lastName: profile.family_name,
-          provider: "Google",
+          provider: Provider.GOOGLE,
           emailVerified: true,
         };
       },
@@ -70,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           firstName,
           lastName,
           emailVerified: true,
-          provider: "Github",
+          provider: Provider.GITHUB,
           image: avatar_url,
         };
       },

@@ -29,7 +29,7 @@ export const authOptions = {
           image: user.image,
           emailVerified: true,
           isTermsAccepted: true,
-          provider: account?.provider === "google" ? "GOOGLE" : "GITHUB",
+          provider: user.provider,
         },
         update: {
           emailVerified: true,

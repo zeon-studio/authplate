@@ -6,7 +6,7 @@ const { auth } = NextAuth(authOptions);
 const publicUrl = ["/signin", "/signup", "/forgot-password", "/otp"];
 export default auth((req) => {
   const { nextUrl } = req;
-  const isAuth = !!req.auth;
+  const isAuth = !!req.auth && req.auth.user.emailVerified;
   const pathname = nextUrl.pathname;
   const origin = nextUrl.origin;
 
