@@ -245,6 +245,8 @@ export const updatePassword = async (
       user.password!,
     );
 
+    console.log({ isValidPassword });
+
     if (!isValidPassword) {
       throw new Error("Invalid password");
     }

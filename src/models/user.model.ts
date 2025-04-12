@@ -65,10 +65,6 @@ const UserSchema = new Schema<UserType>(
   },
 );
 
-// Add indexes for frequently queried fields
-UserSchema.index({ email: 1 });
-UserSchema.index({ provider: 1 });
-
 // Create or get existing model
 const User: Model<UserType> =
   mongoose.models?.User || mongoose.model("User", UserSchema);

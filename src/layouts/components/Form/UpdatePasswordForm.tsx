@@ -1,4 +1,4 @@
-import { resetPassword } from "@/app/actions/user";
+import { updatePassword } from "@/app/actions/user";
 import {
   Form,
   FormControl,
@@ -18,19 +18,28 @@ import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
+const defaultValues =
+  process.env.NODE_ENV === "development"
+    ? {
+        oldPassword: "Password123$",
+        newPassword: "Password123$1",
+        confirmPassword: "Password123$1",
+      }
+    : {
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      };
+
 export default function UpdatePasswordForm() {
   const { data: session } = useSession();
   const passwordForm = useForm<z.infer<typeof updatePasswordSchema>>({
     resolver: zodResolver(updatePasswordSchema),
     mode: "onChange",
-    defaultValues: {
-      oldPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
+    defaultValues: defaultValues,
   });
 
-  const { action, isPending } = useMutation(resetPassword, {
+  const { action, isPending } = useMutation(updatePassword, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
         passwordForm.trigger();
@@ -87,7 +96,7 @@ export default function UpdatePasswordForm() {
             <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
-                <Input
+                <PasswordInput
                   placeholder="Confirm new password"
                   type="password"
                   {...field}
