@@ -1,10 +1,11 @@
-import { BillingCycle } from "@/models/Subscription/type";
+import { BillingCycle } from "@/models/types/subscription.types";
 
-export type PackageType =
-  | "BASIC"
-  | "PREMIUM"
-  | "PREMIUM_LIFETIME"
-  | "ENTERPRISE";
+export enum PackageType {
+  BASIC = "BASIC",
+  PREMIUM = "PREMIUM",
+  PREMIUM_LIFETIME = "PREMIUM_LIFETIME",
+  ENTERPRISE = "ENTERPRISE",
+}
 
 type OneKeyOnly<T> = {
   [K in keyof T]: {

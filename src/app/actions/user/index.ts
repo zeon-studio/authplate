@@ -10,9 +10,9 @@ import {
   updatePasswordSchema,
   updateUserSchema,
 } from "@/lib/validation/user.schema";
-import { IOtpVerification } from "@/models/OtpVerification/type";
-import User from "@/models/User/index";
-import { UserType } from "@/models/User/type";
+import { IOtpVerification } from "@/models/types/otpVerification.types";
+import { UserType } from "@/models/types/user.types";
+import User from "@/models/user.model";
 import bcryptjs from "bcryptjs";
 import { AuthError, CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -218,7 +218,7 @@ export const resetPassword = async (
 };
 
 // oauth login
-export const updatePassword = async (
+export const oauthLogin = async (
   state: Result<UserType>,
   formData: FormData,
 ) => {
@@ -227,33 +227,6 @@ export const updatePassword = async (
     const validatedData = updatePasswordSchema.parse(data);
     await connectToMongoDB();
     const user = await User.findOne({ email: validatedData.email });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // verify password
-    const isValidPassword = await bcryptjs.compare(
-      validatedData.oldPassword,
-      user.password!,
-    );
-
-    if (!isValidPassword) {
-      throw new Error("Invalid password");
-    }
-
-    const encryptedPassword = await bcryptjs.hash(
-      validatedData.newPassword,
-      10,
-    );
-
-    await User.findByIdAndUpdate(
-      user.id,
-      {
-        password: encryptedPassword,
-      },
-      { new: true },
-    );
 
     return user;
   });

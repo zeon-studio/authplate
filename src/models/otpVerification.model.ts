@@ -1,5 +1,5 @@
 import { Model, Schema, model, models } from "mongoose";
-import { IOtpVerification } from "./type";
+import { IOtpVerification } from "./types/otpVerification.types";
 
 const OtpVerificationSchema = new Schema<IOtpVerification>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },

@@ -1,4 +1,4 @@
-import { findOrCreateUser } from "@/server/user-service";
+import { Provider } from "@/models/types/user.types";
 import { NextAuthConfig } from "next-auth";
 
 export const authOptions = {
@@ -18,13 +18,29 @@ export const authOptions = {
         return !!user.emailVerified;
       }
 
-      const dbUser = await findOrCreateUser(user, account);
+      const origin = process.env.NEXTAUTH_URL ?? process.env.NEXTAUTH_URL;
+      const response = await fetch(`${origin}/api/auth/oauth-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          image: user.image,
+          emailVerified: user.emailVerified,
+          provider:
+            account?.provider === "google" ? Provider.GOOGLE : Provider.GITHUB,
+        }),
+      });
 
+      const { data: dbUser } = await response.json();
       user.firstName = dbUser.firstName || "";
       user.lastName = dbUser.lastName || "";
       user.image = dbUser.image;
       user.emailVerified = dbUser.emailVerified;
-      user.id = dbUser.id;
+      user.id = dbUser._id;
 
       return true;
     },

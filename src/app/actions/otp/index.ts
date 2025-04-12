@@ -3,9 +3,9 @@ import "server-only";
 
 import { connectToMongoDB } from "@/lib/mongoose";
 import { otpSchema } from "@/lib/validation/otp.schema";
-import OtpVerificationModel from "@/models/OtpVerification";
-import { IOtpVerification } from "@/models/OtpVerification/type";
-import UserModel from "@/models/User";
+import OtpVerificationModel from "@/models/otpVerification.model";
+import { IOtpVerification } from "@/models/types/otpVerification.types";
+import UserModel from "@/models/user.model";
 import { Result, safeAction } from "..";
 import { mailSender } from "../sender";
 
@@ -30,13 +30,6 @@ export const sendOtp = async (
 
     // Set expiration time (15 minutes from now)
     const expiresIn = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-
-    // Upsert OTP verification record
-    const abc = await OtpVerificationModel.findOneAndUpdate(
-      { userId: user._id },
-      { token: otp, expires: expiresIn },
-      { upsert: true, new: true },
-    );
 
     // Create or update OTP verification record
     // Upsert OTP verification record

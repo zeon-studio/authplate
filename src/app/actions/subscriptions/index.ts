@@ -1,7 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongoose";
-import Payment from "@/models/Payment";
-import Subscription from "@/models/Subscription";
-import { BillingCycle } from "@/models/Subscription/type";
+import Payment from "@/models/payment.model";
+import Subscription from "@/models/subscription.model";
+import { BillingCycle } from "@/models/types/subscription.types";
 import { Types } from "mongoose";
 import { safeAction } from "..";
 

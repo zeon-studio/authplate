@@ -2,7 +2,6 @@ import { PricingTier } from "@/actions/paddle/pricing-tier";
 import { getActiveSubscriptions } from "@/actions/subscriptions";
 import PricingCard from "@/layouts/components/PricingCard";
 import { auth } from "@/lib/auth";
-import { PackageType } from "../actions/paddle/type";
 
 export default async function Page() {
   const { user } = (await auth()) || {};
@@ -25,10 +24,7 @@ export default async function Page() {
 
             return (
               <div className="w-full h-full max-lg:max-w-lg" key={tier.id}>
-                <PricingCard
-                  isActive={isActive}
-                  tier={{ ...tier, id: tier.id as PackageType }}
-                />
+                <PricingCard isActive={isActive} tier={tier} />
               </div>
             );
           })}

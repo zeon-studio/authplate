@@ -1,7 +1,7 @@
 "use server";
 import { safeAction } from "@/app/actions";
 import { connectToMongoDB } from "@/lib/mongoose";
-import SubscriptionModel from "@/models/Subscription";
+import SubscriptionModel from "@/models/subscription.model";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { getPaddleInstance } from "./getPaddleInstance";

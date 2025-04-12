@@ -1,10 +1,13 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { connectToMongoDB } from "@/lib/mongoose";
-import Payment from "@/models/Payment";
-import { PaymentStatus } from "@/models/Payment/type";
-import Subscription from "@/models/Subscription";
-import { BillingCycle, SubscriptionStatus } from "@/models/Subscription/type";
-import User from "@/models/User";
+import Payment from "@/models/payment.model";
+import Subscription from "@/models/subscription.model";
+import { PaymentStatus } from "@/models/types/payment.types";
+import {
+  BillingCycle,
+  SubscriptionStatus,
+} from "@/models/types/subscription.types";
+import User from "@/models/user.model";
 import {
   EventEntity,
   EventName,

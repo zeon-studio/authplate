@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema, model } from "mongoose";
-import { IPayment, PaymentStatus } from "./type";
+import { IPayment, PaymentStatus } from "./types/payment.types";
 
 const PaymentSchema = new Schema<IPayment>(
   {

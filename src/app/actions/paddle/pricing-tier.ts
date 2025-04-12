@@ -1,9 +1,10 @@
-import { BillingCycle } from "@/models/Subscription/type";
+import { BillingCycle } from "@/models/types/subscription.types";
+import { PackageType, Tier } from "./type";
 
-export const PricingTier = [
+export const PricingTier: Tier[] = [
   {
-    name: "Basic",
-    id: "basic",
+    name: PackageType.BASIC,
+    id: PackageType.BASIC,
     icon: "/assets/icons/price-tiers/free-icon.svg",
     description: "Free forever. Enjoy our services for free.",
     features: [
@@ -21,8 +22,8 @@ export const PricingTier = [
     },
   },
   {
-    name: "Premium",
-    id: "premium",
+    name: PackageType.PREMIUM,
+    id: PackageType.PREMIUM,
     icon: "/assets/icons/price-tiers/basic-icon.svg",
     description: "$27/month (Billed annually).",
     features: [
@@ -44,8 +45,8 @@ export const PricingTier = [
     },
   },
   {
-    name: "Premium Lifetime",
-    id: "premium_lifetime",
+    name: PackageType.PREMIUM_LIFETIME,
+    id: PackageType.PREMIUM_LIFETIME,
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [
@@ -69,8 +70,8 @@ export const PricingTier = [
     },
   },
   {
-    name: "Enterprise",
-    id: "enterprise",
+    name: PackageType.ENTERPRISE,
+    id: PackageType.ENTERPRISE,
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [
