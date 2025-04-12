@@ -1,4 +1,3 @@
-import { Provider } from "@/models/types/user.types";
 import { NextAuthConfig } from "next-auth";
 
 export const authOptions = {
@@ -17,7 +16,6 @@ export const authOptions = {
       if (account?.type === "credentials") {
         return !!user.emailVerified;
       }
-
       const origin = process.env.NEXTAUTH_URL ?? process.env.NEXTAUTH_URL;
       const response = await fetch(`${origin}/api/auth/oauth-login`, {
         method: "POST",
@@ -30,8 +28,7 @@ export const authOptions = {
           lastName: user.lastName,
           image: user.image,
           emailVerified: user.emailVerified,
-          provider:
-            account?.provider === "google" ? Provider.GOOGLE : Provider.GITHUB,
+          provider: user.provider,
         }),
       });
 

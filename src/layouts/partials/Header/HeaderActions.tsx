@@ -19,7 +19,9 @@ interface HeaderActionsProps {
 }
 
 export function HeaderActions({ settings }: HeaderActionsProps) {
-  const { status } = useSession();
+  const data = useSession();
+  const status = data.status;
+
   return (
     <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
       {settings.search && (

@@ -4,15 +4,25 @@ import LoginForm from "@/components/Form/LoginForm";
 import { Button } from "@/components/ui/button";
 import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function SignIn() {
+  const { data: session } = useSession();
+  console.log({ session });
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (session?.error) {
+      toast.error(session.error);
+    }
+  }, [session?.error]);
+
   const [showOtp, setShowOtp] = useState(false);
   if (showOtp) {
     return <OtpVerifyForm {...loginInfo} />;
