@@ -58,9 +58,9 @@ export default async function Billing() {
             </TableHeader>
             <TableBody>
               {paymentHistories.data.length === 0 && (
-                <TableRow>
+                <TableRow className="hover:bg-transparent">
                   <TableCell colSpan={7}>
-                    <div className="flex pt-6 flex-col items-center justify-center gap-2">
+                    <div className="flex pt-5.5 flex-col items-center justify-center gap-2">
                       <h5 className="text-muted-foreground">
                         You have no payment history
                       </h5>

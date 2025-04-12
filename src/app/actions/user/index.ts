@@ -97,6 +97,11 @@ export const verifyUserWithPassword = async ({
     if (!user) {
       throw new Error("User not found");
     }
+
+    if (!user.password) {
+      throw new Error("User already exit with different provider!");
+    }
+
     const isValidPassword = await bcryptjs.compare(password, user.password!);
 
     if (!isValidPassword) {
@@ -140,6 +145,7 @@ export const forgotPassword = async (
 ) => {
   return safeAction<OtpVerification>(async () => {
     const data = Object.fromEntries(formData);
+    console.log(data.email);
     // Find user by email
     const user = await db.user.findUnique({
       where: { email: data.email as string },

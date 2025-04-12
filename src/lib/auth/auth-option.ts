@@ -41,6 +41,7 @@ export const authOptions = {
       user.image = dbUser.image;
       user.emailVerified = dbUser.emailVerified;
       user.id = dbUser.id;
+      user.provider = dbUser.provider;
 
       return true;
     },
@@ -51,6 +52,7 @@ export const authOptions = {
         session.user.firstName = token.firstName;
         session.user.lastName = token.lastName;
         session.user.image = token.image;
+        session.user.provider = token.provider;
         // @ts-ignore
         session.user.emailVerified = token.emailVerified;
       }
@@ -70,6 +72,7 @@ export const authOptions = {
         token.firstName = user.firstName!;
         token.lastName = user.lastName!;
         token.image = user.image!;
+        token.provider = user.provider;
         // @ts-ignore
         token.emailVerified = user.emailVerified!;
       }

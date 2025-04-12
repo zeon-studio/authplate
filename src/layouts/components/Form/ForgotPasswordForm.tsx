@@ -46,8 +46,8 @@ const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
         password: "",
       });
     },
-    onError() {
-      toast.error("Something went wrong");
+    onError({ error }) {
+      toast.error(error.message);
     },
   });
 
@@ -70,7 +70,7 @@ const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
         <Button
           type="submit"
           size={"lg"}
-          className="text-black px-4 font-bold w-full text-lg mt-4"
+          className="px-4 font-bold w-full text-lg mt-4"
           disabled={isPending}
         >
           {isPending ? (
