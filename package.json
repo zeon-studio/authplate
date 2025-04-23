@@ -18,6 +18,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@icons-pack/react-simple-icons": "^12.5.0",
+    "@justinribeiro/lite-youtube": "^1.7.1",
     "@paddle/paddle-js": "^1.4.0",
     "@paddle/paddle-node-sdk": "^2.5.1",
     "@radix-ui/react-accordion": "^1.2.4",
@@ -54,7 +55,6 @@
     "react-gravatar": "^2.6.3",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.55.0",
-    "react-lite-youtube-embed": "^2.4.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.3",
