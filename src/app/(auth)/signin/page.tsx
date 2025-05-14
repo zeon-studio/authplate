@@ -65,7 +65,7 @@ export default function SignIn() {
             className="w-full text-lg font-semibold"
           >
             <SiGoogle size={30} className="mr-1.5 inline-block" />
-            <span>Login With Goggle</span>
+            <span>Login With Google</span>
           </Button>
 
           <Button

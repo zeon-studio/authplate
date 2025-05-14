@@ -63,7 +63,7 @@ export default function Register() {
           className="w-full font-semibold mt-3"
         >
           <SiGoogle size={23} className="mr-3 inline-block" />
-          <span>Login With Goggle</span>
+          <span>Login With Google</span>
         </Button>
 
         <Button

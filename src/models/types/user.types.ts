@@ -1,7 +1,7 @@
 export enum Provider {
   CREDENTIALS = "CREDENTIALS",
-  GITHUB = "GITHUB",
-  GOOGLE = "GOOGLE",
+  GITHUB = "Github",
+  GOOGLE = "Google",
 }
 
 export interface UserType {
