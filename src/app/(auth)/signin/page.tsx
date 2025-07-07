@@ -11,7 +11,6 @@ import { toast } from "sonner";
 
 export default function SignIn() {
   const { data: session } = useSession();
-  console.log({ session });
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
