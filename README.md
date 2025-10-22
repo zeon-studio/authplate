@@ -17,7 +17,7 @@ A modern authentication template for Next.js applications with built-in security
 
 ## 📋 Requirements
 
-- Node.js v16.8+
+- Node.js v20+
 - MongoDB (local installation or MongoDB Atlas account)
 - Git
 
