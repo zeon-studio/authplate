@@ -6,9 +6,9 @@
   "license": "MIT",
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
-    "preview": "next build",
+    "start": "next start",
     "lint": "next lint",
     "format": "prettier -w ./src",
     "postinstall": "",
@@ -46,7 +46,7 @@
     "marked": "^16.4.1",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
-    "next": "15.5.6",
+    "next": "16.0.0",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.6",
     "nodemailer": "^7.0.9",
@@ -74,12 +74,12 @@
     "@types/marked": "^6.0.0",
     "@types/node": "24.9.1",
     "@types/nodemailer": "^7.0.2",
-    "@types/react": "^19.2.2",
+    "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@types/react-gravatar": "^2.6.14",
     "bcryptjs": "^3.0.2",
     "eslint": "^9.38.0",
-    "eslint-config-next": "15.5.6",
+    "eslint-config-next": "16.0.0",
     "html-loader": "^5.1.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
@@ -87,5 +87,9 @@
     "tailwindcss": "^4.1.15",
     "tsx": "^4.20.6",
     "typescript": "5.9.3"
+  },
+  "resolutions": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
   }
 }
