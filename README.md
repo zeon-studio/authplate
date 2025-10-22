@@ -5,7 +5,7 @@ A modern authentication template for Next.js applications with built-in security
 
 ## ✨ Features
 
-- **Next.js 13+** with App Router architecture
+- **Next.js 15+** with App Router architecture
 - **Complete Authentication** powered by NextAuth.js
 - **MongoDB Integration** (local or Atlas)
 - **TypeScript** throughout the codebase
