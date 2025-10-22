@@ -2,7 +2,6 @@
 
 A modern authentication template for Next.js applications with built-in security features, MongoDB integration, and a polished UI.
 
-![Authplate Banner](https://via.placeholder.com/800x400)
 
 ## ✨ Features
 
@@ -42,32 +41,32 @@ npm install
 1. Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-# Development settings
-AUTH_TRUST_HOST=true
-ANALYZE=false
+# Configurtion for better auth
+BETTER_AUTH_SECRET=HdQmtk3zMLYI8TJ1pyLwCWoxsStn5zwF
+BETTER_AUTH_URL=http://localhost:3000 # Base URL of your app
 
-# Authentication
-AUTH_SECRET="your_auth_secret_here"
+GITHUB_CLIENT_ID="Your github client id"
+GITHUB_CLIENT_SECRET="Your github client secret"
+
+GOOGLE_CLIENT_ID="Your github client id"
+GOOGLE_CLIENT_SECRET="Your github client secret"
+
+# MAX 100 requests allowed per 10 seconds
+RATELIMIT_WINDOW=10
+RATELIMIT_MAX=100
 
 # Database
-DATABASE_URL="your_mongodb_connection_string_here"
+MONGODB_URI="mongodb://localhost:27017/"
+DATABASE_NAME="auth-plate"
 
-# Google Auth (NextAuth)
-GOOGLE_CLIENT_ID="your_google_client_id"
-GOOGLE_CLIENT_SECRET="your_google_client_secret"
-
-# GitHub Auth (NextAuth)
-GITHUB_CLIENT_ID="your_github_client_id"
-GITHUB_CLIENT_SECRET="your_github_client_secret"
-
-# Email (Nodemailer)
+# Nodemailer
 SENDER_EMAIL="your_sender_email@example.com"
 EMAIL_PASSWORD="your_email_app_password"
 
-# Stripe (Coming Soon)
-# NEXT_PUBLIC_STRIPE_PUBLIC_KEY="your_stripe_public_key"
-# STRIPE_SECRET_KEY="your_stripe_secret_key"
-# STRIPE_WEBHOOK_SECRET="your_stripe_webhook_secret"
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY="your_stripe_public_key"
+STRIPE_SECRET_KEY="your_stripe_secret_key"
+STRIPE_WEBHOOK_SECRET="your_stripe_webhook_secret"
 
 # Paddle
 PADDLE_API_KEY="your_paddle_api_key"
