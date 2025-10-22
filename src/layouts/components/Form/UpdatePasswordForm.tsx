@@ -1,4 +1,5 @@
-import { updatePassword } from "@/app/actions/user";
+"use client";
+
 import {
   Form,
   FormControl,
@@ -7,20 +8,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useMutation } from "@/hooks/useMutation";
+import { changePassword } from "@/lib/auth/auth-client";
 import { updatePasswordSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+
+type UpdatePassPayload = z.infer<typeof updatePasswordSchema>;
 
 export default function UpdatePasswordForm() {
-  const { data: session } = useSession();
-  const passwordForm = useForm<z.infer<typeof updatePasswordSchema>>({
+  const [isPending, setIsPending] = useState(false);
+
+  const passwordForm = useForm<UpdatePassPayload>({
     resolver: zodResolver(updatePasswordSchema),
     mode: "onChange",
     defaultValues: {
@@ -30,26 +33,50 @@ export default function UpdatePasswordForm() {
     },
   });
 
-  const { action, isPending } = useMutation(updatePassword, {
-    onError({ error }) {
-      if (error.type === "VALIDATION_ERROR") {
-        passwordForm.trigger();
-        return;
-      }
-      toast(error.type, {
-        description: error.message,
-      });
-    },
-    onSuccess() {
-      toast.success("Password updated successfully");
-      passwordForm.reset();
-    },
-  });
+  // const { action, isPending } = useMutation(updatePassword, {
+  //   onError({ error }) {
+  //     if (error.type === "VALIDATION_ERROR") {
+  //       passwordForm.trigger();
+  //       return;
+  //     }
+  //     toast(error.type, {
+  //       description: error.message,
+  //     });
+  //   },
+  //   onSuccess() {
+  //     toast.success("Password updated successfully");
+  //     passwordForm.reset();
+  //   },
+  // });
+
+  const onSubmit = async (values: UpdatePassPayload) => {
+    await changePassword(
+      {
+        currentPassword: values.oldPassword,
+        newPassword: values.newPassword,
+        revokeOtherSessions: true, // true to revoke other sessions
+      },
+      {
+        onRequest: () => setIsPending(true),
+        onError(ctx) {
+          setIsPending(false);
+          toast.error(ctx.error.message || "Something went wrong!!");
+        },
+        onSuccess() {
+          setIsPending(false);
+          toast.success("Password updated successfully");
+          passwordForm.reset();
+        },
+      },
+    );
+  };
 
   return (
     <Form {...passwordForm}>
-      <form action={action} className="space-y-4">
-        <Input type="hidden" name="email" value={session?.user.email} />
+      <form
+        onSubmit={passwordForm.handleSubmit(onSubmit)}
+        className="space-y-4"
+      >
         <FormField
           control={passwordForm.control}
           name="oldPassword"

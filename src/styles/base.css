@@ -53,3 +53,7 @@ strong {
 code {
   @apply after:border-none;
 }
+
+button {
+  @apply cursor-pointer;
+}

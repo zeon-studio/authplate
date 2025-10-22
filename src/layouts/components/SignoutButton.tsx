@@ -1,12 +1,22 @@
 "use client";
-import { signOut } from "next-auth/react";
+
+import { signOut } from "@/lib/auth/auth-client";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const SignOutButton = () => {
-  const handleSignOut = () => {
-    signOut();
-    localStorage.removeItem("remember");
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.refresh();
+        },
+      },
+    });
   };
+
   return (
     <Button
       className="w-full"

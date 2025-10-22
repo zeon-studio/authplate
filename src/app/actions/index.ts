@@ -1,9 +1,7 @@
 "use server";
 
-import { CredentialsSignin } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
-import "server-only";
 import { z } from "zod";
 
 export type ExtractVariables<T> = T extends { variables: object }
@@ -32,11 +30,14 @@ export type Result<T> =
   | null;
 
 function formatZodErrors(error: z.ZodError): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(error.flatten().fieldErrors).map(([field, messages]) => [
-      field,
-      messages?.[0] || "Invalid input",
-    ]),
+  return error.issues.reduce(
+    (prev, curr) => {
+      if (curr.path) {
+        prev[curr.path[0]] = curr.message;
+      }
+      return prev;
+    },
+    {} as Record<PropertyKey, string>,
   );
 }
 
@@ -81,22 +82,22 @@ export async function safeAction<T>(
       };
     }
 
-    if (error instanceof CredentialsSignin) {
-      const message = error.message.substring(
-        0,
-        error.message.indexOf(". Read more"),
-      );
-      return {
-        success: false,
-        error: {
-          type: message === "User not verified" ? "OTP_REQUIRED" : "AUTH_ERROR",
-          message,
-          details: {
-            originalError: "Unknown error occurred",
-          },
-        },
-      };
-    }
+    // if (error instanceof CredentialsSignin) {
+    //   const message = error.message.substring(
+    //     0,
+    //     error.message.indexOf(". Read more"),
+    //   );
+    //   return {
+    //     success: false,
+    //     error: {
+    //       type: message === "User not verified" ? "OTP_REQUIRED" : "AUTH_ERROR",
+    //       message,
+    //       details: {
+    //         originalError: "Unknown error occurred",
+    //       },
+    //     },
+    //   };
+    // }
 
     if (error instanceof Error) {
       return {

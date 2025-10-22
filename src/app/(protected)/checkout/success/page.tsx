@@ -1,11 +1,15 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
+import { getServerAuth } from "@/lib/auth/auth-server";
 import { Check } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
-export default function SuccessPage() {
-  const { data: session } = useSession();
+import { redirect } from "next/navigation";
+
+export default async function SuccessPage() {
+  const auth = await getServerAuth();
+
+  if (!auth) {
+    redirect(`/signin?from=${encodeURIComponent("/checkout/success")}`);
+  }
 
   return (
     <div className={"relative h-screen overflow-hidden"}>
@@ -27,11 +31,7 @@ export default function SuccessPage() {
             Success! Your payment is complete, and you’re all set.
           </p>
           <Button size={"lg"} asChild={true}>
-            {session?.user ? (
-              <Link href={"/dashboard/subscriptions"}>Go to Dashboard</Link>
-            ) : (
-              <Link href={"/"}>Go to Home</Link>
-            )}
+            <Link href={"/dashboard/subscriptions"}>Go to Dashboard</Link>
           </Button>
         </div>
       </div>

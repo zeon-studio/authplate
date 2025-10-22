@@ -60,9 +60,7 @@ const UserSchema = new Schema<UserType>(
       },
     ],
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true, versionKey: false },
 );
 
 // Create or get existing model

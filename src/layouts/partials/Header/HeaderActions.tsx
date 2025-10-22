@@ -1,9 +1,10 @@
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Profile from "../UserProfileMenu";
+import { Session } from "@/lib/auth/auth-client";
+import { use } from "react";
 
 interface HeaderActionsProps {
   settings: {
@@ -16,12 +17,11 @@ interface HeaderActionsProps {
     blog_folder: string;
     payment: string;
   };
+  promiseAuth: Promise<Session | null>;
 }
 
-export function HeaderActions({ settings }: HeaderActionsProps) {
-  const data = useSession();
-  const status = data.status;
-
+export function HeaderActions({ settings, promiseAuth }: HeaderActionsProps) {
+  const auth = use(promiseAuth);
   return (
     <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
       {settings.search && (
@@ -34,18 +34,12 @@ export function HeaderActions({ settings }: HeaderActionsProps) {
         </Link>
       )}
       <ThemeSwitcher />
-      {status === "unauthenticated" ? (
-        <Button
-          onClick={() => {
-            signOut();
-          }}
-          asChild
-          className="h-auto"
-        >
-          <Link href="/signin">Sign in</Link>
-        </Button>
+      {auth ? (
+        <Profile auth={auth} />
       ) : (
-        <Profile />
+        <Button asChild className="h-auto">
+          <Link href="/signin">Sign In</Link>
+        </Button>
       )}
     </div>
   );

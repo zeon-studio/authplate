@@ -9,12 +9,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { auth } from "@/lib/auth";
+import { getServerAuth } from "@/lib/auth/auth-server";
 import { parseMoney } from "@/lib/paddle/parseMoney";
+import { redirect } from "next/navigation";
 
 export default async function Billing() {
-  const { user } = (await auth()) || {};
-  const paymentHistories = await getUserPaymentHistory(user?.id!);
+  const auth = await getServerAuth();
+
+  if (!auth) {
+    redirect(`/signin?from=${encodeURIComponent("/dashboard/billing")}`);
+  }
+
+  const { user } = auth;
+  const paymentHistories = await getUserPaymentHistory(user.id);
 
   if (!paymentHistories?.success) {
     return (

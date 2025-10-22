@@ -8,13 +8,20 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/layouts/components/ui/tabs";
-import { auth } from "@/lib/auth";
 import SubscriptionCard from "./_components/SubscriptionCard";
+import { getServerAuth } from "@/lib/auth/auth-server";
+import { redirect } from "next/navigation";
 
 export default async function Subscriptions() {
-  const { user } = (await auth()) || {};
-  const currentActiveSubscriptions = await getActiveSubscriptions(user?.id!);
-  const expiredSubscriptions = await getExpiredSubscriptions(user?.id!);
+  const auth = await getServerAuth();
+
+  if (!auth) {
+    redirect(`/signin?from=${encodeURIComponent("/dashboard/subscriptions")}`);
+  }
+
+  const { user } = auth;
+  const currentActiveSubscriptions = await getActiveSubscriptions(user.id);
+  const expiredSubscriptions = await getExpiredSubscriptions(user.id);
 
   if (!currentActiveSubscriptions?.success || !expiredSubscriptions?.success) {
     return (

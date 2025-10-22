@@ -6,37 +6,43 @@ const baseUserSchema = z.object({
     .string()
     .min(2, "First name must be at least 2 characters long.")
     .max(30, "First name must not exceed 30 characters.")
-    .regex(/^[a-zA-Z]+$/, "First name can only contain alphabetic characters.")
-    .optional(),
+    .regex(
+      /^[A-Za-z\s]+$/,
+      "First name can only contain alphabetic characters.",
+    ),
   lastName: z
     .string()
     .max(30, "Last name must not exceed 30 characters.")
-    .regex(/^[a-zA-Z]+$/, "Last name can only contain alphabetic characters.")
-    .optional(),
-  email: z
-    .string()
-    .email("Please provide a valid email address (e.g., user@example.com).")
-    .optional(),
+    .regex(
+      /^[A-Za-z\s]+$/,
+      "Last name can only contain alphabetic characters.",
+    ),
+  email: z.email(
+    "Please provide a valid email address (e.g., user@example.com).",
+  ),
   image: z
-    .string()
     .url("Please provide a valid URL for the image.")
     .or(z.literal(""))
-    .optional()
-    .nullable(),
+    .optional(),
   isTermsAccepted: z
     .boolean({
-      required_error: "You must accept the terms and conditions",
-      invalid_type_error: "Terms acceptance must be a boolean value",
+      error: (issue) =>
+        issue.input == undefined
+          ? "You must accept the terms and conditions"
+          : "Terms acceptance must be a boolean value",
     })
     .refine((value) => value === true, {
       message: "You must accept the terms and conditions",
     }),
   provider: z
-    .enum(["Credentials"], {
-      required_error: "Provider is required",
-      invalid_type_error: "Invalid provider type",
+    .enum(["Credential", "Google", "Github"], {
+      error: (issue) => {
+        return issue.input == undefined
+          ? "Provider is required"
+          : "Invalid provider type";
+      },
     })
-    .default("Credentials"),
+    .default("Credential"),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
 });
@@ -109,7 +115,6 @@ export const updatePasswordSchema = z
     oldPassword: passwordSchema.shape.password,
     newPassword: passwordSchema.shape.password,
     confirmPassword: passwordSchema.shape.password,
-    email: baseUserSchema.shape.email,
   })
   .refine((data) => data.newPassword !== data.oldPassword, {
     message: "New password must be different from the old password",

@@ -3,12 +3,21 @@
 import RegisterForm from "@/components/Form/RegistrationForm";
 import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
 import { Button } from "@/layouts/components/ui/button";
+import { signIn } from "@/lib/auth/auth-client";
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 
-export default function Register() {
+type SearchParams = Promise<{ from?: string }>;
+
+export default function Register({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { from } = use(searchParams);
+  const callbackURL = decodeURIComponent(from || "/");
+
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -19,6 +28,58 @@ export default function Register() {
   if (showOtp) {
     return <OtpVerifyForm {...loginInfo} />;
   }
+
+  const signinWithGoogle = async () => {
+    await signIn.social(
+      {
+        provider: "google",
+        callbackURL: callbackURL || "/", // redirect after the user authenticates with the provider
+        // errorCallbackURL: "/error",
+        // newUserCallbackURL: "/welcome",
+        disableRedirect: true, // disable the automatic redirect to the provider.
+      },
+      {
+        //callbacks
+        onRequest: () => {},
+        onSuccess: () => {},
+        onError: (ctx) => {
+          // Handle the error
+          if (ctx.error.status === 403) {
+            alert("Please verify your email address");
+            return;
+          }
+          //you can also show the original error message
+          alert(ctx.error.message);
+        },
+      },
+    );
+  };
+
+  const signinWithGithub = async () => {
+    await signIn.social(
+      {
+        provider: "google",
+        callbackURL: callbackURL || "/", // redirect after the user authenticates with the provider
+        // errorCallbackURL: "/error",
+        // newUserCallbackURL: "/welcome",
+        disableRedirect: true, // disable the automatic redirect to the provider.
+      },
+      {
+        //callbacks
+        onRequest: () => {},
+        onSuccess: () => {},
+        onError: (ctx) => {
+          // Handle the error
+          if (ctx.error.status === 403) {
+            alert("Please verify your email address");
+            return;
+          }
+          //you can also show the original error message
+          alert(ctx.error.message);
+        },
+      },
+    );
+  };
 
   return (
     <>
@@ -56,9 +117,7 @@ export default function Register() {
 
       <div className="space-y-4">
         <Button
-          onClick={async () => {
-            await signIn("google");
-          }}
+          onClick={signinWithGoogle}
           size={"lg"}
           className="w-full font-semibold mt-3"
         >
@@ -67,9 +126,7 @@ export default function Register() {
         </Button>
 
         <Button
-          onClick={() => {
-            signIn("github");
-          }}
+          onClick={signinWithGithub}
           className="w-full font-semibold"
           size={"lg"}
         >

@@ -1,6 +1,6 @@
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
-import { auth } from "@/lib/auth";
+import { getServerAuth } from "@/lib/auth/auth-server";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
@@ -25,9 +25,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const promiseAuth = getServerAuth();
+
   return (
-    <html suppressHydrationWarning={true} lang="en" className="text-base">
+    <html suppressHydrationWarning lang="en" className="text-base">
       <head>
         {/* responsive meta */}
         <meta
@@ -53,12 +54,11 @@ export default async function RootLayout({
       </head>
 
       <body
-        suppressHydrationWarning={true}
         className={`${fontPrimary.variable} ${fontSecondary.variable} text-base`}
       >
         <TwSizeIndicator />
-        <Providers session={session}>
-          <Header />
+        <Providers>
+          <Header promiseAuth={promiseAuth} />
           <main>{children}</main>
           <Footer />
         </Providers>

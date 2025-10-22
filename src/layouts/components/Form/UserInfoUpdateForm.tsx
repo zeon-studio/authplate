@@ -1,6 +1,5 @@
 "use client";
 
-import { updateUser } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,50 +10,96 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@/hooks/useMutation";
+import { Session, updateUser } from "@/lib/auth/auth-client";
 import { updateUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
+import { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-export default function UserInfoUpdateForm() {
-  const { data: session, update } = useSession();
-  const profileForm = useForm<z.infer<typeof updateUserSchema>>({
+type UpdateUserPayload = z.infer<typeof updateUserSchema>;
+
+export default function UserInfoUpdateForm({
+  authPromise,
+}: {
+  authPromise: Promise<Session | null>;
+}) {
+  const auth = use(authPromise);
+  const [isPending, setIsPending] = useState(false);
+
+  const profileForm = useForm<UpdateUserPayload>({
     resolver: zodResolver(updateUserSchema),
     mode: "onChange",
     defaultValues: {
-      firstName: session?.user.firstName,
-      lastName: session?.user.lastName,
-      image: session?.user.image ?? "",
+      firstName: "",
+      lastName: "",
+      image: "",
     },
   });
 
-  const { action, isPending } = useMutation(updateUser, {
-    onError({ error }) {
-      if (error.type === "VALIDATION_ERROR") {
-        profileForm.trigger();
-        return;
-      }
-      toast(error.type, {
-        description: error.message,
-      });
-    },
-    onSuccess() {
-      update({
-        ...profileForm.getValues(),
-      });
-      toast("Success!", {
-        description: "User info updated successfully.",
-      });
-    },
-  });
+  useEffect(() => {
+    if (auth?.user.firstName) {
+      profileForm.setValue("firstName", auth?.user.firstName);
+    }
+    if (auth?.user.lastName) {
+      profileForm.setValue("lastName", auth?.user.lastName);
+    }
+    if (auth?.user.image) {
+      profileForm.setValue("image", auth?.user.image);
+    }
+  }, [
+    auth?.user.image,
+    auth?.user.firstName,
+    auth?.user.lastName,
+    profileForm,
+  ]);
+
+  // const { action, isPending } = useMutation(updateUser, {
+  //   onError({ error }) {
+  //     if (error.type === "VALIDATION_ERROR") {
+  //       profileForm.trigger();
+  //       return;
+  //     }
+  //     toast(error.type, {
+  //       description: error.message,
+  //     });
+  //   },
+  //   onSuccess() {
+  //     update({
+  //       ...profileForm.getValues(),
+  //     });
+  //     toast("Success!", {
+  //       description: "User info updated successfully.",
+  //     });
+  //   },
+  // });
+
+  const onSubmit = async (values: UpdateUserPayload) => {
+    await updateUser(
+      {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        image: values.image,
+      },
+      {
+        onRequest: () => setIsPending(true),
+        onSuccess: () => {
+          setIsPending(false);
+          toast.success("Info updated successfully");
+        },
+        onError: (ctx) => {
+          setIsPending(false);
+          toast.error(ctx.error.message || "Something went wrong!");
+        },
+      },
+    );
+  };
 
   return (
     <Form {...profileForm}>
-      <form action={action} className="space-y-4">
-        <Input type="hidden" name="id" value={session?.user.id} />
+      <form onSubmit={profileForm.handleSubmit(onSubmit)} className="space-y-4">
+        <Input type="hidden" name="id" value={auth?.user.id} />
 
         <FormField
           control={profileForm.control}
