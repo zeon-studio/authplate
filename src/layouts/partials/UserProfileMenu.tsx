@@ -1,6 +1,7 @@
 "use client";
 
 import { icons } from "@/components/Icons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,24 +13,33 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import menu from "@/config/menu.json";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Session, signOut } from "@/lib/auth/auth-client";
 import { LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function Profile() {
-  const { data: session } = useSession();
-  const { user } = session || {};
+export default function Profile({ auth }: { auth: Session }) {
+  const router = useRouter();
+  const { user } = auth;
 
   const fallback = () => {
-    let firstName = user?.firstName;
-    let lastName = user?.lastName;
+    let firstName = user.firstName;
+    let lastName = user.lastName;
 
     let firstInitial = firstName?.split(" ")[0]?.[0] || "";
     let lastInitial = lastName?.split(" ")[0]?.[0] || "";
 
     return firstInitial + lastInitial;
+  };
+
+  const handleLogout = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.refresh();
+        },
+      },
+    });
   };
 
   return (
@@ -38,7 +48,7 @@ export default function Profile() {
         <Button className="px-1" variant="outline">
           <Avatar className="size-7">
             <AvatarImage
-              src={user?.image}
+              src={user?.image as string | undefined}
               alt={user?.firstName + " " + user?.lastName}
             />
             <AvatarFallback className="text-xs bg-light text-text-light">
@@ -67,7 +77,7 @@ export default function Profile() {
           })}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

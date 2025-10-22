@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -11,9 +9,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import UpdatePasswordForm from "@/layouts/components/Form/UpdatePasswordForm";
 import UserInfoUpdateForm from "@/layouts/components/Form/UserInfoUpdateForm";
+import { getServerAuth } from "@/lib/auth/auth-server";
 import { Lock, User2 } from "lucide-react";
 
 export default function AccountSettings() {
+  const authPromise = getServerAuth();
+
   return (
     <div className="p-8">
       <div className="mx-auto max-w-2xl space-y-8">
@@ -35,7 +36,7 @@ export default function AccountSettings() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <UserInfoUpdateForm />
+            <UserInfoUpdateForm authPromise={authPromise} />
           </CardContent>
         </Card>
 

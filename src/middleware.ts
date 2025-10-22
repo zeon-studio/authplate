@@ -1,28 +1,29 @@
-import { authOptions } from "@/lib/auth/auth-option";
-import NextAuth from "next-auth";
-import { NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
+import { NextRequest, NextResponse } from "next/server";
 
-// Ensure no imports or logic related to mongoose or database operations are present
-const { auth } = NextAuth(authOptions);
 const publicUrl = ["/signin", "/signup", "/forgot-password", "/otp"];
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isAuth = !!req.auth && req.auth?.user.emailVerified;
-  const pathname = nextUrl.pathname;
-  const origin = nextUrl.origin;
+
+export async function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+  const origin = req.nextUrl.origin;
+  const sessionCookie = getSessionCookie(req);
 
   if (publicUrl.some((u) => pathname.startsWith(u))) {
-    if (isAuth) {
+    if (sessionCookie) {
       return NextResponse.redirect(new URL("/", origin));
     } else {
       return NextResponse.next();
     }
   }
 
-  if (!isAuth) {
+  // THIS IS NOT SECURE!
+  // This is the recommended approach to optimistically redirect users
+  // We recommend handling auth checks in each page/route
+  if (!sessionCookie) {
     return NextResponse.redirect(new URL(`/signin?from=${pathname}`, origin));
   }
-});
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

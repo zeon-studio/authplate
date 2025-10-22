@@ -1,6 +1,5 @@
 "use client";
 
-import { createUser } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -12,9 +11,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@/hooks/useMutation";
+import { emailOtp, signUp } from "@/lib/auth/auth-client";
 import { registerUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,9 +25,9 @@ const defaultValues =
     ? {
         firstName: "John",
         lastName: "Doe",
-        email: "mukles.themefisher@gmail.com",
-        password: "Password123!",
-        confirmPassword: "Password123!",
+        email: "siashuvo1@gmail.com",
+        password: "@Password123",
+        confirmPassword: "@Password123",
         isTermsAccepted: true,
       }
     : {
@@ -39,41 +39,101 @@ const defaultValues =
         isTermsAccepted: false,
       };
 
+type RegisterPayload = z.infer<typeof registerUserSchema>;
+
 export default function RegisterForm({
   onOtpRequired,
 }: {
   onOtpRequired: (params: { email: string; password: string }) => void;
 }) {
-  const registerForm = useForm<z.infer<typeof registerUserSchema>>({
+  const [isPending, setIsPending] = useState(false);
+  const registerForm = useForm<RegisterPayload>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: defaultValues,
   });
 
-  const { action, isPending } = useMutation(createUser, {
-    onError({ error }) {
-      if (error.type === "VALIDATION_ERROR") {
-        registerForm.trigger();
-        return;
-      }
-      toast(error.type, {
-        description: error.message,
-      });
-    },
-    onSuccess() {
-      toast("Success!", {
-        description: "User registered successfully.",
-      });
-      onOtpRequired({
-        email: registerForm.getValues("email")!,
-        password: registerForm.getValues("password")!,
-      });
-      registerForm.reset();
-    },
-  });
+  // const { action, isPending } = useMutation(createUser, {
+  //   onError({ error }) {
+  //     if (error.type === "VALIDATION_ERROR") {
+  //       registerForm.trigger();
+  //       return;
+  //     }
+  //     toast(error.type, {
+  //       description: error.message,
+  //     });
+  //   },
+  //   onSuccess() {
+  //     toast("Success!", {
+  //       description: "User registered successfully.",
+  //     });
+  //     onOtpRequired({
+  //       email: registerForm.getValues("email")!,
+  //       password: registerForm.getValues("password")!,
+  //     });
+  //     registerForm.reset();
+  //   },
+  // });
+
+  const onSubmit = async ({
+    email,
+    password,
+    isTermsAccepted,
+    firstName,
+    lastName,
+  }: RegisterPayload) => {
+    await signUp.email(
+      {
+        name: firstName + " " + lastName,
+        firstName,
+        lastName,
+        email,
+        password,
+        isTermsAccepted,
+        provider: "CREDENTIALS",
+        callbackURL: "/",
+      },
+      {
+        //callbacks
+        onRequest: () => {
+          setIsPending(true);
+        },
+        onSuccess: async () => {
+          toast.success("User registered successfully.");
+          setIsPending(false);
+          onOtpRequired({
+            email: registerForm.getValues("email")!,
+            password: registerForm.getValues("password")!,
+          });
+          registerForm.reset();
+          await emailOtp.sendVerificationOtp({
+            email: registerForm.getValues("email"),
+            type: "email-verification", // required
+          });
+        },
+        onError: (ctx) => {
+          setIsPending(false);
+          // Handle the error
+          if (ctx.error.status === 403) {
+            toast.warning("Please verify your email address");
+            onOtpRequired({
+              email: ctx.request.body.email,
+              password: ctx.request.body.password,
+            });
+            return;
+          }
+          //you can also show the original error message
+          toast.error(ctx.error.message);
+        },
+      },
+    );
+  };
 
   return (
     <Form {...registerForm}>
-      <form action={action} className="mx-auto mb-10 row">
+      <form
+        onSubmit={registerForm.handleSubmit(onSubmit)}
+        className="mx-auto mb-10 row"
+      >
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}

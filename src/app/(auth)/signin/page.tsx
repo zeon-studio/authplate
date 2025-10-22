@@ -3,29 +3,45 @@
 import LoginForm from "@/components/Form/LoginForm";
 import { Button } from "@/components/ui/button";
 import OtpVerifyForm from "@/layouts/components/Form/OtpVerfyForm";
+import { signIn } from "@/lib/auth/auth-client";
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
-import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { use, useState } from "react";
 
-export default function SignIn() {
-  const { data: session } = useSession();
+type SearchParams = Promise<{ from?: string }>;
+
+export default function SignIn({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { from } = use(searchParams);
+  const callbackURL = decodeURIComponent(from || "/");
+
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
   });
 
-  useEffect(() => {
-    if (session?.error) {
-      toast.error(session.error);
-    }
-  }, [session?.error]);
-
   const [showOtp, setShowOtp] = useState(false);
+
   if (showOtp) {
     return <OtpVerifyForm {...loginInfo} />;
   }
+
+  const signinWithGoogle = async () => {
+    await signIn.social({
+      provider: "google",
+      callbackURL, // redirect after the user authenticates with the provider
+      // errorCallbackURL: "/error",
+      // newUserCallbackURL: "/welcome",
+      // disableRedirect: true, // disable the automatic redirect to the provider.
+    });
+  };
+
+  const signinWithGithub = async () => {
+    await signIn.social({ provider: "github", callbackURL });
+  };
 
   return (
     <>
@@ -57,9 +73,7 @@ export default function SignIn() {
 
         <div className="space-y-5 mt-5">
           <Button
-            onClick={async () => {
-              await signIn("google");
-            }}
+            onClick={signinWithGoogle}
             size={"lg"}
             className="w-full text-lg font-semibold"
           >
@@ -68,9 +82,7 @@ export default function SignIn() {
           </Button>
 
           <Button
-            onClick={() => {
-              signIn("github");
-            }}
+            onClick={signinWithGithub}
             className="w-full text-lg font-semibold"
             size={"lg"}
           >

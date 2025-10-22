@@ -1,6 +1,5 @@
 "use client";
 
-import { verifyOtp } from "@/app/actions/otp";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,15 +14,15 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useMutation } from "@/hooks/useMutation";
+import { emailOtp, signIn } from "@/lib/auth/auth-client";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { signIn } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
 import { OtpTimer } from "../OtpTimer";
 import { Input } from "../ui/input";
 import ResetPasswordForm from "./ResetPasswordForm";
@@ -34,9 +33,13 @@ type OtpVerifyFormProps = {
 };
 
 const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
+  const [isPending, setIsPending] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackURL = decodeURIComponent(searchParams.get("from") || "/");
   const pathname = usePathname();
-  const isForgotPassword = pathname.includes("forgot-password");
+  const isForgotPassword = pathname.startsWith("/forgot-password");
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
+
   const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -45,35 +48,87 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
     mode: "onChange",
   });
 
-  const { action, isPending } = useMutation(verifyOtp, {
-    onError({ error }) {
-      if (error.type === "VALIDATION_ERROR") {
-        otpForm.trigger();
-        return;
-      }
-      toast.error(error.message || "Something went Wrong!");
-    },
-    async onSuccess() {
-      toast.success("OTP Verified!");
-      if (isForgotPassword) {
-        setShowResetPasswordForm(true);
-        return;
-      }
-      signIn("credentials", {
-        email: email,
-        password: password!,
-      });
-    },
-  });
+  // const { action, isPending } = useMutation(verifyOtp, {
+  //   onError({ error }) {
+  //     if (error.type === "VALIDATION_ERROR") {
+  //       otpForm.trigger();
+  //       return;
+  //     }
+  //     toast.error(error.message || "Something went Wrong!");
+  //   },
+  //   async onSuccess() {
+  //     toast.success("OTP Verified!");
+  //     if (isForgotPassword) {
+  //       setShowResetPasswordForm(true);
+  //       return;
+  //     }
+  //     signIn("credentials", {
+  //       email: email,
+  //       password: password!,
+  //     });
+  //   },
+  // });
 
-  return showResetPasswordForm ? (
-    <ResetPasswordForm email={email!} />
-  ) : (
+  const onSubmit = async (values: z.infer<typeof otpSchema>) => {
+    if (isForgotPassword) {
+      await emailOtp.checkVerificationOtp(
+        {
+          email,
+          type: "forget-password", // required
+          otp: values.otp,
+        },
+        {
+          onSuccess: () => {
+            setShowResetPasswordForm(true);
+          },
+        },
+      );
+      return;
+    }
+
+    await emailOtp.verifyEmail(
+      { email, otp: values.otp },
+      {
+        onRequest: () => {
+          setIsPending(true);
+        },
+        onSuccess: async () => {
+          if (password) {
+            await signIn.email({
+              email,
+              password,
+              callbackURL: callbackURL,
+              rememberMe: true, // false to not remember the session
+            });
+          }
+
+          setIsPending(false);
+          toast.success("Email verification is successful");
+        },
+        onError: async (ctx) => {
+          setIsPending(false);
+          toast.success(ctx.error.message);
+        },
+      },
+    );
+  };
+
+  if (showResetPasswordForm) {
+    return (
+      <ResetPasswordForm
+        email={email}
+        otp={otpForm.getValues("otp")}
+        callbackURL={callbackURL}
+      />
+    );
+  }
+
+  return (
     <div className="relative">
       <Form {...otpForm}>
         <form
           id="otpVerification"
-          action={action}
+          onSubmit={otpForm.handleSubmit(onSubmit)}
           className="space-y-3 text-left"
         >
           <div className="mb-4 text-left">

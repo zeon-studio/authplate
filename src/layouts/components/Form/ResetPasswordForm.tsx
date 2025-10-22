@@ -1,5 +1,5 @@
 "use client";
-import { resetPassword } from "@/app/actions/user";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,50 +10,92 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@/hooks/useMutation";
+import { emailOtp, signIn } from "@/lib/auth/auth-client";
 import { resetPasswordSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
 import PasswordInput from "../PasswordInput";
 
 const defaultValues =
   process.env.NODE_ENV === "development"
     ? {
-        password: "password123$",
-        confirmPassword: "password123$",
+        password: "Password123@",
+        confirmPassword: "Password123@",
       }
     : {
         password: "",
         confirmPassword: "",
       };
 
-const ResetPasswordForm = ({ email }: { email: string }) => {
-  const router = useRouter();
-  const resetPasswordForm = useForm({
+type ResetPasspayload = z.infer<typeof resetPasswordSchema>;
+
+const ResetPasswordForm = ({
+  email,
+  otp,
+  callbackURL,
+}: {
+  email: string;
+  otp: string;
+  callbackURL: string;
+}) => {
+  const [isPending, setIsPending] = useState(false);
+
+  const resetPasswordForm = useForm<ResetPasspayload>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: defaultValues,
   });
 
-  const { action, isPending } = useMutation(resetPassword, {
-    onSuccess: () => {
-      toast.success("Password reset successfully");
-      router.push("/signin"); // redirect to signin page after resetting password
-    },
-    onError: ({ error }) => {
-      if (error.type === "VALIDATION_ERROR") {
-        resetPasswordForm.trigger();
-        return;
-      }
-      toast.error(error.message || "Something went wrong");
-    },
-  });
+  // const { action, isPending } = useMutation(resetPassword, {
+  //   onSuccess: () => {
+  //     toast.success("Password reset successfully");
+  //     router.push("/signin"); // redirect to signin page after resetting password
+  //   },
+  //   onError: ({ error }) => {
+  //     if (error.type === "VALIDATION_ERROR") {
+  //       resetPasswordForm.trigger();
+  //       return;
+  //     }
+  //     toast.error(error.message || "Something went wrong");
+  //   },
+  // });
+
+  const onSubmit = async (values: ResetPasspayload) => {
+    await emailOtp.resetPassword(
+      {
+        email,
+        otp,
+        password: values.password,
+      },
+      {
+        onRequest: () => setIsPending(true),
+        onSuccess: async () => {
+          setIsPending(false);
+          toast.success("Password reset successfully");
+          await signIn.email({
+            email,
+            password: values.password,
+            callbackURL,
+            rememberMe: true, // false to not remember the session
+          });
+        },
+        onError: (ctx) => {
+          setIsPending(false);
+          toast.error(ctx.error.message || "Something went wrong");
+        },
+      },
+    );
+  };
 
   return (
     <Form {...resetPasswordForm}>
-      <form action={action} className="space-y-2.5">
+      <form
+        onSubmit={resetPasswordForm.handleSubmit(onSubmit)}
+        className="space-y-2.5"
+      >
         <Input type="hidden" name="email" value={email} />
         <div>
           <FormField

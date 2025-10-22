@@ -4,17 +4,16 @@ import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { PADDLE_CLIENT_TOKEN, PADDLE_ENV } from "@/config/paddle";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PriceSection } from "./PriceSection";
+import { Session } from "@/lib/auth/auth-client";
 
 interface Props {
-  userEmail?: string;
+  auth: Session;
 }
 
-export function CheckoutContents({ userEmail }: Props) {
-  const { data: session, status } = useSession();
+export function CheckoutContents({ auth }: Props) {
   const { priceId } = useParams<{ priceId: string }>();
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(
@@ -34,12 +33,12 @@ export function CheckoutContents({ userEmail }: Props) {
     setCheckoutData(event);
   };
 
+  const { email, firstName, lastName } = auth.user;
+
+  const isAuthenticated = true;
+
   useEffect(() => {
-    if (
-      !paddle?.Initialized &&
-      PADDLE_CLIENT_TOKEN &&
-      status === "authenticated"
-    ) {
+    if (!paddle?.Initialized && PADDLE_CLIENT_TOKEN && isAuthenticated) {
       initializePaddle({
         token: PADDLE_CLIENT_TOKEN,
         environment: PADDLE_ENV,
@@ -54,7 +53,7 @@ export function CheckoutContents({ userEmail }: Props) {
             showAddDiscounts: true,
             variant: "one-page",
             theme: "light",
-            allowLogout: !userEmail,
+            allowLogout: !isAuthenticated,
             frameTarget: "paddle-checkout-frame",
             frameInitialHeight: 450,
             frameStyle:
@@ -66,15 +65,13 @@ export function CheckoutContents({ userEmail }: Props) {
         if (paddle && priceId) {
           setPaddle(paddle);
           paddle.Checkout.open({
-            ...(userEmail && {
-              customer: {
-                email: userEmail,
-              },
-            }),
+            customer: {
+              email,
+            },
             items: [{ priceId: priceId, quantity: 1 }],
             customData: {
-              email: session?.user?.email,
-              name: session.user.firstName + " " + session.user.lastName,
+              email,
+              name: firstName + " " + lastName,
               packageName: plan?.name,
             },
           });
@@ -85,11 +82,10 @@ export function CheckoutContents({ userEmail }: Props) {
     plan,
     paddle?.Initialized,
     priceId,
-    session?.user?.email,
-    session?.user.firstName,
-    session?.user.lastName,
-    status,
-    userEmail,
+    firstName,
+    lastName,
+    email,
+    isAuthenticated,
   ]);
 
   useEffect(() => {

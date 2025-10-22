@@ -1,10 +1,19 @@
-"use client";
-
 import { CheckoutContents } from "@/layouts/components/payment/paddle/CheckoutContents";
-import { useSession } from "next-auth/react";
+import { getServerAuth } from "@/lib/auth/auth-server";
+import { redirect } from "next/navigation";
 
-export default function CheckoutPage() {
-  const { data } = useSession();
+export default async function CheckoutPage({
+  params,
+}: {
+  params: Promise<{ priceId: string }>;
+}) {
+  const auth = await getServerAuth();
+  const { priceId } = await params;
+
+  if (!auth) {
+    redirect(`/signin?from=${encodeURIComponent("/checkout/" + priceId)}`);
+  }
+
   return (
     <div className={"w-full min-h-screen relative overflow-hidden"}>
       <div
@@ -12,7 +21,7 @@ export default function CheckoutPage() {
           "mx-auto max-w-6xl relative px-[16px] md:px-[32px] py-[24px] flex flex-col gap-6 justify-between"
         }
       >
-        <CheckoutContents userEmail={data?.user?.email} />
+        <CheckoutContents auth={auth} />
       </div>
     </div>
   );

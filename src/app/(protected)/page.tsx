@@ -1,10 +1,17 @@
 import { PricingTier } from "@/actions/paddle/pricing-tier";
 import { getActiveSubscriptions } from "@/actions/subscriptions";
 import PricingCard from "@/layouts/components/PricingCard";
-import { auth } from "@/lib/auth";
+import { getServerAuth } from "@/lib/auth/auth-server";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const { user } = (await auth()) || {};
+  const session = await getServerAuth();
+
+  if (!session) {
+    return redirect("/signin");
+  }
+
+  const { user } = session;
   const currentActiveSubscriptions = await getActiveSubscriptions(user?.id!);
 
   if (!currentActiveSubscriptions?.success) {

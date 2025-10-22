@@ -10,6 +10,7 @@ module.exports = {
   },
   images: {
     remotePatterns: [
+      new URL("https://**"), // allow all secure image path
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",

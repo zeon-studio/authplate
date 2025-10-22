@@ -1,6 +1,5 @@
 "use client";
 
-import { forgotPassword } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,10 +10,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@/hooks/useMutation";
+import { forgetPassword } from "@/lib/auth/auth-client";
 import { forgotPasswordSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -26,34 +26,48 @@ type Props = {
 const defaultValues =
   process.env.NODE_ENV === "development"
     ? {
-        email: "mukles.themefisher@gmail.com",
+        email: "shuvo.themefisher@gmail.com",
       }
     : {
         email: "",
       };
 
+type ForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
+
 const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
-  const forgotPasswordForm = useForm<z.infer<typeof forgotPasswordSchema>>({
+  const [isPending, setIsPending] = useState(false);
+  const forgotPasswordForm = useForm<ForgotPasswordPayload>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: defaultValues,
   });
 
-  const { action, isPending } = useMutation(forgotPassword, {
-    onSuccess() {
-      toast.success("OTP sent to your email");
-      onOtpRequired({
-        email: forgotPasswordForm.getValues("email")!,
-        password: "",
-      });
-    },
-    onError() {
-      toast.error("Something went wrong");
-    },
-  });
+  const onSubmit = async ({ email }: ForgotPasswordPayload) => {
+    await forgetPassword.emailOtp(
+      { email },
+      {
+        onRequest: () => setIsPending(true),
+        onSuccess: () => {
+          setIsPending(false);
+          toast.success("OTP sent to your email");
+          onOtpRequired({
+            email: forgotPasswordForm.getValues("email")!,
+            password: "",
+          });
+        },
+        onError: (ctx) => {
+          setIsPending(false);
+          toast.error(ctx.error.message || "Something went wrong");
+        },
+      },
+    );
+  };
 
   return (
     <Form {...forgotPasswordForm}>
-      <form action={action} className="mx-auto max-w-md">
+      <form
+        onSubmit={forgotPasswordForm.handleSubmit(onSubmit)}
+        className="mx-auto max-w-md"
+      >
         <FormField
           control={forgotPasswordForm.control}
           name={"email"}

@@ -9,10 +9,13 @@ export default function ForgotPasswordPage() {
     email: "",
     password: "",
   });
+  
   const [showOtp, setShowOtp] = useState(false);
+
   if (showOtp) {
     return <OtpVerifyForm {...loginInfo} />;
   }
+
   return (
     <>
       <div className="text-center">

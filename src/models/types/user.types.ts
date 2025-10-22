@@ -1,5 +1,5 @@
 export enum Provider {
-  CREDENTIALS = "CREDENTIALS",
+  CREDENTIALS = "Credential",
   GITHUB = "Github",
   GOOGLE = "Google",
 }
