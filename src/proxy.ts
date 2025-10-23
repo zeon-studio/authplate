@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const publicUrl = ["/signin", "/signup", "/forgot-password", "/otp"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const origin = req.nextUrl.origin;
   const sessionCookie = getSessionCookie(req);
