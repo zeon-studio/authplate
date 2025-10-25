@@ -15,7 +15,7 @@ export async function connectToMongoDB(): Promise<typeof mongoose> {
 
   if (!MONGODB_URI) {
     throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local",
+      "Please define the MONGODB_URI environment variable inside .env",
     );
   }
 
@@ -26,7 +26,6 @@ export async function connectToMongoDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      dbName: process.env.DATABASE_NAME!,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       return mongoose;
@@ -44,5 +43,5 @@ export async function connectToMongoDB(): Promise<typeof mongoose> {
 
 export async function getClient() {
   const conn = await connectToMongoDB();
-  return conn.connection.getClient().db(process.env.DATABASE_NAME);
+  return conn.connection.getClient().db();
 }

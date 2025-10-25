@@ -77,19 +77,16 @@ export default function RegisterForm({
   const onSubmit = async ({
     email,
     password,
-    isTermsAccepted,
     firstName,
     lastName,
   }: RegisterPayload) => {
     await signUp.email(
       {
-        name: firstName + " " + lastName,
-        firstName,
+        name: firstName,
+        firstName: firstName,
         lastName,
         email,
         password,
-        isTermsAccepted,
-        provider: "CREDENTIALS",
         callbackURL: "/",
       },
       {

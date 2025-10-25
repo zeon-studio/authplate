@@ -1,38 +1,23 @@
-import { betterAuth } from "better-auth";
-import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { APIError } from "better-auth/api";
-import { emailOTP } from "better-auth/plugins";
-// import { getClient } from "../mongoose";
 import { mailSender } from "@/app/actions/sender";
 import bcryptjs from "bcryptjs";
+import { betterAuth } from "better-auth";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { MongoClient } from "mongodb";
-import {
-  registerUserSchema,
-  updateUserSchema,
-} from "../validation/user.schema";
+import { emailOTP } from "better-auth/plugins";
+import { getClient } from "../mongoose";
+import { userSchema } from "../validation/user.schema";
+import { otpVerifySchema } from "./server-validation-schema";
 
-// const client = await getClient();
-const client = new MongoClient(process.env.MONGODB_URI!);
-const db = client.db(process.env.DATABASE_NAME!);
+const client = await getClient();
 
 export const auth = betterAuth({
-  database: mongodbAdapter(db, { client, usePlural: true }),
+  database: mongodbAdapter(client),
   // to modify user data before create or update
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
-          const validationResult = registerUserSchema.safeParse(user);
-
-          if (!validationResult.success) {
-            throw new APIError("BAD_REQUEST", {
-              message: validationResult.error.issues.map(
-                (issue) => issue.message,
-              )[0],
-            });
-          }
-
+        before: async (user, ctx) => {
           // Modify the user object before it is created
           return { data: user };
         },
@@ -42,17 +27,7 @@ export const auth = betterAuth({
       },
       update: {
         before: async (user) => {
-          const validationResult = updateUserSchema.safeParse(user);
-
-          if (!validationResult.success) {
-            // Use APIError to send validation errors to the client
-            throw new APIError("BAD_REQUEST", {
-              message: validationResult.error.issues.map(
-                (issue) => issue.message,
-              )[0],
-            });
-          }
-
+          // const validationResult = updateUserSchema.safeParse(user)
           // Modify the user object before it is created
           return { data: user };
         },
@@ -83,24 +58,37 @@ export const auth = betterAuth({
     window: parseInt(process.env.RATELIMIT_WINDOW!), // time window in seconds
     max: parseInt(process.env.RATELIMIT_MAX!), // max requests in the window
   },
-  // hooks: {
-  //   before: createAuthMiddleware(async (ctx) => {}),
-  //   after: createAuthMiddleware(async (ctx) => {
-  //     // run after an endpoint is executed. Use them to modify responses.
-  //     // Example: Send a notification to your channel when a new user is registered
-  //     if (ctx.path.startsWith("/sign-up")) {
-  //       // const newSession = ctx.context.newSession;
-  //       // if (newSession) {
-  //       //   sendMessage({
-  //       //     type: "user-register",
-  //       //     name: newSession.user.name,
-  //       //   });
-  //       // }
-  //     }
-  //     // The newly created session after an endpoint is run. This only exist in after hook.
-  //     //  const newSession = ctx.context.newSession
-  //   }),
-  // },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      // run before an endpoint is executed.
+      if (ctx.path === "/sign-up/email") {
+        // validate register payload
+        const refinedSchema = userSchema.omit({ isTermsAccepted: true });
+        const { success, error } = refinedSchema.safeParse({
+          ...ctx.body,
+          firstName: ctx.body.name,
+        });
+        if (!success) {
+          throw new APIError("BAD_REQUEST", {
+            message: error.issues.map((issue) => issue.message)[0],
+          });
+        }
+      }
+
+      if (ctx.path === "/email-otp/verify-email") {
+        // validate otp payload
+        const { success, error } = otpVerifySchema.safeParse(ctx.body);
+        if (!success) {
+          throw new APIError("BAD_REQUEST", {
+            message: error.issues.map((issue) => issue.message)[0],
+          });
+        }
+      }
+    }),
+    after: createAuthMiddleware(async (ctx) => {
+      // run after an endpoint is executed. Use them to modify responses.
+    }),
+  },
 
   emailVerification: {
     sendOnSignUp: true,
@@ -137,18 +125,17 @@ export const auth = betterAuth({
       isTermsAccepted: {
         type: "boolean",
         required: true,
-        input: true,
-        defaultValue: false,
+        input: false,
+        defaultValue: true,
       },
       provider: {
         type: "string",
         required: true,
-        input: true,
+        input: false,
         defaultValue: "Credential",
       },
       password: {
         type: "string",
-        required: false,
         input: true,
       },
       // verifications: {
@@ -266,7 +253,7 @@ export const auth = betterAuth({
 
     // Custom password validation function
     // onPasswordReset: async ({ user }, request) => {
-      // your logic here
+    // your logic here
     // },
     password: {
       hash: async (password: string) => {
@@ -285,8 +272,9 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       mapProfileToUser: (profile) => {
         return {
-          firstName: profile.name.split(" ")[0],
+          name: profile.name.split(" ")[0],
           lastName: profile.name.split(" ")[1],
+          provider: "Github",
         };
       },
     },
@@ -297,14 +285,14 @@ export const auth = betterAuth({
       accessType: "offline", // To always get a refresh token
       prompt: "select_account consent",
       // scope: [""], // custom scopes
-      // mapProfileToUser: (profile) => {
-      //   return {
-      //     firstName: profile.given_name, // aliased as firstName
-      //     lastName: profile.family_name,
-      //     isTermsAccepted: true,
-      //     provider: "Google",
-      //   };
-      // },
+      mapProfileToUser: (profile) => {
+        return {
+          name: profile.given_name, // aliased as firstName
+          firstName: profile.given_name, // aliased as firstName
+          lastName: profile.family_name,
+          provider: "Google",
+        };
+      },
       // refreshAccessToken: async (token) => {
       //   return token
       //   // fetch new access token from google

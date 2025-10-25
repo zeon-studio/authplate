@@ -32,6 +32,8 @@ type OtpVerifyFormProps = {
   password?: string;
 };
 
+type OTPPayload = z.infer<typeof otpSchema>;
+
 const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
@@ -40,12 +42,11 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   const isForgotPassword = pathname.startsWith("/forgot-password");
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
 
-  const otpForm = useForm({
+  const otpForm = useForm<OTPPayload>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
     },
-    mode: "onChange",
   });
 
   // const { action, isPending } = useMutation(verifyOtp, {
@@ -69,7 +70,7 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   //   },
   // });
 
-  const onSubmit = async (values: z.infer<typeof otpSchema>) => {
+  const onSubmit = async (values: OTPPayload) => {
     if (isForgotPassword) {
       await emailOtp.checkVerificationOtp(
         {
@@ -101,11 +102,11 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
               rememberMe: true, // false to not remember the session
             });
           }
-
           setIsPending(false);
           toast.success("Email verification is successful");
         },
         onError: async (ctx) => {
+          console.log({ error: ctx.error });
           setIsPending(false);
           toast.success(ctx.error.message);
         },
@@ -156,7 +157,6 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
                 )}
               />
             </div>
-            <Input type="hidden" name="email" value={email} />
           </div>
 
           <div className="pt-10">

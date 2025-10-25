@@ -44,7 +44,6 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.546.0",
     "marked": "^16.4.1",
-    "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
     "next": "16.0.0",
     "next-mdx-remote": "^5.0.0",

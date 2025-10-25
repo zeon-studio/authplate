@@ -108,7 +108,7 @@ export default function UserInfoUpdateForm({
             <FormItem>
               <FormLabel>First Name</FormLabel>
               <FormControl>
-                <Input placeholder="johndoe" {...field} />
+                <Input placeholder="Entere first name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -122,7 +122,7 @@ export default function UserInfoUpdateForm({
             <FormItem>
               <FormLabel>Last Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Enter Last name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -136,7 +136,7 @@ export default function UserInfoUpdateForm({
               <FormLabel>Profile Image</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="URL_ADDRESS.com/image.png"
+                  placeholder="Enter image url"
                   {...field}
                   value={field.value || ""}
                 />

@@ -3,25 +3,33 @@ import { z } from "zod";
 // Base schema for user details
 const baseUserSchema = z.object({
   firstName: z
-    .string()
-    .min(2, "First name must be at least 2 characters long.")
-    .max(30, "First name must not exceed 30 characters.")
-    .regex(
-      /^[A-Za-z\s]+$/,
-      "First name can only contain alphabetic characters.",
-    ),
+    .string({
+      error: (issue) =>
+        issue === undefined
+          ? "First name is required"
+          : "First name must be string",
+    })
+    .min(2, { error: "First name must be at least 2 characters long." })
+    .max(30, { error: "First name must not exceed 30 characters." })
+    .regex(/^[A-Za-z\s]+$/, {
+      error: "First name can only contain alphabetic characters.",
+    }),
   lastName: z
-    .string()
-    .max(30, "Last name must not exceed 30 characters.")
-    .regex(
-      /^[A-Za-z\s]+$/,
-      "Last name can only contain alphabetic characters.",
-    ),
-  email: z.email(
-    "Please provide a valid email address (e.g., user@example.com).",
-  ),
+    .string({
+      error: (issue) =>
+        issue === undefined
+          ? "Last name is required"
+          : "Last name must be string",
+    })
+    .max(30, { error: "Last name must not exceed 30 characters." })
+    .regex(/^[A-Za-z\s]+$/, {
+      error: "Last name can only contain alphabetic characters.",
+    }),
+  email: z.email({
+    error: "Please provide a valid email address (e.g., user@example.com).",
+  }),
   image: z
-    .url("Please provide a valid URL for the image.")
+    .url({ error: "Please provide a valid URL for the image." })
     .or(z.literal(""))
     .optional(),
   isTermsAccepted: z
@@ -37,7 +45,7 @@ const baseUserSchema = z.object({
   provider: z
     .enum(["Credential", "Google", "Github"], {
       error: (issue) => {
-        return issue.input == undefined
+        return issue.input === undefined
           ? "Provider is required"
           : "Invalid provider type";
       },
@@ -50,20 +58,29 @@ const baseUserSchema = z.object({
 // Password validation schema
 export const passwordSchema = z.object({
   password: z
-    .string()
-    .min(8, "Password must be at least 8 characters long.")
-    .max(50, "Password must not exceed 50 characters.")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter.")
-    .regex(/[0-9]/, "Password must contain at least one digit.")
-    .regex(
-      /[@$!%*?&#]/,
-      "Password must contain at least one special character.",
-    ),
+    .string({
+      error: (issue) =>
+        issue === undefined
+          ? "Password is required"
+          : "Password must be string",
+    })
+    .min(8, { error: "Password must be at least 8 characters long." })
+    .max(50, { error: "Password must not exceed 50 characters." })
+    .regex(/[A-Z]/, {
+      error: "Password must contain at least one uppercase letter.",
+    })
+    .regex(/[a-z]/, {
+      error: "Password must contain at least one lowercase letter.",
+    })
+    .regex(/[0-9]/, { error: "Password must contain at least one digit." })
+    .regex(/[@$!%*?&#]/, {
+      error: "Password must contain at least one special character.",
+    }),
 });
 
 // Complete user schema
-export const userSchema = baseUserSchema.merge(passwordSchema);
+export const userSchema = baseUserSchema.extend(passwordSchema.shape);
+
 export const registerUserSchema = userSchema
   .omit({
     provider: true,
@@ -109,7 +126,6 @@ export const resetPasswordSchema = z.object({
 });
 
 // update password
-
 export const updatePasswordSchema = z
   .object({
     oldPassword: passwordSchema.shape.password,
