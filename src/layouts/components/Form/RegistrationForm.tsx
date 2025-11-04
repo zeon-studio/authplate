@@ -23,21 +23,21 @@ import PasswordInput from "../PasswordInput";
 const defaultValues =
   process.env.NODE_ENV === "development"
     ? {
-        firstName: "John",
-        lastName: "Doe",
-        email: "siashuvo1@gmail.com",
-        password: "@Password123",
-        confirmPassword: "@Password123",
-        isTermsAccepted: true,
-      }
+      firstName: "John",
+      lastName: "Doe",
+      email: "murad.themefisher@gmail.com",
+      password: "@Password123",
+      confirmPassword: "@Password123",
+      isTermsAccepted: true,
+    }
     : {
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        isTermsAccepted: false,
-      };
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      isTermsAccepted: false,
+    };
 
 type RegisterPayload = z.infer<typeof registerUserSchema>;
 

@@ -2,10 +2,9 @@
 
 A modern authentication template for Next.js applications with built-in security features, MongoDB integration, and a polished UI.
 
-
 ## ✨ Features
 
-- **Next.js 15+** with App Router architecture
+- **Next.js 16+** with App Router architecture
 - **Complete Authentication** powered by NextAuth.js
 - **MongoDB Integration** (local or Atlas)
 - **TypeScript** throughout the codebase
@@ -17,6 +16,7 @@ A modern authentication template for Next.js applications with built-in security
 
 ## 📋 Requirements
 
+- Next.js v16+
 - Node.js v20+
 - MongoDB (local installation or MongoDB Atlas account)
 - Git
@@ -108,7 +108,7 @@ Authplate uses Nodemailer for email-based authentication:
 Authplate supports two payment providers:
 
 - **Paddle**
-- **Stripe** (Coming Soon)
+- **Stripe**
 
 ### Paddle Setup
 
@@ -132,12 +132,12 @@ Navigate to `src/config/paddle.ts` or `src/config/stripe.ts` depending on your p
 
 ```typescript
 interface Tier {
-  name: string;             // Display name
-  id: PackageType;          // Unique identifier
-  icon: string;             // Icon path
-  description: string;      // Short description
-  features: string[];       // List of features
-  featured: boolean;        // Highlight this plan
+  name: string; // Display name
+  id: PackageType; // Unique identifier
+  icon: string; // Icon path
+  description: string; // Short description
+  features: string[]; // List of features
+  featured: boolean; // Highlight this plan
   priceId: OneKeyOnly<Record<BillingCycle, string>>; // Pricing
 }
 ```

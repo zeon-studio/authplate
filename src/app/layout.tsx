@@ -1,5 +1,6 @@
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
+import Announcement from "@/layouts/helpers/Announcement";
 import { getServerAuth } from "@/lib/auth/auth-server";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
@@ -58,6 +59,7 @@ export default async function RootLayout({
       >
         <TwSizeIndicator />
         <Providers>
+          <Announcement />
           <Header promiseAuth={promiseAuth} />
           <main>{children}</main>
           <Footer />

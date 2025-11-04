@@ -10,28 +10,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { emailOtp, signIn } from "@/lib/auth/auth-client";
 import { loginUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import PasswordInput from "../PasswordInput";
-import { emailOtp, signIn } from "@/lib/auth/auth-client";
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 const defaultValues =
   process.env.NODE_ENV === "production"
     ? {
-        email: "",
-        password: "",
-      }
+      email: "",
+      password: "",
+    }
     : {
-        email: "siashuvo1@gmail.com",
-        password: "@Password123",
-      };
+      email: "murad.themefisher@gmail.com",
+      password: "@Password123",
+    };
 
 const LoginForm = ({
   onOtpRequired,
