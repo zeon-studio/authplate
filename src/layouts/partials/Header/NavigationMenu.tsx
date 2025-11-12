@@ -32,23 +32,37 @@ export function NavigationMenu({
         <NavItem key={i} variant={menu.hasChildren ? "dropdown" : "default"}>
           {menu.hasChildren && menu.children?.length ? (
             <>
+              {/*
+                Use a stable, unique id per menu (index-based). The checkbox is visually hidden
+                but remains in the DOM for the CSS `peer-checked` selector to work on small screens.
+                We hide the checkbox behavior on lg via `lg:hidden` so hover styles take over.
+              */}
               <input
                 type="checkbox"
-                id={`submenu-${menu.name}`}
-                className="peer hidden lg:hidden"
+                id={`submenu-${i}`}
+                className="peer sr-only lg:hidden"
               />
               <label
-                htmlFor={`submenu-${menu.name}`}
-                className={`nav-link inline-flex items-center`}
+                htmlFor={`submenu-${i}`}
+                className={`nav-link inline-flex items-center cursor-pointer lg:inline-flex`}
+                aria-controls={`submenu-list-${i}`}
               >
                 {menu.name}
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                <svg
+                  className="h-4 w-4 fill-current ml-2"
+                  viewBox="0 0 20 20"
+                  aria-hidden
+                >
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                 </svg>
               </label>
-              <ul className="nav-dropdown-list hidden peer-checked:block lg:invisible lg:absolute lg:block lg:opacity-0 lg:group-hover:visible lg:group-hover:opacity-100">
-                {menu.children?.map((child, i) => (
-                  <NavItem variant="dropdown" key={i}>
+
+              <ul
+                id={`submenu-list-${i}`}
+                className="nav-dropdown-list hidden peer-checked:block lg:invisible lg:absolute lg:block lg:opacity-0 lg:group-hover:visible lg:group-hover:opacity-100"
+              >
+                {menu.children?.map((child, childIndex) => (
+                  <NavItem variant="dropdown" key={childIndex}>
                     <NavLink
                       href={child.url}
                       className="nav-dropdown-link block"

@@ -66,7 +66,7 @@ export default function SignIn({
         />
 
         <div className="relative mt-6 w-full h-px bg-[#B3B8C2] mb-4">
-          <span className="absolute bg-light z-10 inline-block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-2">
+          <span className="absolute bg-light z-10 inline-block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs sm:text-base">
             Or Continue With
           </span>
         </div>
