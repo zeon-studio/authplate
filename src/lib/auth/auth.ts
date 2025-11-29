@@ -17,7 +17,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user, ctx) => {
+        before: async (user) => {
           // Modify the user object before it is created
           return { data: user };
         },
@@ -85,7 +85,7 @@ export const auth = betterAuth({
         }
       }
     }),
-    after: createAuthMiddleware(async (ctx) => {
+    after: createAuthMiddleware(async () => {
       // run after an endpoint is executed. Use them to modify responses.
     }),
   },

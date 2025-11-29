@@ -49,7 +49,7 @@ export default function PricingCard({
       <div className="mt-6">
         {isActive && (
           <Button
-            className="w-full !text-base h-auto !py-2.5"
+            className="w-full text-base! h-auto py-2.5!"
             size="lg"
             disabled
           >
@@ -61,7 +61,7 @@ export default function PricingCard({
           <Link
             href={priceId ? `/checkout/${priceId}` : `/contact`}
             className={buttonVariants({
-              className: "w-full !text-base h-auto !py-2.5",
+              className: "w-full text-base! h-auto py-2.5!",
               size: "lg",
             })}
           >

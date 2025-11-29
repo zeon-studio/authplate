@@ -1,4 +1,6 @@
+import { buttonVariants } from "@/layouts/components/ui/button";
 import SeoMeta from "@/partials/SeoMeta";
+import Link from "next/link";
 
 const NotFound = async () => {
   return (
@@ -18,10 +20,12 @@ const NotFound = async () => {
                   name changed, or is temporarily unavailable.
                 </p>
               </div>
-              {/*  eslint-disable-next-line @next/next/no-html-link-for-pages */}
-              <a href="/" className="btn btn-primary mt-8">
+              <Link href="/" className={buttonVariants({
+                className: "mt-8",
+                size: "lg",
+              })}>
                 Back to home
-              </a>
+              </Link>
             </div>
           </div>
         </div>

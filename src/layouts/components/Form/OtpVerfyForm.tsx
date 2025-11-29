@@ -24,7 +24,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { OtpTimer } from "../OtpTimer";
-import { Input } from "../ui/input";
 import ResetPasswordForm from "./ResetPasswordForm";
 
 type OtpVerifyFormProps = {

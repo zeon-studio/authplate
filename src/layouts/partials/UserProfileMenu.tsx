@@ -23,11 +23,11 @@ export default function Profile({ auth }: { auth: Session }) {
   const { user } = auth;
 
   const fallback = () => {
-    let firstName = user.firstName;
-    let lastName = user.lastName;
+    const firstName = user.firstName;
+    const lastName = user.lastName;
 
-    let firstInitial = firstName?.split(" ")[0]?.[0] || "";
-    let lastInitial = lastName?.split(" ")[0]?.[0] || "";
+    const firstInitial = firstName?.split(" ")[0]?.[0] || "";
+    const lastInitial = lastName?.split(" ")[0]?.[0] || "";
 
     return firstInitial + lastInitial;
   };

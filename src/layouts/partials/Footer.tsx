@@ -43,7 +43,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="border-t border-border py-7 ">
+      <div className="border-t border-border/60 py-7 ">
         <div className="container text-center ">
           <p dangerouslySetInnerHTML={markdownify(copyright)} />
         </div>

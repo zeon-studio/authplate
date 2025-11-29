@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
+// how to use
+// const mobile = useWindow(767) < 768
+// returns true/false
+
 const useWindow = (size: number) => {
+  // getWindowDimensions
   const [windowSize, setWindowSize] = useState(size || 768);
   useEffect(() => {
     function viewport() {

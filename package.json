@@ -1,6 +1,6 @@
 {
   "name": "authplate",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Nextjs, Authjs, Tailwindcss boilerplate",
   "author": "zeon.studio",
   "license": "MIT",
@@ -9,9 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier -w ./src",
-    "postinstall": "",
     "generate-json": "node scripts/jsonGenerator.js",
     "remove-darkmode": "node scripts/removeDarkmode.js && yarn format"
   },

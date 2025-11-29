@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const matter = require("gray-matter");
-const config = require("../src/config/config.json");
+import fs from "fs";
+import matter from "gray-matter";
+import path from "path";
+import config from "../src/config/config.json" with { type: "json" };
 
 const { blog_folder } = config.settings;
 const jsonDir = "./.json";
@@ -24,7 +24,7 @@ const getData = (folder) => {
     };
   });
   const publishedPages = allData.filter(
-    (page) => !page.frontmatter?.draft && page
+    (page) => !page.frontmatter?.draft && page,
   );
   return publishedPages;
 };

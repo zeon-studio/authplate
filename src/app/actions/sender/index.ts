@@ -5,7 +5,7 @@ const config = {
   sender_password: process.env.EMAIL_PASSWORD,
 };
 
-let mailTransporter = nodemailer.createTransport({
+const mailTransporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   port: 465,
@@ -18,7 +18,7 @@ let mailTransporter = nodemailer.createTransport({
 
 // send OTP
 const otpSender = async (email: string, otp: string) => {
-  let mailDetails = {
+  const mailDetails = {
     from: config.sender_email,
     to: email,
     subject: "Authplate Account Verification",
@@ -41,7 +41,7 @@ const otpSender = async (email: string, otp: string) => {
 
 // send team invitation mail
 const teamInvitation = async (email: string) => {
-  let mailDetails = {
+  const mailDetails = {
     from: config.sender_email,
     to: email,
     subject: `You're Invited to Join a Team on Authplate`,
@@ -63,7 +63,7 @@ const notificationEmail = async (
   subject: string,
   message: string,
 ) => {
-  let mailDetails = {
+  const mailDetails = {
     from: config.sender_email,
     to: email,
     subject: subject,
@@ -86,7 +86,7 @@ const commentNotification = async (
   itemName: string,
   comment: string,
 ) => {
-  let mailDetails = {
+  const mailDetails = {
     from: config.sender_email,
     to: email,
     subject: `New comment on ${itemName}`,
