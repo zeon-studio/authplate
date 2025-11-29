@@ -57,7 +57,7 @@ export class ProcessWebhook {
 
     if (scheduledChange?.action) {
       await Subscription.updateOne(
-        { id: subscription.id },
+        { _id: subscription._id },
         {
           $set: {
             status: this.getSubscriptionStatus(scheduledChange),
@@ -105,14 +105,14 @@ export class ProcessWebhook {
     }
 
     await Subscription.create({
-      userId: user!.id,
+      userId: user!._id,
       planId: this.getPlanId(items)!,
       status: SubscriptionStatus.LIFETIME,
       orderId: subscriptionId || transactionId,
       planName: this.getPlanName(items)!,
       startDate: new Date(),
       billingCycle: BillingCycle.LIFETIME,
-    });
+    } as any);
   }
 
   async paymentCreated(eventData: TransactionCompletedEvent) {
@@ -143,18 +143,18 @@ export class ProcessWebhook {
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
       await Payment.create({
-        userId: user!.id,
+        userId: user!._id,
         totalAmount: totalAmount,
         taxAmount: taxAmount,
         processingFee: processingFee,
         earnings: earnings,
-        currency: currencyCode,
+        currency: currencyCode || undefined,
         paymentMethod: "paddle",
         status: PaymentStatus.COMPLETED,
         orderId: subscriptionId || transactionId,
-        transactionId: transactionId,
-        discountId: discountId ?? null,
-      });
+        transactionId: transactionId || undefined,
+        discountId: discountId || undefined,
+      } as any);
     } catch (error) {
       console.log("Error creating payment:", error);
     }
@@ -184,7 +184,7 @@ export class ProcessWebhook {
       }
 
       await Subscription.create({
-        userId: user!.id,
+        userId: user!._id,
         planId: this.getPlanId(items)!,
         status: this.getSubscriptionStatus(eventData.data.status),
         lastBillingDate: firstBilledAt!,
@@ -198,7 +198,7 @@ export class ProcessWebhook {
         nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
         planName: this.getPlanName(items)!,
         billingCycle: this.getBillingCycle(items),
-      });
+      } as any);
     } catch (error) {
       console.log("Error creating subscription:", error);
     }

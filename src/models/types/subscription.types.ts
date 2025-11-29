@@ -19,7 +19,7 @@ export enum BillingCycle {
 }
 
 export interface ISubscription {
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   planId: string;
   status: SubscriptionStatus;
   orderId: string;

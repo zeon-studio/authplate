@@ -8,7 +8,7 @@ export enum PaymentStatus {
 }
 
 export interface IPayment {
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   totalAmount: number;
   taxAmount?: number;
   processingFee?: number;

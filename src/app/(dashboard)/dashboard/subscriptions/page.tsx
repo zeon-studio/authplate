@@ -57,7 +57,7 @@ export default async function Subscriptions() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
               {currentActiveSubscriptions?.data?.map((subscription) => (
                 <SubscriptionCard
-                  key={subscription.id}
+                  key={subscription._id.toString()}
                   subscription={subscription}
                 />
               ))}
@@ -72,7 +72,7 @@ export default async function Subscriptions() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
               {expiredSubscriptions?.data?.map((subscription) => (
                 <SubscriptionCard
-                  key={subscription.id}
+                  key={subscription._id.toString()}
                   subscription={subscription}
                 />
               ))}

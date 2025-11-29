@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonVariants } from "../components/ui/button";
 
 const Button = ({
   label,
@@ -14,13 +15,10 @@ const Button = ({
   return (
     <Link
       href={link}
-      target="_blank"
-      rel={`noopener noreferrer ${
-        rel ? (rel === "follow" ? "" : rel) : "nofollow"
-      }`}
-      className={`btn mb-4 me-4 no-underline hover:text-white dark:hover:text-black ${
-        style === "outline" ? "btn-outline-primary" : "btn-primary"
-      }`}
+      target={link.startsWith("http") ? "_blank" : "_self"}
+      rel={`noopener noreferrer ${rel ? (rel === "follow" ? "" : rel) : "nofollow"
+        }`}
+      className={`no-underline ${buttonVariants({ variant: style === "outline" ? "outline" : "default" })}`}
     >
       {label}
     </Link>
