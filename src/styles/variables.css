@@ -8,6 +8,8 @@
   --ring: var(--text-default-color);
   --light: var(--light-color);
   --dark: var(--dark-color);
+  --white: var(--white-color);
+  --black: var(--black-color);
 
   --card: var(--body-color);
   --card-foreground: var(--text-default-color);
@@ -45,6 +47,8 @@
   --color-ring: var(--ring);
   --color-light: var(--light);
   --color-dark: var(--dark);
+  --color-white: var(--white);
+  --color-black: var(--black);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-success: var(--success);

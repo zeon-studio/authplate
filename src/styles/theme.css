@@ -12,6 +12,8 @@
   --body-color: #ffffff;
   --primary-color: #000000;
   --border-color: #a6b0c3;
+  --white-color: #ffffff;
+  --black-color: #000000;
   --light-color: #f8fafc;
   --dark-color: #1c1f26;
   --accent-color: #007bff;
@@ -32,6 +34,8 @@
   --body-color: #1c1c1c;
   --primary-color: #ffffff;
   --border-color: #3d3d3d;
+  --white-color: #000000;
+  --black-color: #ffffff;
   --light-color: #212121;
   --dark-color: #f2f2f2;
   --accent-color: #00aaff;
