@@ -5,7 +5,7 @@ A modern authentication template for Next.js applications with built-in security
 ## ✨ Features
 
 - **Next.js 16+** with App Router architecture
-- **Complete Authentication** powered by NextAuth.js
+- **Complete Authentication** powered by BetterAuth
 - **MongoDB Integration** (local or Atlas)
 - **TypeScript** throughout the codebase
 - **Tailwind CSS** for responsive styling
@@ -17,7 +17,7 @@ A modern authentication template for Next.js applications with built-in security
 ## 📋 Requirements
 
 - Next.js v16+
-- Node.js v20+
+- Node.js v24+
 - MongoDB (local installation or MongoDB Atlas account)
 - Git
 
@@ -41,7 +41,7 @@ npm install
 1. Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-# Configurtion for better auth
+# Configuration for better auth
 BETTER_AUTH_SECRET=HdQmtk3zMLYI8TJ1pyLwCWoxsStn5zwF
 BETTER_AUTH_URL=http://localhost:3000 # Base URL of your app
 
@@ -181,7 +181,6 @@ Authplate is designed to be easily customizable:
 
 - **Theme**: Modify the Tailwind configuration in `tailwind.config.js`
 - **Components**: Edit or extend the components in `src/components`
-- **Authentication**: Configure providers in `src/app/api/auth/[...nextauth]/route.ts`
 
 ## 📱 Responsive Design
 
