@@ -1,7 +1,6 @@
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
 import Announcement from "@/layouts/helpers/Announcement";
-import { getServerAuth } from "@/lib/auth/auth-server";
 import Footer from "@/partials/Footer";
 import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
@@ -21,13 +20,7 @@ const fontSecondary = Signika({
   variable: "--font-secondary",
 });
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const promiseAuth = getServerAuth();
-
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html suppressHydrationWarning lang="en" className="text-base">
       <head>
@@ -55,13 +48,13 @@ export default async function RootLayout({
       </head>
 
       <body
-        className={`${fontPrimary.variable} ${fontSecondary.variable} text-base`}
+        className={`${fontPrimary.variable} ${fontSecondary.variable} text-base flex flex-col min-h-screen`}
       >
         <TwSizeIndicator />
         <Providers>
           <Announcement />
-          <Header promiseAuth={promiseAuth} />
-          <main>{children}</main>
+          <Header />
+          <main className="grow">{children}</main>
           <Footer />
         </Providers>
         <Toaster />

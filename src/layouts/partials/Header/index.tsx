@@ -6,9 +6,8 @@ import menu from "@/config/menu.json";
 import { HeaderActions } from "./HeaderActions";
 import { NavbarToggle } from "./NavbarToggle";
 import { NavigationMenu } from "./NavigationMenu";
-import { Session } from "@/lib/auth/auth-client";
 
-const Header = ({ promiseAuth }: { promiseAuth: Promise<Session | null> }) => {
+const Header = () => {
   const settings = config.settings;
 
   return (
@@ -24,7 +23,7 @@ const Header = ({ promiseAuth }: { promiseAuth: Promise<Session | null> }) => {
           main={menu.main}
           navigationButton={config.navigation_button}
         />
-        <HeaderActions promiseAuth={promiseAuth} settings={settings} />
+        <HeaderActions settings={settings} />
       </nav>
     </header>
   );
