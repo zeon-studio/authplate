@@ -10,10 +10,14 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      new URL("https://**"), // allow all secure image path
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
         pathname: "/**",
       },
     ],

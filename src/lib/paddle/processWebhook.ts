@@ -1,7 +1,6 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { EBillingCycle } from "@/app/actions/paddle/type";
 import { prisma } from "@/lib/prisma";
-import { SubscriptionStatus } from "@prisma/client";
 import {
   EventEntity,
   EventName,
@@ -14,20 +13,88 @@ import {
   TransactionItemNotification,
 } from "@paddle/paddle-node-sdk";
 
+type TransactionClient = Parameters<
+  Parameters<typeof prisma.$transaction>[0]
+>[0];
+
+const SubscriptionStatus = {
+  ACTIVE: "ACTIVE",
+  CANCELED: "CANCELED",
+  PAST_DUE: "PAST_DUE",
+  PAUSED: "PAUSED",
+  TRIALING: "TRIALING",
+  LIFETIME: "LIFETIME",
+} as const;
+type SubscriptionStatus =
+  (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
+
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
-        this.subscriptionCreated(eventData);
+        await this.subscriptionCreated(eventData);
         break;
       case EventName.TransactionCompleted:
-        this.lifetimeSubscriptionCreated(eventData);
-        this.paymentCreated(eventData);
+        await this.transactionCompleted(eventData);
         break;
       case EventName.SubscriptionUpdated:
-        this.subscriptionUpdated(eventData);
+        await this.subscriptionUpdated(eventData);
         break;
     }
+  }
+
+  async transactionCompleted(eventData: TransactionCompletedEvent) {
+    const {
+      id: transactionId,
+      customData,
+      subscriptionId,
+      items,
+      details,
+      discountId,
+      currencyCode,
+    } = eventData.data;
+    const { email: userEmail } = (customData as { email: string }) || {};
+    const user = await this.getUserByEmail(userEmail);
+    if (!user) return;
+
+    const isLifetime = !subscriptionId;
+
+    const earnings = +(details?.totals?.total ?? "0") / 100;
+    const taxAmount = +(details?.totals?.tax ?? "0") / 100;
+    const processingFee = +(details?.totals?.fee ?? "0") / 100;
+    const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
+
+    await prisma.$transaction(async (tx: TransactionClient) => {
+      if (isLifetime) {
+        await tx.subscription.create({
+          data: {
+            userId: user.id,
+            planId: this.getPlanId(items)!,
+            status: "LIFETIME",
+            orderId: transactionId,
+            planName: this.getPlanName(items)!,
+            startDate: new Date(),
+            billingCycle: EBillingCycle.LIFETIME,
+          },
+        });
+      }
+
+      await tx.payment.create({
+        data: {
+          userId: user.id,
+          totalAmount,
+          taxAmount,
+          processingFee,
+          earnings,
+          currency: currencyCode || "",
+          paymentMethod: "paddle",
+          status: "COMPLETED",
+          orderId: subscriptionId || transactionId,
+          transactionId,
+          discountId: discountId || undefined,
+        },
+      });
+    });
   }
 
   async subscriptionUpdated(eventData: SubscriptionUpdatedEvent) {
@@ -74,71 +141,6 @@ export class ProcessWebhook {
     });
   }
 
-  async lifetimeSubscriptionCreated(eventData: TransactionCompletedEvent) {
-    const { id: transactionId, customData, subscriptionId, items } =
-      eventData.data;
-
-    if (subscriptionId) {
-      return;
-    }
-
-    const { email: userEmail } = customData as { email: string };
-    const user = await this.getUserByEmail(userEmail);
-    if (!user) return;
-
-    await prisma.subscription.create({
-      data: {
-        userId: user.id,
-        planId: this.getPlanId(items)!,
-        status: "LIFETIME",
-        orderId: subscriptionId || transactionId,
-        planName: this.getPlanName(items)!,
-        startDate: new Date(),
-        billingCycle: EBillingCycle.LIFETIME,
-      },
-    });
-  }
-
-  async paymentCreated(eventData: TransactionCompletedEvent) {
-    try {
-      const {
-        id: transactionId,
-        subscriptionId,
-        details,
-        customData,
-        discountId,
-        currencyCode,
-      } = eventData.data;
-
-      const { email: userEmail } = (customData as { email: string }) || {};
-      const user = await this.getUserByEmail(userEmail);
-      if (!user) return;
-
-      const earnings = +(details?.totals?.total ?? "0") / 100;
-      const taxAmount = +(details?.totals?.tax ?? "0") / 100;
-      const processingFee = +(details?.totals?.fee ?? "0") / 100;
-      const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
-
-      await prisma.payment.create({
-        data: {
-          userId: user.id,
-          totalAmount,
-          taxAmount,
-          processingFee,
-          earnings,
-          currency: currencyCode || "",
-          paymentMethod: "paddle",
-          status: "COMPLETED",
-          orderId: subscriptionId || transactionId,
-          transactionId: transactionId,
-          discountId: discountId || undefined,
-        },
-      });
-    } catch (error) {
-      console.log("Error creating payment:", error);
-    }
-  }
-
   async subscriptionCreated(eventData: SubscriptionCreatedEvent) {
     try {
       const {
@@ -155,13 +157,20 @@ export class ProcessWebhook {
       const user = await this.getUserByEmail(userEmail);
       if (!user) return;
 
+      const orderId = subscriptionId || transactionId!;
+
+      const existing = await prisma.subscription.findUnique({
+        where: { orderId },
+      });
+      if (existing) return;
+
       await prisma.subscription.create({
         data: {
           userId: user.id,
           planId: this.getPlanId(items)!,
           status: this.getSubscriptionStatus(eventData.data.status),
           lastBillingDate: firstBilledAt ? new Date(firstBilledAt) : new Date(),
-          orderId: subscriptionId || transactionId!,
+          orderId,
           canceledAt: null,
           startDate: currentBillingPeriod?.startsAt
             ? new Date(currentBillingPeriod.startsAt)
@@ -172,18 +181,17 @@ export class ProcessWebhook {
             eventData.data.status === "trialing" && currentBillingPeriod?.endsAt
               ? new Date(currentBillingPeriod.endsAt)
               : null,
-          nextBillingDate:
-            nextBilledAt
-              ? new Date(nextBilledAt)
-              : currentBillingPeriod?.endsAt
-                ? new Date(currentBillingPeriod.endsAt)
-                : null,
+          nextBillingDate: nextBilledAt
+            ? new Date(nextBilledAt)
+            : currentBillingPeriod?.endsAt
+              ? new Date(currentBillingPeriod.endsAt)
+              : null,
           planName: this.getPlanName(items)!,
           billingCycle: this.getBillingCycle(items),
         },
       });
     } catch (error) {
-      console.log("Error creating subscription:", error);
+      console.error("Error creating subscription:", error);
     }
   }
 

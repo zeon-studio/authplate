@@ -20,24 +20,14 @@ import { toast } from "sonner";
 import { z } from "zod";
 import PasswordInput from "../PasswordInput";
 
-const defaultValues =
-  process.env.NODE_ENV === "development"
-    ? {
-        firstName: "John",
-        lastName: "Doe",
-        email: "themefisher.dev@gmail.com",
-        password: "@Password123",
-        confirmPassword: "@Password123",
-        isTermsAccepted: true,
-      }
-    : {
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        isTermsAccepted: false,
-      };
+const defaultValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  isTermsAccepted: false,
+};
 
 type TRegisterPayload = z.infer<typeof registerUserSchema>;
 

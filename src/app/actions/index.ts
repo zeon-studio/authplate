@@ -104,9 +104,6 @@ export async function safeAction<T>(
         error: {
           type: "SERVER_ERROR",
           message: error.message,
-          details: {
-            originalError: error.stack,
-          },
         },
         success: false,
       };

@@ -6,9 +6,14 @@ const webhookProcessor = new ProcessWebhook();
 
 export async function POST(request: NextRequest) {
   const signature = request.headers.get("paddle-signature") || "";
-  const privateKey = process.env["PADDLE_NOTIFICATION_WEBHOOK_SECRET"] || "";
+  const privateKey = process.env["PADDLE_NOTIFICATION_WEBHOOK_SECRET"];
   const rawRequestBody = await request.text();
   let status, eventName;
+
+  if (!privateKey) {
+    console.error("PADDLE_NOTIFICATION_WEBHOOK_SECRET is not configured");
+    return Response.json({ status: 500, error: "Webhook not configured" }, { status: 500 });
+  }
 
   try {
     if (signature && rawRequestBody) {

@@ -2,12 +2,12 @@
 
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
 import { PADDLE_CLIENT_TOKEN, PADDLE_ENV } from "@/config/paddle";
+import { TSession } from "@/lib/auth/auth-client";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PriceSection } from "./PriceSection";
-import { TSession } from "@/lib/auth/auth-client";
 
 interface Props {
   auth: TSession;
@@ -35,7 +35,7 @@ export function CheckoutContents({ auth }: Props) {
 
   const { email, firstName, lastName } = auth.user;
 
-  const isAuthenticated = true;
+  const isAuthenticated = !!auth?.user;
 
   useEffect(() => {
     if (!paddle?.Initialized && PADDLE_CLIENT_TOKEN && isAuthenticated) {
@@ -97,7 +97,7 @@ export function CheckoutContents({ auth }: Props) {
   return (
     <div
       className={
-        "relative flex flex-col justify-between rounded-lg bg-light md:min-h-[400px] md:p-10 md:pl-16 md:pt-16 md:backdrop-blur-[24px]"
+        "relative flex flex-col justify-between rounded-lg bg-light md:min-h-[400px] md:p-10 md:pl-16 md:pt-16 md:backdrop-blur-xl"
       }
     >
       <div className={"flex flex-col gap-8 md:flex-row md:gap-16"}>

@@ -22,16 +22,10 @@ import { toast } from "sonner";
 import { z } from "zod";
 import PasswordInput from "../PasswordInput";
 
-const defaultValues =
-  process.env.NODE_ENV === "production"
-    ? {
-        email: "",
-        password: "",
-      }
-    : {
-        email: "themefisher.dev@gmail.com",
-        password: "@Password123",
-      };
+const defaultValues = {
+  email: "",
+  password: "",
+};
 
 const LoginForm = ({
   onOtpRequired,
