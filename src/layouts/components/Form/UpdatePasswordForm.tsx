@@ -18,12 +18,12 @@ import { z } from "zod";
 import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";
 
-type UpdatePassPayload = z.infer<typeof updatePasswordSchema>;
+type TUpdatePassPayload = z.infer<typeof updatePasswordSchema>;
 
 export default function UpdatePasswordForm() {
   const [isPending, setIsPending] = useState(false);
 
-  const passwordForm = useForm<UpdatePassPayload>({
+  const passwordForm = useForm<TUpdatePassPayload>({
     resolver: zodResolver(updatePasswordSchema),
     mode: "onChange",
     defaultValues: {
@@ -49,7 +49,7 @@ export default function UpdatePasswordForm() {
   //   },
   // });
 
-  const onSubmit = async (values: UpdatePassPayload) => {
+  const onSubmit = async (values: TUpdatePassPayload) => {
     await changePassword(
       {
         currentPassword: values.oldPassword,

@@ -39,7 +39,7 @@ const defaultValues =
         isTermsAccepted: false,
       };
 
-type RegisterPayload = z.infer<typeof registerUserSchema>;
+type TRegisterPayload = z.infer<typeof registerUserSchema>;
 
 export default function RegisterForm({
   onOtpRequired,
@@ -47,7 +47,7 @@ export default function RegisterForm({
   onOtpRequired: (params: { email: string; password: string }) => void;
 }) {
   const [isPending, setIsPending] = useState(false);
-  const registerForm = useForm<RegisterPayload>({
+  const registerForm = useForm<TRegisterPayload>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: defaultValues,
   });
@@ -79,7 +79,7 @@ export default function RegisterForm({
     password,
     firstName,
     lastName,
-  }: RegisterPayload) => {
+  }: TRegisterPayload) => {
     await signUp.email(
       {
         name: firstName,

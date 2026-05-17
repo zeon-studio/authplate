@@ -39,4 +39,4 @@ export const {
 });
 
 // session type e infer
-export type Session = typeof $Infer.Session;
+export type TSession = typeof $Infer.Session;

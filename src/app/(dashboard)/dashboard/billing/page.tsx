@@ -23,7 +23,7 @@ export default async function Billing() {
   const { user } = auth;
   const paymentHistories = await getUserPaymentHistory(user.id);
 
-  if (!paymentHistories?.success) {
+  if (!paymentHistories || !paymentHistories.success) {
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-semibold mb-2">
@@ -76,7 +76,7 @@ export default async function Billing() {
                 </TableRow>
               )}
 
-              {paymentHistories.data.map((payment) => (
+              {paymentHistories.data.map((payment: any) => (
                 <TableRow key={payment.id}>
                   <TableCell>
                     {payment.createdAt.toLocaleDateString("en-US", {
@@ -93,7 +93,7 @@ export default async function Billing() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={"success"} className="capitalize">
+                    <Badge variant={"default"} className="capitalize">
                       {payment.status.toLowerCase()}
                     </Badge>
                   </TableCell>

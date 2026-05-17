@@ -5,7 +5,7 @@ import { getListPage, getSinglePage } from "@/lib/contentParser";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import PageHeader from "@/partials/PageHeader";
 import SeoMeta from "@/partials/SeoMeta";
-import { Post } from "@/types";
+import { TPost } from "@/types";
 
 const { blog_folder, pagination } = config.settings;
 
@@ -14,7 +14,7 @@ export const dynamicParams = false;
 
 // generate static params
 export const generateStaticParams = () => {
-  const allPost: Post[] = getSinglePage(blog_folder);
+  const allPost: TPost[] = getSinglePage(blog_folder);
   const allSlug: string[] = allPost.map((item) => item.slug!);
   const totalPages = Math.ceil(allSlug.length / pagination);
   const paths: { page: string }[] = [];
@@ -31,9 +31,9 @@ export const generateStaticParams = () => {
 // for all regular pages
 const Posts = async (props: { params: Promise<{ page: string }> }) => {
   const params = await props.params;
-  const postIndex: Post = getListPage(`${blog_folder}/_index.md`);
+  const postIndex: TPost = getListPage(`${blog_folder}/_index.md`);
   const { title, meta_title, description, image } = postIndex.frontmatter;
-  const posts: Post[] = getSinglePage(blog_folder);
+  const posts: TPost[] = getSinglePage(blog_folder);
   const sortedPosts = sortByDate(posts);
   const totalPages = Math.ceil(posts.length / pagination);
   const currentPage =

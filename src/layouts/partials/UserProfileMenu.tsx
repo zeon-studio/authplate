@@ -13,12 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import menu from "@/config/menu.json";
-import { Session, signOut } from "@/lib/auth/auth-client";
+import { TSession, signOut } from "@/lib/auth/auth-client";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function Profile({ auth }: { auth: Session }) {
+export default function Profile({ auth }: { auth: TSession }) {
   const router = useRouter();
   const { user } = auth;
 

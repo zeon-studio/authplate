@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-export type RegularPage = {
+export type TRegularPage = {
   frontmatter: {
     title: string;
     image?: string;
@@ -13,7 +13,7 @@ export type RegularPage = {
   slug?: string;
 };
 
-export type Product = {
+export type TProduct = {
   name: string;
   id: string;
   prices: {
@@ -25,7 +25,7 @@ export type Product = {
   }[];
 };
 
-export type Post = {
+export type TPost = {
   frontmatter: {
     title: string;
     meta_title?: string;
@@ -41,7 +41,7 @@ export type Post = {
   content?: string;
 };
 
-export type Author = {
+export type TAuthor = {
   frontmatter: {
     title: string;
     image?: string;
@@ -58,48 +58,48 @@ export type Author = {
   content?: string;
   slug?: string;
 };
-export type Client = string;
-export type Benefits = {
+export type TClient = string;
+export type TBenefits = {
   title: string;
   content: string;
   image: string;
 };
-export type Experience = {
+export type TExperience = {
   title: string;
-  benefits: Benefits[];
+  benefits: TBenefits[];
 };
-export type Feature_Details = {
+export type TFeature_Details = {
   button: button;
   image: string;
   bulletpoints: string[];
   content: string;
   title: string;
 };
-export type Feature = {
+export type TFeature = {
   title: string;
   content: string;
   icon: string;
 };
-export type Features = {
+export type TFeatures = {
   title: string;
-  features: Feature[];
+  features: TFeature[];
 };
-export type Testimonial = {
+export type TTestimonial = {
   name: string;
   designation: string;
   avatar: string;
   content: string;
 };
 
-export type Call_to_action = {
+export type TCall_to_action = {
   enable?: boolean;
   title: string;
   description: string;
   image: string;
-  button: Button;
+  button: TButton;
 };
 
-export type Button = {
+export type TButton = {
   enable: boolean;
   label: string;
   link: string;

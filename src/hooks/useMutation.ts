@@ -1,12 +1,12 @@
-import { ErrorType, Result } from "@/app/actions";
+import { TErrorType, TResult } from "@/app/actions";
 import { useActionState, useEffect } from "react";
 
-type MutationCallbacks<T> = {
+type TMutationCallbacks<T> = {
   onSuccess?: (result: T) => void;
   onError?: (error: {
     success: false;
     error: {
-      type: ErrorType;
+      type: TErrorType;
       message: string;
       details?: Record<string, any>;
     };
@@ -14,12 +14,12 @@ type MutationCallbacks<T> = {
 };
 
 export function useMutation<T>(
-  actionFunction: (state: Result<T>, formData: FormData) => Promise<Result<T>>,
-  props?: MutationCallbacks<T>,
+  actionFunction: (state: TResult<T>, formData: FormData) => Promise<TResult<T>>,
+  props?: TMutationCallbacks<T>,
 ): {
   action: (formData: FormData) => void;
   isPending: boolean;
-  state: Result<T>;
+  state: TResult<T>;
 } {
   const [state, action, isPending] = useActionState(actionFunction, null);
 

@@ -2,7 +2,7 @@ import MDXContent from "@/helpers/MDXContent";
 import { getSinglePage } from "@/lib/contentParser";
 import PageHeader from "@/partials/PageHeader";
 import SeoMeta from "@/partials/SeoMeta";
-import { RegularPage } from "@/types";
+import { TRegularPage } from "@/types";
 import { notFound } from "next/navigation";
 
 // remove dynamicParams
@@ -12,7 +12,7 @@ export const dynamicParams = false;
 export const generateStaticParams = () => {
   const getRegularPages = getSinglePage("pages");
 
-  const regularPages = getRegularPages.map((page: RegularPage) => ({
+  const regularPages = getRegularPages.map((page: TRegularPage) => ({
     regular: page.slug,
   }));
 
@@ -28,7 +28,7 @@ const RegularPages = async ({
   const { regular } = await params;
   const regularData = getSinglePage("pages");
   const data = regularData.filter(
-    (page: RegularPage) => page.slug === regular,
+    (page: TRegularPage) => page.slug === regular,
   )[0];
 
   if (!data) {

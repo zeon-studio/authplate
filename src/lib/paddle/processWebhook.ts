@@ -1,5 +1,5 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import { BillingCycle } from "@/app/actions/paddle/type";
+import { EBillingCycle } from "@/app/actions/paddle/type";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 import {
@@ -94,7 +94,7 @@ export class ProcessWebhook {
         orderId: subscriptionId || transactionId,
         planName: this.getPlanName(items)!,
         startDate: new Date(),
-        billingCycle: BillingCycle.LIFETIME,
+        billingCycle: EBillingCycle.LIFETIME,
       },
     });
   }
@@ -254,18 +254,18 @@ export class ProcessWebhook {
 
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
-  ): BillingCycle {
+  ): EBillingCycle {
     const currentId = this.getPlanId(items);
 
     if (!currentId) {
-      return BillingCycle.DAILY;
+      return EBillingCycle.DAILY;
     }
 
-    const cycle = PricingTier.reduce<BillingCycle>((acc, tier) => {
+    const cycle = PricingTier.reduce<EBillingCycle>((acc, tier) => {
       const ids = Object.entries(tier.priceId as Record<string, unknown>);
       const found = ids.find(([, id]) => id === currentId);
-      return found ? (found[0] as BillingCycle) : acc;
-    }, BillingCycle.DAILY);
+      return found ? (found[0] as EBillingCycle) : acc;
+    }, EBillingCycle.DAILY);
 
     return cycle;
   }

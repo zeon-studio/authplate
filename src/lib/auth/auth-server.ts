@@ -8,4 +8,4 @@ export const getServerAuth = async () => {
   return session;
 };
 
-export type Session = typeof auth.$Infer.Session;
+export type TSession = typeof auth.$Infer.Session;

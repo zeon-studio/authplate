@@ -1,11 +1,11 @@
-import { Post } from "@/types";
+import { TPost } from "@/types";
 
 // similar products
 const similarItems = (
-  currentItem: Post,
-  allItems: Post[],
+  currentItem: TPost,
+  allItems: TPost[],
   slug: string,
-): Post[] => {
+): TPost[] => {
   let categories: string[] = [];
   let tags: string[] = [];
 

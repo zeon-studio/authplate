@@ -1,11 +1,11 @@
 import ImageFallback from "@/helpers/ImageFallback";
 import { markdownify } from "@/lib/utils/textConverter";
-import { Call_to_action } from "@/types";
+import { TCall_to_action } from "@/types";
 
 interface PageData {
   notFound?: boolean;
   content?: string;
-  frontmatter: Call_to_action;
+  frontmatter: TCall_to_action;
 }
 
 const CallToAction = ({ data }: { data: PageData }) => {

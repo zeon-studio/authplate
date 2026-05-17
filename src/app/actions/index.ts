@@ -4,11 +4,11 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export type ExtractVariables<T> = T extends { variables: object }
+export type TExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
   : never;
 
-export type ErrorType =
+export type TErrorType =
   | "NOT_FOUND"
   | "VALIDATION_ERROR"
   | "UNIQUE_CONSTRAINT"
@@ -17,12 +17,12 @@ export type ErrorType =
   | "AUTH_ERROR"
   | "OTP_REQUIRED";
 
-export type Result<T> =
+export type TResult<T> =
   | { success: true; data: T }
   | {
       success: false;
       error: {
-        type: ErrorType;
+        type: TErrorType;
         message: string;
         details?: Record<string, any>;
       } | null;
@@ -43,7 +43,7 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
 
 export async function safeAction<T>(
   fn: () => Promise<T> | T,
-): Promise<Result<T>> {
+): Promise<TResult<T>> {
   try {
     const response = await fn();
     return {

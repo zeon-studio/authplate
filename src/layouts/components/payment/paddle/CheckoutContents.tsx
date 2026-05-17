@@ -7,10 +7,10 @@ import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PriceSection } from "./PriceSection";
-import { Session } from "@/lib/auth/auth-client";
+import { TSession } from "@/lib/auth/auth-client";
 
 interface Props {
-  auth: Session;
+  auth: TSession;
 }
 
 export function CheckoutContents({ auth }: Props) {

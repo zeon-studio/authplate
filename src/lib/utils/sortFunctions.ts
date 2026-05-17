@@ -1,7 +1,7 @@
-import { Post } from "@/types";
+import { TPost } from "@/types";
 
 // sort by date
-export const sortByDate = (array: Post[]) => {
+export const sortByDate = (array: TPost[]) => {
   const sortedArray = array.sort(
     (a: any, b: any) =>
       new Date(b.frontmatter.date && b.frontmatter.date).valueOf() -

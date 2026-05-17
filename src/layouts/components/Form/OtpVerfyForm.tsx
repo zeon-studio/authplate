@@ -26,14 +26,14 @@ import z from "zod";
 import { OtpTimer } from "../OtpTimer";
 import ResetPasswordForm from "./ResetPasswordForm";
 
-type OtpVerifyFormProps = {
+type TOtpVerifyFormProps = {
   email: string;
   password?: string;
 };
 
-type OTPPayload = z.infer<typeof otpSchema>;
+type TOTPPayload = z.infer<typeof otpSchema>;
 
-const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
+const OtpVerifyForm = ({ email, password }: TOtpVerifyFormProps) => {
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
   const callbackURL = decodeURIComponent(searchParams.get("from") || "/");
@@ -41,7 +41,7 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   const isForgotPassword = pathname.startsWith("/forgot-password");
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
 
-  const otpForm = useForm<OTPPayload>({
+  const otpForm = useForm<TOTPPayload>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
@@ -69,7 +69,7 @@ const OtpVerifyForm = ({ email, password }: OtpVerifyFormProps) => {
   //   },
   // });
 
-  const onSubmit = async (values: OTPPayload) => {
+  const onSubmit = async (values: TOTPPayload) => {
     if (isForgotPassword) {
       await emailOtp.checkVerificationOtp(
         {

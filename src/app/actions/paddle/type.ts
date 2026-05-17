@@ -1,4 +1,4 @@
-export enum BillingCycle {
+export enum EBillingCycle {
   DAILY = "DAILY",
   WEEKLY = "WEEKLY",
   MONTHLY = "MONTHLY",
@@ -7,14 +7,14 @@ export enum BillingCycle {
   LIFETIME = "LIFETIME",
 }
 
-export enum PackageType {
+export enum EPackageType {
   BASIC = "BASIC",
   PREMIUM = "PREMIUM",
   PREMIUM_LIFETIME = "PREMIUM_LIFETIME",
   ENTERPRISE = "ENTERPRISE",
 }
 
-type OneKeyOnly<T> = {
+type TOneKeyOnly<T> = {
   [K in keyof T]: {
     [P in K]: T[P];
   } & Partial<Record<Exclude<keyof T, K>, never>>;
@@ -22,10 +22,10 @@ type OneKeyOnly<T> = {
 
 export interface Tier {
   name: string;
-  id: PackageType;
+  id: EPackageType;
   icon: string;
   description: string;
   features: string[];
   featured: boolean;
-  priceId: OneKeyOnly<Record<keyof typeof BillingCycle, string>>;
+  priceId: TOneKeyOnly<Record<keyof typeof EBillingCycle, string>>;
 }

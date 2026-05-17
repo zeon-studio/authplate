@@ -3,16 +3,16 @@
 import { prisma } from "@/lib/prisma";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import "server-only";
-import { Result, safeAction } from "..";
+import { TResult, safeAction } from "..";
 import { mailSender } from "../sender";
 
-type OtpResponse = { token: string; expires: string };
+type TOtpResponse = { token: string; expires: string };
 
 export const sendOtp = async (
-  state: Result<OtpResponse>,
+  state: TResult<TOtpResponse>,
   formData: FormData,
 ) => {
-  return safeAction<OtpResponse>(async () => {
+  return safeAction<TOtpResponse>(async () => {
     const data = Object.fromEntries(formData);
 
     const user = await prisma.user.findUnique({
@@ -38,10 +38,10 @@ export const sendOtp = async (
 };
 
 export const verifyOtp = async (
-  state: Result<OtpResponse>,
+  state: TResult<TOtpResponse>,
   formData: FormData,
 ) => {
-  return safeAction<OtpResponse>(async () => {
+  return safeAction<TOtpResponse>(async () => {
     const data = Object.fromEntries(formData);
     otpSchema.parse(data);
 

@@ -31,7 +31,7 @@ const defaultValues =
         confirmPassword: "",
       };
 
-type ResetPasspayload = z.infer<typeof resetPasswordSchema>;
+type TResetPasspayload = z.infer<typeof resetPasswordSchema>;
 
 const ResetPasswordForm = ({
   email,
@@ -44,7 +44,7 @@ const ResetPasswordForm = ({
 }) => {
   const [isPending, setIsPending] = useState(false);
 
-  const resetPasswordForm = useForm<ResetPasspayload>({
+  const resetPasswordForm = useForm<TResetPasspayload>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: defaultValues,
   });
@@ -63,7 +63,7 @@ const ResetPasswordForm = ({
   //   },
   // });
 
-  const onSubmit = async (values: ResetPasspayload) => {
+  const onSubmit = async (values: TResetPasspayload) => {
     await emailOtp.resetPassword(
       {
         email,

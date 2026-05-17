@@ -3,10 +3,10 @@ import MDXContent from "@/helpers/MDXContent";
 import { getListPage } from "@/lib/contentParser";
 import { markdownify } from "@/lib/utils/textConverter";
 import SeoMeta from "@/partials/SeoMeta";
-import { RegularPage } from "@/types";
+import { TRegularPage } from "@/types";
 
 const About = async () => {
-  const data: RegularPage = getListPage("about/_index.md");
+  const data: TRegularPage = getListPage("about/_index.md");
   const { frontmatter, content } = data;
   const { title, meta_title, description, image } = frontmatter;
 

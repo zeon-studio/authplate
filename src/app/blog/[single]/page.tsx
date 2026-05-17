@@ -8,7 +8,7 @@ import dateFormat from "@/lib/utils/dateFormat";
 import similarItems from "@/lib/utils/similarItems";
 import { humanize, markdownify, slugify } from "@/lib/utils/textConverter";
 import SeoMeta from "@/partials/SeoMeta";
-import { Post } from "@/types";
+import { TPost } from "@/types";
 import { CircleUser, Clock, Folder } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,7 +20,7 @@ export const dynamicParams = false;
 
 // generate static params
 export const generateStaticParams: () => { single: string }[] = () => {
-  const posts: Post[] = getSinglePage(blog_folder);
+  const posts: TPost[] = getSinglePage(blog_folder);
 
   const paths = posts.map((post) => ({
     single: post.slug!,
@@ -35,7 +35,7 @@ const PostSingle = async ({
   params: Promise<{ single: string }>;
 }) => {
   const { single } = await params;
-  const posts: Post[] = getSinglePage(blog_folder);
+  const posts: TPost[] = getSinglePage(blog_folder);
   const post = posts.filter((page) => page.slug === single)[0];
 
   if (!post) {

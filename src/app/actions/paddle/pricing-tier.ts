@@ -1,9 +1,9 @@
-import { BillingCycle, PackageType, Tier } from "./type";
+import { EBillingCycle, EPackageType, Tier } from "./type";
 
 export const PricingTier: Tier[] = [
   {
-    name: PackageType.BASIC,
-    id: PackageType.BASIC,
+    name: EPackageType.BASIC,
+    id: EPackageType.BASIC,
     icon: "/assets/icons/price-tiers/free-icon.svg",
     description: "Free forever. Enjoy our services for free.",
     features: [
@@ -17,12 +17,12 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      [BillingCycle.LIFETIME]: "pri_01jrewpbc6wsbajb7y7gh913d4",
+      [EBillingCycle.LIFETIME]: "pri_01jrewpbc6wsbajb7y7gh913d4",
     },
   },
   {
-    name: PackageType.PREMIUM,
-    id: PackageType.PREMIUM,
+    name: EPackageType.PREMIUM,
+    id: EPackageType.PREMIUM,
     icon: "/assets/icons/price-tiers/basic-icon.svg",
     description: "$27/month (Billed annually).",
     features: [
@@ -40,12 +40,12 @@ export const PricingTier: Tier[] = [
     ],
     featured: true,
     priceId: {
-      [BillingCycle.MONTHLY]: "pri_01jrewrwbxm27z0evg0gdh2y0p",
+      [EBillingCycle.MONTHLY]: "pri_01jrewrwbxm27z0evg0gdh2y0p",
     },
   },
   {
-    name: PackageType.PREMIUM_LIFETIME,
-    id: PackageType.PREMIUM_LIFETIME,
+    name: EPackageType.PREMIUM_LIFETIME,
+    id: EPackageType.PREMIUM_LIFETIME,
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [
@@ -65,12 +65,12 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      [BillingCycle.MONTHLY]: "pri_01jrewt8t819qw8qh3bq225rmg",
+      [EBillingCycle.MONTHLY]: "pri_01jrewt8t819qw8qh3bq225rmg",
     },
   },
   {
-    name: PackageType.ENTERPRISE,
-    id: PackageType.ENTERPRISE,
+    name: EPackageType.ENTERPRISE,
+    id: EPackageType.ENTERPRISE,
     icon: "/assets/icons/price-tiers/pro-icon.svg",
     description: "Get in touch with us to get this plan.",
     features: [
@@ -90,7 +90,7 @@ export const PricingTier: Tier[] = [
     ],
     featured: false,
     priceId: {
-      [BillingCycle.MONTHLY]: "",
+      [EBillingCycle.MONTHLY]: "",
     },
   },
 ];

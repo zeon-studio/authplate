@@ -8,12 +8,12 @@ import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
 import Link from "next/link";
 import { use, useState } from "react";
 
-type SearchParams = Promise<{ from?: string }>;
+type TSearchParams = Promise<{ from?: string }>;
 
 export default function Register({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: TSearchParams;
 }) {
   const { from } = use(searchParams);
   const callbackURL = decodeURIComponent(from || "/");

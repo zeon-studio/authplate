@@ -1,12 +1,12 @@
 import config from "@/config/config.json";
 import dateFormat from "@/lib/utils/dateFormat";
 import { humanize, plainify, slugify } from "@/lib/utils/textConverter";
-import { Post } from "@/types";
+import { TPost } from "@/types";
 import { CircleCheckBig, Folder } from "lucide-react";
 import Link from "next/link";
 import ImageFallback from "../helpers/ImageFallback";
 
-const BlogCard = ({ data }: { data: Post }) => {
+const BlogCard = ({ data }: { data: TPost }) => {
   const { summary_length, blog_folder } = config.settings;
   const { title, image, author, categories, date } = data.frontmatter;
   return (

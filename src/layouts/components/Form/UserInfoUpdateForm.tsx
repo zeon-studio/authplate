@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Session, updateUser } from "@/lib/auth/auth-client";
+import { TSession, updateUser } from "@/lib/auth/auth-client";
 import { updateUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
@@ -18,17 +18,17 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-type UpdateUserPayload = z.infer<typeof updateUserSchema>;
+type TUpdateUserPayload = z.infer<typeof updateUserSchema>;
 
 export default function UserInfoUpdateForm({
   authPromise,
 }: {
-  authPromise: Promise<Session | null>;
+  authPromise: Promise<TSession | null>;
 }) {
   const auth = use(authPromise);
   const [isPending, setIsPending] = useState(false);
 
-  const profileForm = useForm<UpdateUserPayload>({
+  const profileForm = useForm<TUpdateUserPayload>({
     resolver: zodResolver(updateUserSchema),
     mode: "onChange",
     defaultValues: {
@@ -75,7 +75,7 @@ export default function UserInfoUpdateForm({
   //   },
   // });
 
-  const onSubmit = async (values: UpdateUserPayload) => {
+  const onSubmit = async (values: TUpdateUserPayload) => {
     await updateUser(
       {
         firstName: values.firstName,

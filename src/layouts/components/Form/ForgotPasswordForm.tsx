@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-type Props = {
+type TProps = {
   onOtpRequired: (params: { email: string; password: string }) => void;
 };
 
@@ -32,16 +32,16 @@ const defaultValues =
         email: "",
       };
 
-type ForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
+type TForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
 
-const ForgotPasswordForm = ({ onOtpRequired }: Props) => {
+const ForgotPasswordForm = ({ onOtpRequired }: TProps) => {
   const [isPending, setIsPending] = useState(false);
-  const forgotPasswordForm = useForm<ForgotPasswordPayload>({
+  const forgotPasswordForm = useForm<TForgotPasswordPayload>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: defaultValues,
   });
 
-  const onSubmit = async ({ email }: ForgotPasswordPayload) => {
+  const onSubmit = async ({ email }: TForgotPasswordPayload) => {
     await forgetPassword.emailOtp(
       { email },
       {

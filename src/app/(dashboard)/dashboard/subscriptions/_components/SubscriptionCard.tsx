@@ -61,7 +61,7 @@ export default function SubscriptionCard({
           </div>
           <Badge
             variant={
-              subscription.status === "ACTIVE" ? "success" : "destructive"
+              subscription.status === "ACTIVE" ? "default" : "destructive"
             }
             className="capitalize"
           >
