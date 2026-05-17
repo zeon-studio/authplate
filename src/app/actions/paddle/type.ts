@@ -1,4 +1,11 @@
-import { BillingCycle } from "@/models/types/subscription.types";
+export enum BillingCycle {
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
+  MONTHLY = "MONTHLY",
+  QUARTERLY = "QUARTERLY",
+  ANNUAL = "ANNUAL",
+  LIFETIME = "LIFETIME",
+}
 
 export enum PackageType {
   BASIC = "BASIC",

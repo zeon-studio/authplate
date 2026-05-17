@@ -1,5 +1,4 @@
-import { BillingCycle } from "@/models/types/subscription.types";
-import { PackageType, Tier } from "./type";
+import { BillingCycle, PackageType, Tier } from "./type";
 
 export const PricingTier: Tier[] = [
   {

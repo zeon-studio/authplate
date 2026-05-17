@@ -1,0 +1,140 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  PAUSED
+  TRIALING
+  LIFETIME
+}
+
+enum PaymentStatus {
+  COMPLETED
+  FAILED
+  REFUNDED
+  PENDING
+}
+
+enum BillingCycle {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  LIFETIME
+}
+
+// BetterAuth required models
+model User {
+  id              String            @id @default(cuid())
+  firstName       String            // BetterAuth `name` field mapped here via fields config
+  lastName        String?
+  email           String            @unique
+  emailVerified   Boolean           @default(false)
+  image           String?
+  isTermsAccepted Boolean           @default(true)
+  provider        String            @default("CREDENTIALS")
+  customerId      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  sessions        Session[]
+  accounts        Account[]
+  verifications   OtpVerification[]
+  subscriptions   Subscription[]
+  payments        Payment[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+// Custom application models
+model OtpVerification {
+  id      String @id @default(cuid())
+  token   String
+  expires String
+  userId  String @unique
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                String             @id @default(cuid())
+  userId            String
+  user              User               @relation(fields: [userId], references: [id])
+  billingCycle      BillingCycle
+  orderId           String             @unique
+  planId            String
+  planName          String
+  status            SubscriptionStatus
+  startDate         DateTime
+  endDate           DateTime?
+  trialEndsAt       DateTime?
+  canceledAt        DateTime?
+  lastBillingDate   DateTime?
+  nextBillingDate   DateTime?
+  nextPaymentAmount Float?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  payments          Payment[]
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  transactionId  String
+  discountId     String?
+  totalAmount    Float
+  earnings       Float
+  discountAmount Float?
+  taxAmount      Float
+  processingFee  Float
+  currency       String
+  status         PaymentStatus
+  paymentMethod  String?
+  orderId        String?       @unique
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  subscription   Subscription? @relation(fields: [orderId], references: [orderId])
+}

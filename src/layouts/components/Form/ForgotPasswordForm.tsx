@@ -26,11 +26,11 @@ type Props = {
 const defaultValues =
   process.env.NODE_ENV === "development"
     ? {
-      email: "murad.themefisher@gmail.com",
-    }
+        email: "themefisher.dev@gmail.com",
+      }
     : {
-      email: "",
-    };
+        email: "",
+      };
 
 type ForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
 

@@ -25,13 +25,13 @@ import PasswordInput from "../PasswordInput";
 const defaultValues =
   process.env.NODE_ENV === "production"
     ? {
-      email: "",
-      password: "",
-    }
+        email: "",
+        password: "",
+      }
     : {
-      email: "murad.themefisher@gmail.com",
-      password: "@Password123",
-    };
+        email: "themefisher.dev@gmail.com",
+        password: "@Password123",
+      };
 
 const LoginForm = ({
   onOtpRequired,

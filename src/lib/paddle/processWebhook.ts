@@ -1,13 +1,7 @@
 import { PricingTier } from "@/app/actions/paddle/pricing-tier";
-import { connectToMongoDB } from "@/lib/mongoose";
-import Payment from "@/models/payment.model";
-import Subscription from "@/models/subscription.model";
-import { PaymentStatus } from "@/models/types/payment.types";
-import {
-  BillingCycle,
-  SubscriptionStatus,
-} from "@/models/types/subscription.types";
-import User from "@/models/user.model";
+import { BillingCycle } from "@/app/actions/paddle/type";
+import { prisma } from "@/lib/prisma";
+import { SubscriptionStatus } from "@prisma/client";
 import {
   EventEntity,
   EventName,
@@ -22,7 +16,6 @@ import {
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
-    await connectToMongoDB();
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
         this.subscriptionCreated(eventData);
@@ -47,8 +40,8 @@ export class ProcessWebhook {
       scheduledChange,
     } = eventData.data;
 
-    const subscription = await Subscription.findOne({
-      orderId: subscriptionId,
+    const subscription = await prisma.subscription.findUnique({
+      where: { orderId: subscriptionId },
     });
 
     if (!subscription || scheduledChange?.action === "cancel") {
@@ -56,63 +49,54 @@ export class ProcessWebhook {
     }
 
     if (scheduledChange?.action) {
-      await Subscription.updateOne(
-        { _id: subscription._id },
-        {
-          $set: {
-            status: this.getSubscriptionStatus(scheduledChange),
-          },
-        },
-      );
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: { status: this.getSubscriptionStatus(scheduledChange) },
+      });
       return;
     }
 
-    await Subscription.updateOne(
-      { orderId: subscriptionId },
-      {
-        $set: {
-          status: this.getSubscriptionStatus(status),
-          nextBillingDate: nextBilledAt,
-          trialEndsAt:
-            status === "trialing" ? currentBillingPeriod?.endsAt : null,
-          planId: this.getPlanId(items)!,
-          planName: this.getPlanName(items)!,
-          lastBillingDate: items[0].previouslyBilledAt,
-        },
+    await prisma.subscription.update({
+      where: { orderId: subscriptionId },
+      data: {
+        status: this.getSubscriptionStatus(status),
+        nextBillingDate: nextBilledAt ? new Date(nextBilledAt) : undefined,
+        trialEndsAt:
+          status === "trialing" && currentBillingPeriod?.endsAt
+            ? new Date(currentBillingPeriod.endsAt)
+            : null,
+        planId: this.getPlanId(items)!,
+        planName: this.getPlanName(items)!,
+        lastBillingDate: items[0].previouslyBilledAt
+          ? new Date(items[0].previouslyBilledAt)
+          : undefined,
       },
-    );
+    });
   }
 
   async lifetimeSubscriptionCreated(eventData: TransactionCompletedEvent) {
-    const {
-      id: transactionId,
-      customData,
-      subscriptionId,
-      items,
-    } = eventData.data;
+    const { id: transactionId, customData, subscriptionId, items } =
+      eventData.data;
 
     if (subscriptionId) {
       return;
     }
 
-    const { email: userEmail } = customData as {
-      email: string;
-    };
+    const { email: userEmail } = customData as { email: string };
+    const user = await this.getUserByEmail(userEmail);
+    if (!user) return;
 
-    const user = await this.getUserEmail(userEmail);
-    if (!user) {
-      return;
-    }
-
-    await Subscription.create({
-      userId: user!._id,
-      planId: this.getPlanId(items)!,
-      status: SubscriptionStatus.LIFETIME,
-      orderId: subscriptionId || transactionId,
-      planName: this.getPlanName(items)!,
-      startDate: new Date(),
-      billingCycle: BillingCycle.LIFETIME,
-    } as any);
+    await prisma.subscription.create({
+      data: {
+        userId: user.id,
+        planId: this.getPlanId(items)!,
+        status: "LIFETIME",
+        orderId: subscriptionId || transactionId,
+        planName: this.getPlanName(items)!,
+        startDate: new Date(),
+        billingCycle: BillingCycle.LIFETIME,
+      },
+    });
   }
 
   async paymentCreated(eventData: TransactionCompletedEvent) {
@@ -126,35 +110,30 @@ export class ProcessWebhook {
         currencyCode,
       } = eventData.data;
 
-      const { email: userEmail } =
-        (customData as {
-          email: string;
-        }) || {};
-
-      const user = await this.getUserEmail(userEmail);
-
-      if (!user) {
-        return;
-      }
+      const { email: userEmail } = (customData as { email: string }) || {};
+      const user = await this.getUserByEmail(userEmail);
+      if (!user) return;
 
       const earnings = +(details?.totals?.total ?? "0") / 100;
       const taxAmount = +(details?.totals?.tax ?? "0") / 100;
       const processingFee = +(details?.totals?.fee ?? "0") / 100;
       const totalAmount = +(earnings + taxAmount + processingFee).toFixed(2);
 
-      await Payment.create({
-        userId: user!._id,
-        totalAmount: totalAmount,
-        taxAmount: taxAmount,
-        processingFee: processingFee,
-        earnings: earnings,
-        currency: currencyCode || undefined,
-        paymentMethod: "paddle",
-        status: PaymentStatus.COMPLETED,
-        orderId: subscriptionId || transactionId,
-        transactionId: transactionId || undefined,
-        discountId: discountId || undefined,
-      } as any);
+      await prisma.payment.create({
+        data: {
+          userId: user.id,
+          totalAmount,
+          taxAmount,
+          processingFee,
+          earnings,
+          currency: currencyCode || "",
+          paymentMethod: "paddle",
+          status: "COMPLETED",
+          orderId: subscriptionId || transactionId,
+          transactionId: transactionId,
+          discountId: discountId || undefined,
+        },
+      });
     } catch (error) {
       console.log("Error creating payment:", error);
     }
@@ -172,33 +151,37 @@ export class ProcessWebhook {
         items,
       } = eventData.data;
 
-      const { email: userEmail } =
-        (customData as {
-          email: string;
-        }) || {};
+      const { email: userEmail } = (customData as { email: string }) || {};
+      const user = await this.getUserByEmail(userEmail);
+      if (!user) return;
 
-      const user = await this.getUserEmail(userEmail);
-
-      if (!user) {
-        return;
-      }
-
-      await Subscription.create({
-        userId: user!._id,
-        planId: this.getPlanId(items)!,
-        status: this.getSubscriptionStatus(eventData.data.status),
-        lastBillingDate: firstBilledAt!,
-        orderId: subscriptionId || transactionId,
-        canceledAt: null,
-        startDate: currentBillingPeriod?.startsAt || firstBilledAt!,
-        trialEndsAt:
-          eventData.data.status === "trialing"
-            ? currentBillingPeriod?.endsAt
-            : null,
-        nextBillingDate: nextBilledAt || currentBillingPeriod?.endsAt,
-        planName: this.getPlanName(items)!,
-        billingCycle: this.getBillingCycle(items),
-      } as any);
+      await prisma.subscription.create({
+        data: {
+          userId: user.id,
+          planId: this.getPlanId(items)!,
+          status: this.getSubscriptionStatus(eventData.data.status),
+          lastBillingDate: firstBilledAt ? new Date(firstBilledAt) : new Date(),
+          orderId: subscriptionId || transactionId!,
+          canceledAt: null,
+          startDate: currentBillingPeriod?.startsAt
+            ? new Date(currentBillingPeriod.startsAt)
+            : firstBilledAt
+              ? new Date(firstBilledAt)
+              : new Date(),
+          trialEndsAt:
+            eventData.data.status === "trialing" && currentBillingPeriod?.endsAt
+              ? new Date(currentBillingPeriod.endsAt)
+              : null,
+          nextBillingDate:
+            nextBilledAt
+              ? new Date(nextBilledAt)
+              : currentBillingPeriod?.endsAt
+                ? new Date(currentBillingPeriod.endsAt)
+                : null,
+          planName: this.getPlanName(items)!,
+          billingCycle: this.getBillingCycle(items),
+        },
+      });
     } catch (error) {
       console.log("Error creating subscription:", error);
     }
@@ -211,7 +194,6 @@ export class ProcessWebhook {
     if (item instanceof SubscriptionItemNotification) {
       return item.price?.id || item.product?.id;
     }
-
     if (item instanceof TransactionItemNotification) {
       return item.price?.id;
     }
@@ -224,7 +206,6 @@ export class ProcessWebhook {
     if (item instanceof TransactionItemNotification) {
       return item.price?.name;
     }
-
     if (item instanceof SubscriptionItemNotification) {
       return item.price?.name || item.product?.name;
     }
@@ -232,7 +213,7 @@ export class ProcessWebhook {
 
   getSubscriptionStatus(
     status: PaddleSubscriptionStatus | SubscriptionScheduledChangeNotification,
-  ) {
+  ): SubscriptionStatus {
     if (status instanceof SubscriptionScheduledChangeNotification) {
       switch (status.action) {
         case "cancel":
@@ -262,19 +243,15 @@ export class ProcessWebhook {
     }
   }
 
-  async getUserEmail(email: string) {
+  async getUserByEmail(email: string) {
     try {
-      const user = await User.findOne({
-        email: email,
-      });
-
-      return user;
+      return await prisma.user.findUnique({ where: { email } });
     } catch (error) {
       console.log("Error finding user:", error);
+      return null;
     }
   }
 
-  // Updated logic to use `BillingCycle`
   getBillingCycle(
     items: SubscriptionItemNotification[] | TransactionItemNotification[],
   ): BillingCycle {

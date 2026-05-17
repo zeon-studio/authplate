@@ -1,19 +1,22 @@
-import { UserType } from "@/models/types/user.types";
-import User from "@/models/user.model";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const data = (await req.json()) as UserType;
-  const user = await User.findOne({ email: data.email });
+  const data = await req.json();
+
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+
   if (!user) {
-    const newUser = await User.create({
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      image: data.image,
-      emailVerified: true,
-      isTermsAccepted: true,
-      provider: data.provider,
+    const newUser = await prisma.user.create({
+      data: {
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        image: data.image,
+        emailVerified: true,
+        isTermsAccepted: true,
+        provider: data.provider,
+      },
     });
 
     return NextResponse.json(
@@ -22,13 +25,5 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    {
-      data: user,
-      message: "User found",
-    },
-    {
-      status: 200,
-    },
-  );
+  return NextResponse.json({ data: user, message: "User found" }, { status: 200 });
 }

@@ -1,18 +1,18 @@
 import { mailSender } from "@/app/actions/sender";
 import bcryptjs from "bcryptjs";
 import { betterAuth } from "better-auth";
-import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { emailOTP } from "better-auth/plugins";
-import { getClient } from "../mongoose";
+import { prisma } from "../prisma";
 import { userSchema } from "../validation/user.schema";
 import { otpVerifySchema } from "./server-validation-schema";
 
-const client = await getClient();
-
 export const auth = betterAuth({
-  database: mongodbAdapter(client),
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
   // to modify user data before create or update
   databaseHooks: {
     user: {
@@ -54,7 +54,7 @@ export const auth = betterAuth({
     },
   },
   rateLimit: {
-    // enabled: true, // enabled only if you want to test it in development
+    // v1.6+: auto-enabled in production, disabled in development
     window: parseInt(process.env.RATELIMIT_WINDOW!), // time window in seconds
     max: parseInt(process.env.RATELIMIT_MAX!), // max requests in the window
   },
@@ -327,9 +327,10 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
-      otpLength: 6, // six digits
+      otpLength: 6,
       expiresIn: 15 * 60, // 15 minutes
-      allowedAttempts: 3, // Invalid the otp after 3 wrong submisssion
+      allowedAttempts: 3,
+      storeOTP: "hashed", // bcrypt-hash OTPs at rest (v1.6 best practice)
       overrideDefaultEmailVerification: true,
       sendVerificationOTP: async ({ email, otp, type }) => {
         if (type === "sign-in") {
