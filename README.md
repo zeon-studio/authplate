@@ -76,14 +76,12 @@ NEXT_PUBLIC_PADDLE_ENV="sandbox"
 
 ### 3. Set up the database
 
-Push the Prisma schema to your database and generate the client:
+Generate the Prisma client and push the schema to your database:
 
 ```bash
-pnpm dlx dotenv-cli prisma db push
-pnpm dlx dotenv-cli prisma generate
+pnpm db:generate
+pnpm db:push
 ```
-
-> `dotenv-cli` is required because Prisma 7's `prisma.config.ts` loads `DATABASE_URL` at config-parse time, before the standard env injection runs.
 
 ### 4. Run the dev server
 
@@ -99,24 +97,32 @@ App runs at [http://localhost:3000](http://localhost:3000).
 
 Authplate uses **PostgreSQL** with Prisma 7. Any Postgres provider works. [Neon](https://neon.tech) is recommended for serverless deployments (free tier available).
 
+### Scripts
+
+| Command | Description |
+|---|---|
+| `pnpm db:generate` | Regenerate Prisma client from schema |
+| `pnpm db:push` | Push schema to DB without migration files (dev/prototyping) |
+| `pnpm db:migrate` | Create and apply a named migration (dev) |
+| `pnpm db:migrate:prod` | Apply pending migrations (production deploys) |
+| `pnpm db:studio` | Open Prisma Studio visual editor |
+
 ### Schema changes
 
 After editing `prisma/schema.prisma`:
 
 ```bash
-# Push changes (no migration files — good for dev/prototyping)
-pnpm dlx dotenv-cli prisma db push
+# Development — creates a migration file + applies it
+pnpm db:migrate
 
-# Regenerate Prisma client
-pnpm dlx dotenv-cli prisma generate
-```
-
-Or use the package.json scripts (requires `DATABASE_URL` in shell env):
-
-```bash
+# Or push directly without migration files (prototyping only)
 pnpm db:push
+
+# Regenerate the Prisma client
 pnpm db:generate
 ```
+
+> The generated client lives at `src/generated/prisma/` (gitignored). Always run `pnpm db:generate` after schema changes or a fresh `pnpm install`.
 
 ---
 
@@ -190,7 +196,7 @@ docker run -p 3000:3000 \
   authplate
 ```
 
-> `DATABASE_URL` is needed at build time (for `prisma generate`) and at runtime. Pass it as both `--build-arg` and `-e`.
+> `DATABASE_URL` is needed at build time (`prisma generate`) and at runtime. Pass it as both `--build-arg` and `-e`.
 
 ---
 

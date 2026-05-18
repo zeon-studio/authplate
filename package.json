@@ -13,6 +13,9 @@
     "format": "prettier -w ./src",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:prod": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "generate-json": "node scripts/jsonGenerator.js",
     "remove-darkmode": "node scripts/removeDarkmode.js && pnpm format"
   },
@@ -68,6 +71,7 @@
     "@types/react-dom": "19.2.3",
     "@types/react-gravatar": "^2.6.14",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
     "eslint": "^10.4.0",
     "eslint-config-next": "16.2.6",
     "html-loader": "^5.1.0",
