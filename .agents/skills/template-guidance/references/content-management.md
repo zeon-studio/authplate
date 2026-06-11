@@ -1,0 +1,53 @@
+# Content Management
+
+This skill explains how to manage content collections within this Authplate template architecture.
+
+## Content Architecture
+
+Content is primarily driven by Markdown (`.md`) and MDX (`.mdx`) files located in the `src/content/` directory.
+
+**Important for AI Agents:** The exact collections (folders) may vary depending on how this template was customized. **You should always list the contents of the `src/content/` directory to discover what collections are available in the current project.**
+
+Current collections in this template:
+- **About**: `src/content/about/` — About page content.
+- **Blog Posts**: `src/content/blog/` — Blog articles.
+- **Contact**: `src/content/contact/` — Contact page content.
+- **Homepage**: `src/content/homepage/` — Homepage section content.
+- **Pages**: `src/content/pages/` — Standalone pages rendered by the `[regular]` catch-all route.
+- **Pricing**: `src/content/pricing/` — Pricing page content.
+- **Sections**: `src/content/sections/` — Reusable content sections (CTA, testimonials, etc.).
+
+## Frontmatter Schema
+
+Every markdown file must start with YAML frontmatter.
+
+### Required Fields for Blog Posts (`src/content/blog/`)
+- `title`: String. The main title of the post.
+- `date`: ISO Date string (e.g., `2022-04-04T05:00:00Z`).
+- `description`: String. Short summary used for lists and SEO.
+- `image`: String. Path to the cover image (starts with `/images/`).
+
+### Optional Fields
+- `meta_title`: String. Used for SEO if different from `title`.
+- `categories`: Array of strings (e.g., `["Application", "Data"]`).
+- `tags`: Array of strings (e.g., `["nextjs", "tailwind"]`).
+- `author`: String. Author name for the post.
+- `draft`: Boolean (`true`/`false`). If `true`, the post is excluded from production builds.
+
+## File Naming Conventions
+
+- Use kebab-case for filenames: `my-new-post.md`
+- The filename (without extension) becomes the URL slug (e.g., `/blog/my-new-post`).
+- For index pages of a folder, use `_index.md`.
+
+## Image Handling
+
+- Images should be placed in `public/images/`.
+- Reference them in frontmatter or content using the absolute path relative to `public`: `/images/my-image.jpg`.
+- Example: `![Alt text](/images/my-image.jpg)`
+
+## Common Mistakes / What NOT to do
+
+- **DO NOT** use relative paths for images like `../../public/images/my-image.jpg`. Always use absolute paths starting with `/` (e.g., `/images/...`).
+- **DO NOT** put content files outside of `src/content/`. The content parsers are hardcoded to look in this directory.
+- **DO NOT** misspell frontmatter keys (e.g., using `category` instead of `categories`). The site will fail to render the taxonomy if keys do not match exactly.

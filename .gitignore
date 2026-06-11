@@ -39,3 +39,6 @@ next-env.d.ts
 
 # prisma generated client
 /src/generated
+
+# skills
+.agents/skills/skill-creator
