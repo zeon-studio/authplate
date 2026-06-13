@@ -7,6 +7,9 @@
     "next-devtools": {
       "command": "npx",
       "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "better-auth": {
+      "url": "https://mcp.better-auth.com/mcp"
     }
   }
 }
