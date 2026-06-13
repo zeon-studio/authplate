@@ -2,8 +2,17 @@
 
 This skill explains the custom Node.js scripts and `pnpm` commands available in this Authplate template.
 
-## Available pnpm Commands (`package.json`)
+## Script Run Precedence (Getting Started)
 
+When setting up the project or starting work, you **must** run scripts in a specific order:
+
+1. **Install Dependencies**: `pnpm install`
+2. **Setup Database**: `pnpm db:generate` followed by `pnpm db:push` (or `pnpm db:migrate` for existing/production-ready schemas)
+3. **Start Development**: `pnpm dev`
+
+> **CRITICAL**: The database must be set up and the Prisma client generated *before* running the development server.
+
+## Available pnpm Commands (`package.json`)
 ### Development & Build
 
 #### `pnpm dev`
@@ -39,6 +48,11 @@ Applies pending migrations in production.
 #### `pnpm db:studio`
 Opens the Prisma Studio database GUI.
 - **What it does**: Runs `prisma studio`, which opens a browser-based UI to inspect and edit database records directly.
+
+### Schema Changes Precedence
+After editing `prisma/schema.prisma`, you must apply changes to your database and regenerate the client in this exact order:
+1. Apply changes: `pnpm db:migrate` (or `pnpm db:push` for prototyping)
+2. Regenerate client: `pnpm db:generate`
 
 ### Code Quality
 

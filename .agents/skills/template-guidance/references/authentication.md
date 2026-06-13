@@ -26,12 +26,15 @@ src/app/api/auth/
 This is the **central configuration hub** for Better Auth. It exports a single `auth` instance created with `betterAuth()`.
 
 ### Database Adapter
+
 Uses `prismaAdapter` with PostgreSQL:
+
 ```ts
 database: prismaAdapter(prisma, { provider: "postgresql" }),
 ```
 
 ### Session Configuration
+
 ```ts
 session: {
   expiresIn: 60 * 60 * 24 * 7,   // 7 days
@@ -44,10 +47,13 @@ session: {
 ```
 
 ### Rate Limiting
+
 Configured via environment variables (`RATELIMIT_WINDOW`, `RATELIMIT_MAX`). Auto-enabled in production, disabled in development (v1.6+).
 
 ### User Model with Custom Fields
+
 The `name` field is mapped to `firstName`. Additional fields:
+
 - `firstName` (required, string)
 - `lastName` (required, string)
 - `isTermsAccepted` (boolean, default `true`)
@@ -55,6 +61,7 @@ The `name` field is mapped to `firstName`. Additional fields:
 - `password` (string, for credential auth)
 
 ### Email & Password
+
 ```ts
 emailAndPassword: {
   enabled: true,
@@ -69,9 +76,11 @@ emailAndPassword: {
 ```
 
 ### Social Providers
+
 Two OAuth providers are configured out of the box:
 
 **GitHub:**
+
 ```ts
 github: {
   clientId: process.env.GITHUB_CLIENT_ID,
@@ -85,6 +94,7 @@ github: {
 ```
 
 **Google:**
+
 ```ts
 google: {
   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -101,17 +111,21 @@ google: {
 ```
 
 ### Plugins
+
 - **`emailOTP`**: Sends 6-digit OTPs via email for verification. 15-minute expiry, 3 attempts max, hashed storage. Overrides default email verification.
 - **`nextCookies()`**: Integrates with Next.js cookie handling.
 
 Commented-out options available: `twoFactor()`, `customSession()`.
 
 ### Auth Middleware (Hooks)
+
 Server-side validation runs before endpoints via `createAuthMiddleware`:
+
 - `/sign-up/email` → Validates against `userSchema` (Zod)
 - `/email-otp/verify-email` → Validates against `otpVerifySchema` (Zod)
 
 ### Database Hooks
+
 `databaseHooks.user.create.before` and `databaseHooks.user.update.before` run before user creation/updates. Currently pass-through but can be extended for custom logic (e.g., creating a Stripe customer after signup).
 
 ---
@@ -121,6 +135,7 @@ Server-side validation runs before endpoints via `createAuthMiddleware`:
 Creates the client-side auth interface using `createAuthClient()` from `better-auth/react`.
 
 ### Exported Methods & Hooks
+
 ```ts
 export const {
   signIn,            // signIn.email(), signIn.social()
@@ -142,16 +157,19 @@ export const {
 ```
 
 ### Client Plugins
+
 - `emailOTPClient()` — Client-side OTP methods
 - `customSessionClient<typeof auth>()` — Infers custom session types from server config
 - `inferAdditionalFields<typeof auth>()` — Infers additional user fields (firstName, lastName, etc.)
 
 ### Type Export
+
 ```ts
 export type TSession = typeof $Infer.Session;
 ```
 
 ### Error Handling
+
 Global `fetchOptions.onError` catches rate limit errors (HTTP 429) and shows a toast notification.
 
 ---
@@ -173,6 +191,7 @@ export const getServerAuth = async () => {
 ```
 
 **Usage in Server Components:**
+
 ```tsx
 import { getServerAuth } from "@/lib/auth/auth-server";
 
@@ -190,6 +209,7 @@ export default async function MyPage() {
 ## API Route Handler — `src/app/api/auth/[...all]/route.ts`
 
 A minimal catch-all route that exposes all Better Auth API endpoints:
+
 ```ts
 import { auth } from "@/lib/auth/auth";
 import { toNextJsHandler } from "better-auth/next-js";
@@ -206,9 +226,11 @@ This single route handles all auth operations: sign-in, sign-up, OAuth callbacks
 The `(auth)` route group contains all public authentication pages with a shared centered card layout:
 
 ### Layout (`src/app/(auth)/layout.tsx`)
+
 Wraps children in a centered container with `bg-light` card styling.
 
 ### Sign In (`src/app/(auth)/signin/page.tsx`)
+
 - Client component (`"use client"`)
 - Uses `LoginForm` component with `react-hook-form` + Zod validation
 - Social login buttons (Google, GitHub) using `signIn.social()`
@@ -216,12 +238,14 @@ Wraps children in a centered container with `bg-light` card styling.
 - Supports `?from=` search param for redirect-after-login
 
 ### Sign Up (`src/app/(auth)/signup/page.tsx`)
+
 - Client component
 - Uses `RegisterForm` component
 - Same social login + OTP flow as signin
 - Includes terms acceptance
 
 ### Forgot Password (`src/app/(auth)/forgot-password/page.tsx`)
+
 - Client component
 - Uses `ForgotPasswordForm` → triggers OTP → `<OtpVerifyForm />`
 
@@ -230,7 +254,9 @@ Wraps children in a centered container with `bg-light` card styling.
 ## Route Protection Patterns
 
 ### Pattern 1: Layout-Level Protection (Dashboard)
+
 The `(dashboard)` layout automatically protects all child routes:
+
 ```tsx
 // src/app/(dashboard)/layout.tsx
 export default async function DashboardLayout({ children }) {
@@ -243,7 +269,9 @@ export default async function DashboardLayout({ children }) {
 ```
 
 ### Pattern 2: Page-Level Protection
+
 For individual protected pages outside the dashboard:
+
 ```tsx
 // src/app/(protected)/page.tsx
 export default async function Page() {
@@ -261,22 +289,23 @@ export default async function Page() {
 
 Better Auth requires these core models (defined in `prisma/schema.prisma`):
 
-| Model | Purpose |
-|-------|---------|
-| `User` | User accounts with custom fields (firstName, lastName, isTermsAccepted, provider, customerId) |
-| `Session` | Active login sessions with token, expiry, IP, user agent |
-| `Account` | OAuth provider accounts (access/refresh tokens, provider IDs) |
-| `Verification` | General verification records (used by Better Auth internally) |
+| Model          | Purpose                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| `User`         | User accounts with custom fields (firstName, lastName, isTermsAccepted, provider, customerId) |
+| `Session`      | Active login sessions with token, expiry, IP, user agent                                      |
+| `Account`      | OAuth provider accounts (access/refresh tokens, provider IDs)                                 |
+| `Verification` | General verification records (used by Better Auth internally)                                 |
 
 Custom application models:
 
-| Model | Purpose |
-|-------|---------|
-| `OtpVerification` | Stores OTP tokens with expiry, linked to users |
-| `Subscription` | User subscriptions (Paddle/Stripe) with status, billing cycle, dates |
-| `Payment` | Payment transaction records with amounts, fees, currency |
+| Model             | Purpose                                                              |
+| ----------------- | -------------------------------------------------------------------- |
+| `OtpVerification` | Stores OTP tokens with expiry, linked to users                       |
+| `Subscription`    | User subscriptions (Paddle/Stripe) with status, billing cycle, dates |
+| `Payment`         | Payment transaction records with amounts, fees, currency             |
 
 ### After Schema Changes
+
 ```bash
 pnpm db:migrate    # Create migration + apply
 pnpm db:generate   # Regenerate Prisma client
@@ -289,6 +318,7 @@ pnpm db:generate   # Regenerate Prisma client
 All input validation uses **Zod v4** schemas:
 
 ### `user.schema.ts`
+
 - `userSchema` — Full user with all fields
 - `registerUserSchema` — Registration (includes confirmPassword, terms)
 - `loginUserSchema` — Login (email + password only)
@@ -299,6 +329,7 @@ All input validation uses **Zod v4** schemas:
 - `passwordSchema` — Password rules: 8+ chars, uppercase, lowercase, digit, special char
 
 ### `otp.schema.ts`
+
 - `otpSchema` — 6-digit numeric string validation
 
 ---
@@ -306,6 +337,7 @@ All input validation uses **Zod v4** schemas:
 ## Email Sending — `src/app/actions/sender/`
 
 Uses **Nodemailer** with Gmail SMTP. Available senders:
+
 - `mailSender.otpSender(email, otp)` — OTP verification email
 - `mailSender.teamInvitation(email)` — Team invite email
 - `mailSender.notificationEmail(email, subject, message)` — General notification
@@ -319,15 +351,15 @@ Configured via `SENDER_EMAIL` and `EMAIL_PASSWORD` environment variables.
 
 Required auth-related environment variables (see `.env.example`):
 
-| Variable | Purpose |
-|----------|---------|
-| `BETTER_AUTH_SECRET` | Secret key for Better Auth session signing |
-| `BETTER_AUTH_URL` | Base URL of the application (e.g., `http://localhost:3000`) |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth app credentials |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth app credentials |
-| `SENDER_EMAIL` / `EMAIL_PASSWORD` | Gmail SMTP credentials for OTP emails |
-| `RATELIMIT_WINDOW` / `RATELIMIT_MAX` | Rate limiting config (default: 100 req/10s) |
+| Variable                                    | Purpose                                                     |
+| ------------------------------------------- | ----------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`                        | Secret key for Better Auth session signing                  |
+| `BETTER_AUTH_URL`                           | Base URL of the application (e.g., `http://localhost:3000`) |
+| `DATABASE_URL`                              | PostgreSQL connection string                                |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth app credentials                                |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth app credentials                                |
+| `SENDER_EMAIL` / `EMAIL_PASSWORD`           | Gmail SMTP credentials for OTP emails                       |
+| `RATELIMIT_WINDOW` / `RATELIMIT_MAX`        | Rate limiting config (default: 100 req/10s)                 |
 
 ---
 
@@ -372,6 +404,7 @@ Required auth-related environment variables (see `.env.example`):
 ### Protecting a New Page
 
 Use `getServerAuth()` in Server Components:
+
 ```tsx
 import { getServerAuth } from "@/lib/auth/auth-server";
 import { redirect } from "next/navigation";
@@ -384,6 +417,7 @@ export default async function SecretPage() {
 ```
 
 Or for client components, use the `useSession` hook:
+
 ```tsx
 "use client";
 import { useSession } from "@/lib/auth/auth-client";
@@ -405,3 +439,13 @@ export default function ProfileWidget() {
 - **DO NOT** store raw OTP codes in the database. The `emailOTP` plugin uses hashed storage (`storeOTP: "hashed"`).
 - **DO NOT** hardcode auth-related URLs. Use `BETTER_AUTH_URL` from environment variables.
 - **DO NOT** bypass the Zod validation schemas. Auth middleware automatically validates signups and OTP verifications.
+
+## Official Better Auth AI Skills
+
+For deeper guidance on Better Auth features, refer to the following official AI agent skills available in this project:
+
+- **Better Auth Best Practices**: `.agents/skills/better-auth-best-practices`
+- **Security Best Practices**: `.agents/skills/better-auth-security-best-practices`
+- **Create Auth**: `.agents/skills/create-auth-skill`
+- **Email & Password Best Practices**: `.agents/skills/email-and-password-best-practices`
+- **Two-Factor Authentication Best Practices**: `.agents/skills/two-factor-authentication-best-practices`
