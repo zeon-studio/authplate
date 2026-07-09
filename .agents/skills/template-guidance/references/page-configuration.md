@@ -9,36 +9,44 @@ The primary configuration files are located in `src/config/`. These are JSON and
 **Important for AI Agents:** The exact schema and available keys may vary. **Always read the contents of the files in `src/config/` to discover what settings are currently available.**
 
 ### `src/config/config.json`
+
 This is the master configuration file for the site.
+
 - **`site`**: Contains basic site info like `title`, `base_url`, `favicon`, `logo` paths, `logo_darkmode`, and logo dimensions.
 - **`announcement`**: Controls the announcement banner (`enable`, `content` HTML, `expire_days`).
 - **`settings`**: Controls feature flags like `search`, `sticky_header`, `theme_switcher`, `default_theme` (dark/light/system), `pagination` limits, `blog_folder`, and `payment` provider (e.g., `"paddle"`).
 - **`params`**: Contains global parameters like `contact_form_action` and `copyright` text.
 - **`navigation_button`**: Controls the header CTA button (`enable`, `label`, `link`).
-- **`disqus`**: Disqus commenting integration settings.
 - **`metadata`**: Global SEO defaults (`meta_author`, `meta_image`, `meta_description`).
 
 ### `src/config/menu.json`
+
 Controls the header, dashboard sidebar, and footer navigation menus.
+
 - **`main`**: Array of objects for the header menu (`name`, `url`). Supports nested menus via `hasChildren` and `children`.
 - **`dashboard`**: Array of objects for the dashboard sidebar menu (`name`, `url`, `icon`). Icons map to Lucide icon names.
 - **`footer`**: Array of objects for footer links.
 
 ### `src/config/social.ts`
+
 A **TypeScript** file (not JSON) that defines social media links and their icons.
+
 - Exports an array of objects with `name`, `icon` (from `@icons-pack/react-simple-icons`), and `link`.
 - Used by the `<Social />` component.
 - To add or remove a social link, edit this TypeScript file directly.
 
 ### `src/config/paddle.ts`
+
 Paddle payment integration configuration (pricing tier IDs, etc.).
 
 ### `src/config/stripe.ts`
+
 Stripe payment integration configuration (if using Stripe instead of Paddle).
 
 ## SEO Metadata
 
 SEO is handled dynamically, with fallbacks:
+
 1. **Per-Page Basis**: Defined in the frontmatter of individual markdown files (`title`, `meta_title`, `description`, `image`).
 2. **Global Fallback**: If a specific page lacks SEO fields, the system falls back to `config.json` → `metadata`.
 
