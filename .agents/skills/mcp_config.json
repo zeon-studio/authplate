@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "shadcn-ui": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "paddle-live": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.paddle.com/mcp"
+      ]
+    },
+    "tailwindcss-server": {
+      "command": "npx",
+      "args": ["-y", "tailwindcss-mcp-server"]
+    }
+  }
+}

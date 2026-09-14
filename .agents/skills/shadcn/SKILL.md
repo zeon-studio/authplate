@@ -1,8 +1,6 @@
 ---
 name: shadcn
 description: Manages shadcn components and projects — adding, searching, fixing, debugging, styling, and composing UI, including chat interfaces. Provides project context, component docs, and usage examples. Applies when working with shadcn/ui, component registries, presets, --preset codes, or any project with a components.json file. Also triggers for "shadcn init", "create an app with --preset", or "switch to --preset".
-user-invocable: false
-allowed-tools: Bash(npx shadcn@latest *), Bash(pnpm dlx shadcn@latest *), Bash(bunx --bun shadcn@latest *)
 ---
 
 # shadcn/ui
@@ -30,7 +28,7 @@ The JSON above contains the project config and installed components. Use `npx sh
 
 These rules are **always enforced**. Each links to a file with Incorrect/Correct code pairs.
 
-### Styling & Tailwind → [styling.md](./rules/styling.md)
+### Styling & Tailwind → [styling.md](references/styling.md)
 
 - **`className` for layout, not styling.** Never override component colors or typography.
 - **No `space-x-*` or `space-y-*`.** Use `flex` with `gap-*`. For vertical stacks, `flex flex-col gap-*`.
@@ -40,7 +38,7 @@ These rules are **always enforced**. Each links to a file with Incorrect/Correct
 - **Use `cn()` for conditional classes.** Don't write manual template literal ternaries.
 - **No manual `z-index` on overlay components.** Dialog, Sheet, Popover, etc. handle their own stacking.
 
-### Forms & Inputs → [forms.md](./rules/forms.md)
+### Forms & Inputs → [forms.md](references/forms.md)
 
 - **Forms use `FieldGroup` + `Field`.** Never use raw `div` with `space-y-*` or `grid gap-*` for form layout.
 - **`InputGroup` uses `InputGroupInput`/`InputGroupTextarea`.** Never raw `Input`/`Textarea` inside `InputGroup`.
@@ -49,17 +47,17 @@ These rules are **always enforced**. Each links to a file with Incorrect/Correct
 - **`FieldSet` + `FieldLegend` for grouping related checkboxes/radios.** Don't use a `div` with a heading.
 - **Field validation uses `data-invalid` + `aria-invalid`.** `data-invalid` on `Field`, `aria-invalid` on the control. For disabled: `data-disabled` on `Field`, `disabled` on the control.
 
-### Component Structure → [composition.md](./rules/composition.md)
+### Component Structure → [composition.md](references/composition.md)
 
 - **Items always inside their Group.** `SelectItem` → `SelectGroup`. `DropdownMenuItem` → `DropdownMenuGroup`. `CommandItem` → `CommandGroup`.
-- **Use `asChild` (radix) or `render` (base) for custom triggers.** Check `base` field from `npx shadcn@latest info`. → [base-vs-radix.md](./rules/base-vs-radix.md)
+- **Use `asChild` (radix) or `render` (base) for custom triggers.** Check `base` field from `npx shadcn@latest info`. → [base-vs-radix.md](references/base-vs-radix.md)
 - **Dialog, Sheet, and Drawer always need a Title.** `DialogTitle`, `SheetTitle`, `DrawerTitle` required for accessibility. Use `className="sr-only"` if visually hidden.
 - **Use full Card composition.** `CardHeader`/`CardTitle`/`CardDescription`/`CardContent`/`CardFooter`. Don't dump everything in `CardContent`.
 - **Button has no `isPending`/`isLoading`.** Compose with `Spinner` + `data-icon` + `disabled`.
 - **`TabsTrigger` must be inside `TabsList`.** Never render triggers directly in `Tabs`.
 - **`Avatar` always needs `AvatarFallback`.** For when the image fails to load.
 
-### Use Components, Not Custom Markup → [composition.md](./rules/composition.md)
+### Use Components, Not Custom Markup → [composition.md](references/composition.md)
 
 - **Use existing components before custom markup.** Check if a component exists before writing a styled `div`.
 - **Callouts use `Alert`.** Don't build custom styled divs.
@@ -71,13 +69,13 @@ These rules are **always enforced**. Each links to a file with Incorrect/Correct
 - **Use `Skeleton`** for loading placeholders. No custom `animate-pulse` divs.
 - **Use `Badge`** instead of custom styled spans.
 
-### Icons → [icons.md](./rules/icons.md)
+### Icons → [icons.md](references/icons.md)
 
 - **Icons in `Button` use `data-icon`.** `data-icon="inline-start"` or `data-icon="inline-end"` on the icon.
 - **No sizing classes on icons inside components.** Components handle icon sizing via CSS. No `size-4` or `w-4 h-4`.
 - **Pass icons as objects, not string keys.** `icon={CheckIcon}`, not a string lookup.
 
-### Chat & Messaging → [chat.md](./rules/chat.md)
+### Chat & Messaging → [chat.md](references/chat.md)
 
 - **Chat UI composes the chat primitives.** Conversations use `MessageScroller`, rows use `Message`, surfaces use `Bubble`. Never hand-rolled bubble `div`s or a raw scroll container.
 - **`MessageScroller` owns scroll behavior.** Streaming follow, anchoring, and jump-to-latest (`MessageScrollerButton`) are built in. Don't write a `useStickToBottom`/`ResizeObserver` hook.
@@ -162,7 +160,7 @@ The injected project context contains these key fields:
 - **`packageManager`** → use this for any non-shadcn dependency installs (e.g. `pnpm add date-fns` vs `npm install date-fns`).
 - **`preset`** → resolved preset code and values for the current project. Use `npx shadcn@latest preset resolve --json` when you only need preset information.
 
-See [cli.md — `info` command](./cli.md) for the full field reference.
+See [cli.md — `info` command](references/cli.md) for the full field reference.
 
 ## Component Docs, Examples, and Usage
 
@@ -266,12 +264,13 @@ npx shadcn@latest view owner/repo/item
 
 ## Detailed References
 
-- [rules/forms.md](./rules/forms.md) — FieldGroup, Field, InputGroup, ToggleGroup, FieldSet, validation states
-- [rules/composition.md](./rules/composition.md) — Groups, overlays, Card, Tabs, Avatar, Alert, Empty, Toast, Separator, Skeleton, Badge, Button loading
-- [rules/chat.md](./rules/chat.md) — MessageScroller, Message, Bubble, Attachment, Marker; streaming, anchoring, jump-to-latest
-- [rules/icons.md](./rules/icons.md) — data-icon, icon sizing, passing icons as objects
-- [rules/styling.md](./rules/styling.md) — Semantic colors, variants, className, spacing, size, truncate, dark mode, cn(), z-index
-- [rules/base-vs-radix.md](./rules/base-vs-radix.md) — asChild vs render, Select, ToggleGroup, Slider, Accordion
-- [cli.md](./cli.md) — Commands, flags, presets, templates
-- [registry.md](./registry.md) — Authoring source registries, `include`, item definitions, dependencies, GitHub registry rules
-- [customization.md](./customization.md) — Theming, CSS variables, extending components
+- 📖 [forms.md](references/forms.md) — FieldGroup, Field, InputGroup, ToggleGroup, FieldSet, validation states
+- 📖 [composition.md](references/composition.md) — Groups, overlays, Card, Tabs, Avatar, Alert, Empty, Toast, Separator, Skeleton, Badge, Button loading
+- 📖 [chat.md](references/chat.md) — MessageScroller, Message, Bubble, Attachment, Marker; streaming, anchoring, jump-to-latest
+- 📖 [icons.md](references/icons.md) — data-icon, icon sizing, passing icons as objects
+- 📖 [styling.md](references/styling.md) — Semantic colors, variants, className, spacing, size, truncate, dark mode, cn(), z-index
+- 📖 [base-vs-radix.md](references/base-vs-radix.md) — asChild vs render, Select, ToggleGroup, Slider, Accordion
+- 📖 [cli.md](references/cli.md) — Commands, flags, presets, templates
+- 📖 [registry.md](references/registry.md) — Authoring source registries, `include`, item definitions, dependencies, GitHub registry rules
+- 📖 [customization.md](references/customization.md) — Theming, CSS variables, extending components
+- 📖 [mcp.md](references/mcp.md) — shadcn MCP server tools (search, view, list, registries)
