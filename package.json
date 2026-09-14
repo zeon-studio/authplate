@@ -11,6 +11,11 @@
     "start": "next start",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier -w ./src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:services": "vitest run tests/services",
+    "test:routes": "vitest run tests/routes",
+    "test:contract": "vitest run tests/contract",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
@@ -83,6 +88,7 @@
     "tailwind-bootstrap-grid": "^7.0.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.13",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.11"
   }
 }
