@@ -343,7 +343,7 @@ Uses **Nodemailer** with Gmail SMTP. Available senders:
 - `mailSender.notificationEmail(email, subject, message)` — General notification
 - `mailSender.commentNotification(email, itemName, comment)` — Comment alert
 
-Configured via `SENDER_EMAIL` and `EMAIL_PASSWORD` environment variables.
+Configured via `SENDER_EMAIL` and `SENDER_PASSWORD` environment variables.
 
 ---
 
@@ -358,7 +358,7 @@ Required auth-related environment variables (see `.env.example`):
 | `DATABASE_URL`                              | PostgreSQL connection string                                |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth app credentials                                |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth app credentials                                |
-| `SENDER_EMAIL` / `EMAIL_PASSWORD`           | Gmail SMTP credentials for OTP emails                       |
+| `SENDER_EMAIL` / `SENDER_PASSWORD`           | Gmail SMTP credentials for OTP emails                       |
 | `RATELIMIT_WINDOW` / `RATELIMIT_MAX`        | Rate limiting config (default: 100 req/10s)                 |
 
 ---
@@ -368,11 +368,14 @@ Required auth-related environment variables (see `.env.example`):
 ### Adding a New Social Provider
 
 1. Add credentials to `.env`:
+
    ```
    DISCORD_CLIENT_ID="..."
    DISCORD_CLIENT_SECRET="..."
    ```
+
 2. Add provider in `src/lib/auth/auth.ts` → `socialProviders`:
+
    ```ts
    discord: {
      clientId: process.env.DISCORD_CLIENT_ID as string,
@@ -384,6 +387,7 @@ Required auth-related environment variables (see `.env.example`):
      }),
    },
    ```
+
 3. Add a login button in the signin/signup pages using `signIn.social({ provider: "discord" })`.
 
 ### Adding a Custom User Field
@@ -391,6 +395,7 @@ Required auth-related environment variables (see `.env.example`):
 1. Add the field to `prisma/schema.prisma` → `User` model.
 2. Run `pnpm db:migrate` and `pnpm db:generate`.
 3. Add the field in `src/lib/auth/auth.ts` → `user.additionalFields`:
+
    ```ts
    myField: {
      type: "string",
@@ -399,6 +404,7 @@ Required auth-related environment variables (see `.env.example`):
      defaultValue: "",
    },
    ```
+
 4. Update the Zod schema in `src/lib/validation/user.schema.ts`.
 
 ### Protecting a New Page

@@ -19,7 +19,7 @@ const envSchema = z.object({
 
   // Email
   SENDER_EMAIL: z.string().email(),
-  EMAIL_PASSWORD: z.string().min(1),
+  SENDER_PASSWORD: z.string().min(1),
 
   // Paddle
   PADDLE_API_KEY: z.string().min(1),

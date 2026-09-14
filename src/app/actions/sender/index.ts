@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 const config = {
   sender_email: process.env.SENDER_EMAIL,
-  sender_password: process.env.EMAIL_PASSWORD,
+  sender_password: process.env.SENDER_PASSWORD,
 };
 
 const mailTransporter = nodemailer.createTransport({

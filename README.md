@@ -60,7 +60,7 @@ DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
 
 # Nodemailer
 SENDER_EMAIL="your@email.com"
-EMAIL_PASSWORD="your_app_password"
+SENDER_PASSWORD="your_app_password"
 
 # Stripe
 NEXT_PUBLIC_STRIPE_PUBLIC_KEY=""
@@ -100,7 +100,7 @@ Authplate uses **PostgreSQL** with Prisma 7. Any Postgres provider works. [Neon]
 ### Scripts
 
 | Command | Description |
-|---|---|
+| --- | --- |
 | `pnpm db:generate` | Regenerate Prisma client from schema |
 | `pnpm db:push` | Push schema to DB without migration files (dev/prototyping) |
 | `pnpm db:migrate` | Create and apply a named migration (dev) |
@@ -144,7 +144,7 @@ BetterAuth handles all auth flows. Configure providers in `src/lib/auth/auth.ts`
 
 ### Email / OTP
 
-Uses Nodemailer. For Gmail, create an [App Password](https://support.google.com/accounts/answer/185833) and use it as `EMAIL_PASSWORD`.
+Uses Nodemailer. For Gmail, create an [App Password](https://support.google.com/accounts/answer/185833) and use it as `SENDER_PASSWORD`.
 
 ---
 
@@ -188,7 +188,7 @@ docker run -p 3000:3000 \
   -e GITHUB_CLIENT_ID="..." \
   -e GITHUB_CLIENT_SECRET="..." \
   -e SENDER_EMAIL="..." \
-  -e EMAIL_PASSWORD="..." \
+  -e SENDER_PASSWORD="..." \
   -e PADDLE_API_KEY="..." \
   -e NEXT_PUBLIC_PADDLE_CLIENT_TOKEN="..." \
   -e PADDLE_NOTIFICATION_WEBHOOK_SECRET="..." \
