@@ -8,3 +8,6 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - zod@4.6.5

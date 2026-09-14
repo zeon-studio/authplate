@@ -31,7 +31,7 @@ export function PriceSection({
             "checkout-order-summary-mobile-yellow-highlight relative mt-6 bg-border/50"
           }
         />
-        <Accordion type="single" collapsible>
+        <Accordion>
           <AccordionItem className={"border-none"} value="item-1">
             <AccordionTrigger className={"text-muted-foreground !no-underline"}>
               Order summary

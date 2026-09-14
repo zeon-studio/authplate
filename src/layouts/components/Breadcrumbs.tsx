@@ -37,7 +37,7 @@ const Breadcrumbs = ({ className }: { className?: string }) => {
                 {label}
               </Link>
             ) : (
-              <span className="text-text-light">{label}</span>
+              <span className="text-muted-foreground">{label}</span>
             )}
           </li>
         ))}

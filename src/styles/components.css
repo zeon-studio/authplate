@@ -20,7 +20,7 @@
   @apply inline-block;
 }
 .social-icons li a {
-  @apply flex h-9 w-9 items-center justify-center rounded-sm bg-primary text-center leading-9 text-white;
+  @apply flex h-9 w-9 items-center justify-center rounded-sm bg-primary text-center leading-9 text-primary-foreground;
 }
 .social-icons li a svg {
   @apply h-5 w-5;
@@ -40,7 +40,7 @@
 }
 
 .notice-head p {
-  @apply font-secondary text-xl font-semibold text-text-dark;
+  @apply font-secondary text-xl font-semibold text-text-strong;
 }
 
 .notice-body {
@@ -81,11 +81,11 @@
 }
 
 .tab-nav-item {
-  @apply cursor-pointer border-b-[3px] border-border py-2 text-lg text-text-dark opacity-80  !my-0 !px-8;
+  @apply cursor-pointer border-b-[3px] border-border py-2 text-lg text-text-strong opacity-80  !my-0 !px-8;
 }
 
 .tab-nav-item.active {
-  @apply border-b-[3px] border-dark opacity-100;
+  @apply border-b-[3px] border-foreground opacity-100;
 }
 
 .tab-content {
@@ -110,7 +110,7 @@
 }
 
 .accordion-header {
-  @apply flex w-full cursor-pointer items-center justify-between px-8 py-4 text-lg text-text-dark;
+  @apply flex w-full cursor-pointer items-center justify-between px-8 py-4 text-lg text-text-strong;
 }
 
 .accordion-icon {
@@ -143,7 +143,7 @@
 }
 
 .modal-close {
-  @apply absolute right-3 top-3 h-8 w-8 rounded-full bg-light text-center leading-8 text-text-dark;
+  @apply absolute right-3 top-3 h-8 w-8 rounded-full bg-light text-center leading-8 text-text-strong;
 }
 
 /* pricing */
@@ -165,22 +165,22 @@
 /* content style */
 .content {
   @apply prose max-w-none;
-  @apply prose-headings:mb-[.3em] prose-headings:mt-[.6em] prose-headings:text-text-dark;
+  @apply prose-headings:mb-[.3em] prose-headings:mt-[.6em] prose-headings:text-text-strong;
   @apply prose-h1:text-h1-sm md:prose-h1:text-h1;
   @apply prose-h2:text-h2-sm md:prose-h2:text-h2;
   @apply prose-h3:text-h3-sm md:prose-h3:text-h3;
-  @apply prose-p:text-base prose-p:text-text;
-  @apply prose-a:text-text prose-a:[&.btn]:no-underline;
+  @apply prose-p:text-base prose-p:text-text-default;
+  @apply prose-a:text-text-default prose-a:[&.btn]:no-underline;
   @apply prose-img:max-w-full prose-img:rounded;
-  @apply prose-strong:text-text-dark;
+  @apply prose-strong:text-text-strong;
   @apply prose-hr:border-border;
   @apply prose-pre:rounded-lg prose-pre:bg-light;
-  @apply prose-code:text-text-dark;
-  @apply prose-li:text-text;
-  @apply prose-blockquote:rounded-lg prose-blockquote:border prose-blockquote:border-l-[10px] prose-blockquote:border-primary prose-blockquote:bg-light prose-blockquote:px-8 prose-blockquote:py-10 prose-blockquote:font-secondary prose-blockquote:text-2xl prose-blockquote:not-italic prose-blockquote:text-text-dark;
+  @apply prose-code:text-text-strong;
+  @apply prose-li:text-text-default;
+  @apply prose-blockquote:rounded-lg prose-blockquote:border prose-blockquote:border-l-[10px] prose-blockquote:border-primary prose-blockquote:bg-light prose-blockquote:px-8 prose-blockquote:py-10 prose-blockquote:font-secondary prose-blockquote:text-2xl prose-blockquote:not-italic prose-blockquote:text-text-strong;
   @apply prose-table:relative prose-table:overflow-hidden prose-table:rounded-lg prose-table:before:absolute prose-table:before:left-0 prose-table:before:top-0 prose-table:before:h-full prose-table:before:w-full prose-table:before:rounded-[inherit] prose-table:before:border prose-table:before:border-border prose-table:before:content-[""];
   @apply prose-thead:border-border prose-thead:bg-light;
-  @apply prose-th:relative prose-th:z-10 prose-th:px-4 prose-th:py-[18px] prose-th:text-text-dark;
+  @apply prose-th:relative prose-th:z-10 prose-th:px-4 prose-th:py-[18px] prose-th:text-text-strong;
   @apply prose-tr:border-border;
-  @apply prose-td:relative prose-td:z-10 prose-td:px-3 prose-td:py-[18px] prose-td:text-text;
+  @apply prose-td:relative prose-td:z-10 prose-td:px-3 prose-td:py-[18px] prose-td:text-text-default;
 }

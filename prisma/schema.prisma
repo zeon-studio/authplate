@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "postgresql"
 }
@@ -33,9 +34,10 @@ enum BillingCycle {
 }
 
 // BetterAuth required models
+
 model User {
   id              String            @id @default(cuid())
-  firstName       String            // BetterAuth `name` field mapped here via fields config
+  firstName       String // BetterAuth `name` field mapped here via fields config
   lastName        String?
   email           String            @unique
   emailVerified   Boolean           @default(false)
@@ -50,6 +52,9 @@ model User {
   verifications   OtpVerification[]
   subscriptions   Subscription[]
   payments        Payment[]
+  password        String?
+
+  @@map("user")
 }
 
 model Session {
@@ -62,6 +67,9 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -79,6 +87,9 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -88,9 +99,13 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 // Custom application models
+
 model OtpVerification {
   id      String @id @default(cuid())
   token   String

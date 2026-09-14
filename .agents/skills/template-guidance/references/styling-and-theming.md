@@ -49,7 +49,7 @@ This file maps the raw color palette from `theme.css` into semantic design token
 :root {
   --background: var(--body-color);
   --primary: var(--primary-color);
-  --destructive: var(--danger-color);
+  --destructive: var(--destructive-color);
   /* ... semantic mappings */
 }
 
@@ -126,7 +126,7 @@ pnpm dlx shadcn@latest add <component-name>
 Dark mode is handled using `next-themes`:
 - The `next-themes` provider (in `src/layouts/partials/Providers.tsx`) adds a `.dark` class to the HTML element.
 - `theme.css` defines separate color values under the `.dark` selector.
-- To use dark mode specific Tailwind classes, prefix them with `dark:` (e.g., `dark:bg-dark`).
+- To use dark mode specific Tailwind classes, prefix them with `dark:` (e.g., `dark:bg-muted`).
 - The default theme is set to `"system"` in `config.json` → `settings.default_theme`.
 
 ## Common Mistakes / What NOT to do

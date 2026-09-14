@@ -25,7 +25,7 @@ export function HeaderActions({ settings }: HeaderActionsProps) {
     <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
       {settings.search && (
         <Link
-          className="mr-5 inline-block border-r border-border pr-5 text-xl text-text-dark hover:text-primary  "
+          className="mr-5 inline-block border-r border-border pr-5 text-xl text-text-strong hover:text-primary  "
           href="/search"
           aria-label="search"
         >

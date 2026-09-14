@@ -51,7 +51,7 @@ export default function Profile({ auth }: { auth: TSession }) {
               src={user?.image as string | undefined}
               alt={user?.firstName + " " + user?.lastName}
             />
-            <AvatarFallback className="text-xs bg-light text-text-light">
+            <AvatarFallback className="text-xs bg-light text-muted-foreground">
               {fallback()}
             </AvatarFallback>
           </Avatar>

@@ -118,7 +118,7 @@ const PostSingle = async ({
                     {tags?.map((tag: string) => (
                       <li key={tag} className="inline-block">
                         <Link
-                          className="m-1 block rounded bg-light px-3 py-1 hover:bg-primary hover:text-white   "
+                          className="m-1 block rounded bg-light px-3 py-1 hover:bg-primary hover:text-primary-foreground"
                           href={`/tags/${slugify(tag)}`}
                         >
                           {humanize(tag)}

@@ -76,15 +76,13 @@ export function CancelSubscriptionDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              disabled={loading}
-              variant="destructive"
-              onClick={handleCancelSubscription}
-            >
-              Cancel Subscription
-              {loading && <Loader2 className="ml-2 size-4 animate-spin" />}
-            </Button>
+          <AlertDialogAction
+            disabled={loading}
+            variant="destructive"
+            onClick={handleCancelSubscription}
+          >
+            Cancel Subscription
+            {loading && <Loader2 className="ml-2 size-4 animate-spin" />}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
