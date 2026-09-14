@@ -54,6 +54,24 @@ After editing `prisma/schema.prisma`, you must apply changes to your database an
 1. Apply changes: `pnpm db:migrate` (or `pnpm db:push` for prototyping)
 2. Regenerate client: `pnpm db:generate`
 
+### Testing (Vitest)
+
+#### `pnpm test`
+Runs all unit and contract test suites once.
+- **What it does**: Executes `vitest run` on tests located in `tests/`.
+
+#### `pnpm test:watch`
+Runs Vitest in interactive watch mode for TDD.
+
+#### `pnpm test:contract`
+Runs validation schema and utility contract tests (`tests/contract`).
+
+#### `pnpm test:routes`
+Runs route protection and proxy middleware tests (`tests/routes`).
+
+#### `pnpm test:services`
+Runs service and content parser tests (`tests/services`).
+
 ### Code Quality
 
 #### `pnpm lint`

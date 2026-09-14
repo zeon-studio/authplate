@@ -135,10 +135,34 @@ When setting up or modifying database models, follow this exact sequence:
 
 ---
 
+## 🧪 Testing Suite & Architecture (Vitest)
+
+The test suite is powered by **Vitest** configured in [`vitest.config.mts`](file:///Users/somrat/Development/Boilerplates/authplate/vitest.config.mts) with Node environment simulation, path alias resolution, and Next.js mock headers in [`tests/setup.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/setup.ts).
+
+The test suite is partitioned into three key domains:
+- **Contract & Schema Tests (`tests/contract/`):**
+  - [`validation.contract.test.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/contract/validation.contract.test.ts) — Validates Zod schemas (`userSchema`, `passwordSchema`, `loginUserSchema`, `registerUserSchema`, `otpSchema`, `otpVerifySchema`).
+  - [`utils.contract.test.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/contract/utils.contract.test.ts) — Tests slugification, string utilities, and date formatting helpers.
+- **Route & Middleware Tests (`tests/routes/`):**
+  - [`proxy.routes.test.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/routes/proxy.routes.test.ts) — Tests proxy/middleware route access guards, public routes, and redirect flows.
+- **Service & Integration Tests (`tests/services/`):**
+  - [`paddle.service.test.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/services/paddle.service.test.ts) — Tests Paddle payment SDK initialization and customer portal generation.
+  - [`content.service.test.ts`](file:///Users/somrat/Development/Boilerplates/authplate/tests/services/content.service.test.ts) — Tests markdown parser, frontmatter extraction, and taxonomy helpers.
+
+### Available Test Commands:
+- `pnpm test` — Run all test suites once (`vitest run`).
+- `pnpm test:watch` — Interactive watch mode for TDD.
+- `pnpm test:contract` — Run only contract and validation schema tests.
+- `pnpm test:routes` — Run only proxy and route protection tests.
+- `pnpm test:services` — Run only service and content parser tests.
+
+---
+
 ## 🚦 Quality Gates
 
 Always run and verify before submitting changes:
 
+- `pnpm test` (Vitest test suite — 5 test files across `tests/contract/`, `tests/routes/`, `tests/services/`)
 - `pnpm lint` (ESLint code quality check)
 - `pnpm format` (Prettier code formatting)
 - `pnpm db:generate` (Prisma client compilation)
