@@ -20,10 +20,13 @@ const NotFound = async () => {
                   name changed, or is temporarily unavailable.
                 </p>
               </div>
-              <Link href="/" className={buttonVariants({
-                className: "mt-8",
-                size: "lg",
-              })}>
+              <Link
+                href="/"
+                className={buttonVariants({
+                  className: "mt-8",
+                  size: "lg",
+                })}
+              >
                 Back to home
               </Link>
             </div>

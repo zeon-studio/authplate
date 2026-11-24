@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
-import { ChevronDown } from "lucide-react"
+import * as React from "react";
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { ChevronDown } from "lucide-react";
 
-import { cn } from "@/lib/utils/shadcn"
+import { cn } from "@/lib/utils/shadcn";
 
-const Accordion = AccordionPrimitive.Root
+const Accordion = AccordionPrimitive.Root;
 
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
@@ -17,8 +17,8 @@ const AccordionItem = React.forwardRef<
     className={cn("border-b", className)}
     {...props}
   />
-))
-AccordionItem.displayName = "AccordionItem"
+));
+AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
@@ -29,7 +29,7 @@ const AccordionTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "group/accordion-trigger flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline aria-disabled:pointer-events-none aria-disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     >
@@ -37,8 +37,8 @@ const AccordionTrigger = React.forwardRef<
       <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-aria-expanded/accordion-trigger:rotate-180" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
-))
-AccordionTrigger.displayName = "AccordionTrigger"
+));
+AccordionTrigger.displayName = "AccordionTrigger";
 
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Panel>,
@@ -51,8 +51,8 @@ const AccordionContent = React.forwardRef<
   >
     <div className={cn("pb-4 pt-0", className)}>{children}</div>
   </AccordionPrimitive.Panel>
-))
+));
 
-AccordionContent.displayName = "AccordionContent"
+AccordionContent.displayName = "AccordionContent";
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };

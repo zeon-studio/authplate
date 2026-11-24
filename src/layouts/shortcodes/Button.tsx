@@ -16,8 +16,9 @@ const Button = ({
     <Link
       href={link}
       target={link.startsWith("http") ? "_blank" : "_self"}
-      rel={`noopener noreferrer ${rel ? (rel === "follow" ? "" : rel) : "nofollow"
-        }`}
+      rel={`noopener noreferrer ${
+        rel ? (rel === "follow" ? "" : rel) : "nofollow"
+      }`}
       className={`no-underline ${buttonVariants({ variant: style === "outline" ? "outline" : "default" })}`}
     >
       {label}

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
-import { Check } from "lucide-react"
+import * as React from "react";
+import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
+import { Check } from "lucide-react";
 
-import { cn } from "@/lib/utils/shadcn"
+import { cn } from "@/lib/utils/shadcn";
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -14,7 +14,7 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       "grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:bg-primary data-checked:text-primary-foreground",
-      className
+      className,
     )}
     {...props}
   >
@@ -24,7 +24,7 @@ const Checkbox = React.forwardRef<
       <Check className="h-4 w-4" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-))
-Checkbox.displayName = "Checkbox"
+));
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox }
+export { Checkbox };

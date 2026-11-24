@@ -12,7 +12,10 @@ export async function POST(request: NextRequest) {
 
   if (!privateKey) {
     console.error("PADDLE_NOTIFICATION_WEBHOOK_SECRET is not configured");
-    return Response.json({ status: 500, error: "Webhook not configured" }, { status: 500 });
+    return Response.json(
+      { status: 500, error: "Webhook not configured" },
+      { status: 500 },
+    );
   }
 
   try {

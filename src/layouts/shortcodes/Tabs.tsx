@@ -13,16 +13,15 @@ function Tabs({ children }: { children: ReactElement[] }) {
   const [active, setActive] = useState(0);
   //select tabItems
   const tabItemsRef: RefObject<HTMLElement[]> = useRef([]);
-  const [defaultFocus, setDefaultFocus] = useState(false);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (defaultFocus) {
-      //@ts-ignore
-      tabItemsRef.current[active].focus();
-    } else {
-      setDefaultFocus(true);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //@ts-ignore
+    tabItemsRef.current[active]?.focus();
   }, [active]);
 
   //change tab item on click

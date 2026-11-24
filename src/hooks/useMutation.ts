@@ -14,7 +14,10 @@ type TMutationCallbacks<T> = {
 };
 
 export function useMutation<T>(
-  actionFunction: (state: TResult<T>, formData: FormData) => Promise<TResult<T>>,
+  actionFunction: (
+    state: TResult<T>,
+    formData: FormData,
+  ) => Promise<TResult<T>>,
   props?: TMutationCallbacks<T>,
 ): {
   action: (formData: FormData) => void;

@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
     email: "",
     password: "",
   });
-  
+
   const [showOtp, setShowOtp] = useState(false);
 
   if (showOtp) {

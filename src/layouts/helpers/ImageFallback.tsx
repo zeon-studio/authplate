@@ -2,15 +2,17 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const ImageFallback = (props: any) => {
   const { src, fallback, ...rest } = props;
   const [imgSrc, setImgSrc] = useState(src);
+  const [prevSrc, setPrevSrc] = useState(src);
 
-  useEffect(() => {
+  if (src !== prevSrc) {
+    setPrevSrc(src);
     setImgSrc(src);
-  }, [src]);
+  }
 
   return (
     <Image

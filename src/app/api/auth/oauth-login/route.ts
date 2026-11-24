@@ -25,5 +25,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ data: user, message: "User found" }, { status: 200 });
+  return NextResponse.json(
+    { data: user, message: "User found" },
+    { status: 200 },
+  );
 }

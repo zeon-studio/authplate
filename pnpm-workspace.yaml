@@ -11,3 +11,6 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - zod@4.6.5
+  - '@hookform/resolvers@7.0.9'
+  - lucide-react@1.79.0
+  - marked@18.3.0

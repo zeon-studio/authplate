@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // how to use
 // const { loadedItems, loadItemsHandler, loadItemsFinished } = useLoadMore(filteredWebsites,6,mounted);
@@ -9,25 +9,14 @@ const useLoadMore = (
   loadPerClick: number,
   mounted: boolean,
 ) => {
-  const [loadedItems, setLoadedItems] = useState<Array<any>>([]);
-  const [next, setNext] = useState<number>(loadPerClick);
-
-  const loadItems = (start: number, end: number) => {
-    const slicedItems = items.slice(start, end);
-    setLoadedItems([...loadedItems, ...slicedItems]);
-  };
+  const [loadedCount, setLoadedCount] = useState<number>(loadPerClick);
 
   const loadItemsHandler = () => {
-    loadItems(next, next + loadPerClick);
-    setNext(next + loadPerClick);
+    setLoadedCount((prev) => prev + loadPerClick);
   };
 
-  useEffect(() => {
-    loadItems(0, loadPerClick);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted]);
-
-  const loadItemsFinished = Number(items.length) == Number(loadedItems.length);
+  const loadedItems = mounted ? items.slice(0, loadedCount) : [];
+  const loadItemsFinished = Number(items.length) <= Number(loadedItems.length);
 
   return {
     loadedItems,
