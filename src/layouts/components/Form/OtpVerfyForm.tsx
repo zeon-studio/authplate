@@ -14,6 +14,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { toast } from "@/components/ui/toast";
 import { emailOtp, signIn } from "@/lib/auth/auth-client";
 import { otpSchema } from "@/lib/validation/otp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +22,6 @@ import { Loader2 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import z from "zod";
 import { OtpTimer } from "../OtpTimer";
 import ResetPasswordForm from "./ResetPasswordForm";
@@ -179,7 +179,7 @@ const OtpVerifyForm = ({ email, password }: TOtpVerifyFormProps) => {
 
         <OtpTimer
           email={email}
-          className="absolute left-0 bottom-[47px] w-full"
+          className="absolute left-0 bottom-11.75 w-full"
         />
       </Form>
     </div>

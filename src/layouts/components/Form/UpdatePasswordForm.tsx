@@ -8,12 +8,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "@/components/ui/toast";
 import { changePassword } from "@/lib/auth/auth-client";
 import { updatePasswordSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 import PasswordInput from "../PasswordInput";
 import { Button } from "../ui/button";

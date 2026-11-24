@@ -1,8 +1,8 @@
 "use client";
 
+import { toast } from "@/components/ui/toast";
 import { Button } from "@/layouts/components/ui/button";
 import { FormEvent } from "react";
-import { toast } from "sonner";
 
 export function ContactForm() {
   const handleSubmit = async (ev: FormEvent<HTMLFormElement>) => {

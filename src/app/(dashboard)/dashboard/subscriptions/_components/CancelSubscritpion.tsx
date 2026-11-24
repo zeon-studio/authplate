@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import { useDialog } from "@/hooks/useDialog";
 import { cancelSubscription } from "@/lib/paddle/cancelSubscription";
 
+import { toast } from "@/components/ui/toast";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 interface CancelSubscriptionDialogProps {
   subscriptionId: string;

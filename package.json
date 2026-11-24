@@ -1,6 +1,6 @@
 {
   "name": "authplate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Nextjs, BetterAuth, Tailwindcss boilerplate",
   "author": "zeon.studio",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "remove-darkmode": "node scripts/removeDarkmode.mjs && pnpm format"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0",
+    "@base-ui/react": "^1.9.0",
     "@hookform/resolvers": "^5.9.1",
     "@icons-pack/react-simple-icons": "^13.15.1",
     "@justinribeiro/lite-youtube": "^1.9.0",
@@ -51,7 +51,6 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.88.0",
     "remark-gfm": "^4.0.1",
-    "sonner": "^2.0.8",
     "stripe": "^22.6.2",
     "swiper": "^14.2.0",
     "tailwind-merge": "^3.7.0",

@@ -1,9 +1,9 @@
 import { sendOtp } from "@/app/actions/otp";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { useMutation } from "@/hooks/useMutation";
 import { cn } from "@/lib/utils/shadcn";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { Input } from "./ui/input";
 
 export function OtpTimer({
@@ -16,7 +16,7 @@ export function OtpTimer({
   const formRef = useRef<HTMLFormElement>(null);
   const [minutes, setMinutes] = useState(2);
   const [seconds, setSeconds] = useState(59);
-  
+
   const { action, isPending } = useMutation(sendOtp, {
     onSuccess() {
       setMinutes(2);

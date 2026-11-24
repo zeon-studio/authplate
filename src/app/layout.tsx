@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toast";
 import config from "@/config/config.json";
 import TwSizeIndicator from "@/helpers/TwSizeIndicator";
 import Announcement from "@/layouts/helpers/Announcement";
@@ -6,7 +7,6 @@ import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
 import "@/styles/main.css";
 import { Heebo, Signika } from "next/font/google";
-import { Toaster } from "sonner";
 
 const fontPrimary = Heebo({
   weight: ["400", "600"],
@@ -20,7 +20,11 @@ const fontSecondary = Signika({
   variable: "--font-secondary",
 });
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html suppressHydrationWarning lang="en" className="text-base">
       <head>
